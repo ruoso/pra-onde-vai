@@ -129,10 +129,13 @@ describe('the map', () => {
     expect(screen.queryByRole('button', { name: /D major/ })).toBeNull();
   });
 
-  it('shows only the learner’s level, in fixed places', async () => {
-    await openMap('Dm');
-    expect(screen.queryByRole('button', { name: /^E7,/ })).toBeNull();
-    expect(screen.getAllByRole('button', { name: /^[A-G]/ }).filter((b) => b.classList.contains('chord'))).toHaveLength(2);
+  it('shows the whole board, and only the learner’s level when asked, in the same places', async () => {
+    const { user } = await openMap('Dm');
+    const chords = () => document.querySelectorAll('.board .chord');
+    expect(chords()).toHaveLength(18);
+    await user.click(screen.getByRole('radio', { name: 'Level 1' }));
+    expect(chords()).toHaveLength(2);
+    expect(screen.queryByRole('button', { name: startsWith('E7,') })).toBeNull();
   });
 
   it('has no accessibility violations, asking for home or showing the board', async () => {
@@ -250,10 +253,12 @@ describe('levels', () => {
     expect(screen.getByRole('option', { name: startsWith('Level 1 · Home and its dominant, done') })).toBeInTheDocument();
   });
 
-  it('starts a drill of the level, with "Something else" for chords not on the board', async () => {
+  it('starts a drill of the level on the whole board, with "Something else" for chords above it', async () => {
     const { user } = await open('#/levels/1');
     await user.click(screen.getByRole('button', { name: 'Continue level 1' }));
     expect(screen.getByRole('heading', { name: 'Drill · level 1' })).toBeInTheDocument();
+    // Every chord of the board, not just the two of level 1: the buttons give nothing away.
+    expect(document.querySelectorAll('.board .chord').length).toBeGreaterThanOrEqual(18);
     expect(screen.getByRole('button', { name: 'Something else' })).toBeInTheDocument();
   });
 

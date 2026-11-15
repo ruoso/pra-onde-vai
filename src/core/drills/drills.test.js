@@ -64,12 +64,22 @@ describe('a drill', () => {
     expect(last.every((e) => e.fn === 'i')).toBe(true);
   });
 
-  it('wants "Something else" for a chord off the board, and nothing else', () => {
-    const ev = drillSequence([{ mode: 'maj', key: parseKey('C'), ids: ['I', 'V/ii', 'ii', 'V', 'I'], board: boardAt(2, 'maj') }]);
+  it('takes "Something else", or the chord’s own button, for a chord above the level; nothing else', () => {
+    const ids = ['I', 'V/ii', 'ii', 'V', 'I', 'V/ii', 'ii', 'V', 'I'];
+    const ev = drillSequence([{ mode: 'maj', key: parseKey('C'), ids, board: boardAt(2, 'maj') }]);
     let st = start(ev);
     st = answer(st, 'something', stats);
     expect(st.results[1].kind).toBe('right');
     st = answer(st, 'something', stats);
     expect(st.results[2].kind).toBe('miss');
+    st = answer(st, 'V', stats);
+    st = answer(st, 'I', stats);
+    st = answer(st, 'V/ii', stats);
+    expect(st.results[5].kind).toBe('right');
+    expect(st.last).toMatchObject({ expected: 'something', fn: 'V/ii' });
+    st = answer(st, 'ii', stats);
+    st = answer(st, 'V', stats);
+    st = answer(st, 'V', stats);
+    expect(st.results[8].kind).toBe('miss');
   });
 });

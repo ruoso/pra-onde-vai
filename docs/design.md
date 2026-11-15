@@ -173,7 +173,7 @@ Mockups: `Choose.dc.html`, `Practice.dc.html` (and `?scene=move`),
 
 - **Pick a tune** from the corpus. *On your board* is the share of its chord
   changes the map covers at your level (the full board: a median 88%, 133 of
-  295 tunes at 90% or more). Chords off your board are played for you. Choose
+  295 tunes at 90% or more). Chords above your level are played for you. Choose
   the sections (A only; A then B, which brings a change of key; the whole
   tune), the key (as written, or any key, so you learn moves rather than names)
   and the mode:
@@ -257,8 +257,14 @@ how many of the 295 have at least 80% of their changes on the board.
 - **Below level 4 whole tunes are mostly played for you**, so levels 1–3
   practise on drills: short progressions that walk the corpus's usual moves,
   using only your chords, in any key. Whole tunes come from level 4.
-- **"Something else"**: a chord not yet on your board is answered with a
-  *Something else* button; noticing it is part of the training.
+- **The whole board is always shown**, in practice and drills as on the map:
+  a board of only your level's chords gives the answer away (at level 1, two
+  buttons). Your level decides which chords are *asked*; any button can be
+  pressed, and a wrong one is a miss. The map can still be narrowed to your
+  level with its *Level n* switch.
+- **"Something else"**: in a drill, a chord above your level is answered with
+  its own button or with *Something else*; noticing it is part of the
+  training. In a tune, such a chord is played for you.
 - **Level 7 is an idea more than new chords**: any secondary dominant can bring
   its own ii (Em7(b5) → A7 → Dm in F major; Am7(b5) → D7 → Gm in D minor). The
   corpus's degrees cannot tell such a ii from any other chord on that degree,

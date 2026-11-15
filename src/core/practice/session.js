@@ -57,10 +57,10 @@ export function isDone(st) {
 export function answer(st, picked, stats) {
   const ev = current(st);
   if (!ev) return st;
-  // A chord not yet on the board is answered "Something else"; noticing it is
-  // part of the training (design §8).
+  // A chord above the learner's level is answered "Something else", or by its
+  // own button on the board; noticing it is part of the training (design §8).
   let m;
-  if (ev.expected === 'something') m = { kind: picked === 'something' ? 'right' : 'miss' };
+  if (ev.expected === 'something') m = { kind: picked === 'something' || picked === ev.fn ? 'right' : 'miss' };
   else if (picked === 'something') m = { kind: 'miss' };
   else m = mark(questionOf(ev), picked, stats);
   const results = { ...st.results, [st.idx]: { kind: m.kind, reason: m.reason ?? null, picked } };
@@ -72,7 +72,7 @@ export function answer(st, picked, stats) {
   const next = ev.nextIndex >= 0 ? st.events[ev.nextIndex] : null;
   const last = {
     kind: m.kind, reason: m.reason ?? null, picked, mode: ev.inKey.mode, key: ev.inKey,
-    expected: ev.expected, sym: ev.sym, bar: ev.bar, nextSym: next?.sym ?? null,
+    expected: ev.expected, fn: ev.fn, sym: ev.sym, bar: ev.bar, nextSym: next?.sym ?? null,
     prepares: preparesDominant(ev.expected),
   };
   return advance(st, answered, results, last);

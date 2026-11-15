@@ -10,7 +10,7 @@ import { useApp } from '../AppContext.jsx';
 import Board from '../components/Board.jsx';
 import { answer, showMe, resolveMove, current, isDone, counts, homeOf, heardBefore, lastHeard } from '../../core/practice/session.js';
 import { nextMoves } from '../../core/stats/tiers.js';
-import { boardAt, TOP_LEVEL } from '../../core/levels/levels.js';
+import { TOP_LEVEL } from '../../core/levels/levels.js';
 import { playChords, stop } from '../../audio/synth.js';
 import { feedback, keyName, sectionName, fnName } from '../words.js';
 import { href } from '../router.js';
@@ -108,10 +108,11 @@ export default function PracticeScreen() {
   const home = homeOf(st);
   const mode = home.mode;
   const level = run.kind === 'misses' ? TOP_LEVEL : run.level;
-  const board = boardAt(level, mode);
+  // The whole board, always: a few buttons would give the answer away. The
+  // level decides only which chords are asked (design §8).
   const last = lastHeard(st);
   const hintsOn = settings.hints;
-  const lit = hintsOn && st.pendingMove === null && !done && last ? nextMoves(data.stats, mode, last, board) : null;
+  const lit = hintsOn && st.pendingMove === null && !done && last ? nextMoves(data.stats, mode, last) : null;
   const c = counts(st);
   const fb = feedback(st.last);
   const update = (next) => {
@@ -127,7 +128,9 @@ export default function PracticeScreen() {
   const sub = tune
     ? [t(`practice.sections.${run.options.sections}`), run.transpose ? t('practice.inKey', { key: keyName(run.home) }) : t('practice.asWritten'), t('choose.predict')].join(' · ')
     : t('practice.drillSub');
-  const showSomething = level < TOP_LEVEL;
+  // In a drill, a chord above the learner's level is asked too: its own
+  // button or "Something else" answers it. A tune plays such chords for you.
+  const showSomething = !tune && level < TOP_LEVEL;
 
   return (
     <div className="practice-screen">
@@ -209,7 +212,7 @@ export default function PracticeScreen() {
       </div>
 
       <div className="practice-board">
-        <Board centre={home} board={board} lit={lit} current={last} onPick={pick} size="practice" disabled={!ev} />
+        <Board centre={home} board={null} lit={lit} current={last} onPick={pick} size="practice" disabled={!ev} />
         {showSomething && (
           <Button className="button something" onPress={() => pick('something')} isDisabled={!ev}>{t('practice.something')}</Button>
         )}

@@ -20,7 +20,7 @@ import LevelsScreen from './screens/LevelsScreen.jsx';
 import MeetScreen from './screens/MeetScreen.jsx';
 import AboutScreen from './screens/AboutScreen.jsx';
 
-export const DEFAULT_SETTINGS = { language: null, hints: true, speed: 'normal', mapScope: 'level', cents: 0 };
+export const DEFAULT_SETTINGS = { language: null, hints: true, speed: 'normal', mapScope: 'all', cents: 0 };
 
 const SCREENS = {
   map: MapScreen, listen: ListenScreen, tunes: ChooseScreen, practice: PracticeScreen,

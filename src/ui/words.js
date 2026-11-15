@@ -56,7 +56,8 @@ export function feedback(last) {
       ? { title: t('practice.fb.movedTitle', { key: keyName(k) }), text: t('practice.fb.movedText', { key: keyName(k) }) }
       : { title: t('practice.fb.didMoveTitle', { key: keyName(k) }), text: t('practice.fb.didMoveText', { key: keyName(k), tonic: tonicText(k) }) };
   }
-  const fn = fnName(last.expected);
+  // For a chord above the learner's level, the function it really is.
+  const fn = fnName(last.expected === 'something' ? last.fn : last.expected);
   const picked = last.picked ? nameIn(k, last.picked) : '';
   const pickedFn = last.picked ? fnName(last.picked) : '';
   const p = { sym: last.sym, fn, picked, pickedFn, next: last.nextSym ?? '', bar: last.bar };
