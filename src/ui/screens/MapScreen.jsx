@@ -17,6 +17,7 @@ import { href } from '../router.js';
 import HomePicker from '../components/HomePicker.jsx';
 import { initialMap, resetMap, addChord, changeHome, currentOf, movedOf, playedOf, removeChord, undo } from '../mapState.js';
 import { BAR_SECONDS } from './PracticeScreen.jsx';
+import MapChart from '../components/MapChart.jsx';
 
 const RELATIONS = { 'maj:vi': 'relative', 'min:III': 'relative', 'maj:IV': 'subdominant', 'min:iv': 'subdominant', 'maj:V': 'dominant', 'min:V': 'dominant' };
 const TRAIL = 9;
@@ -142,6 +143,7 @@ export default function MapScreen() {
           )))}
         </ol>
         <div className="trail-actions">
+          <MapChart map={map} />
           <Button className="button" isDisabled={!played.length}
             onPress={() => playChords(played.map((sym) => ({ sym, d: 0.5 })), { barSeconds: BAR_SECONDS[settings.speed] ?? 1.6 })}>
             {t('map.playBack')}

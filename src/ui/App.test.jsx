@@ -198,6 +198,38 @@ describe('the map', () => {
     expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled();
   });
 
+  it('shows the whole run as a chart, and copies it as cifra.md', async () => {
+    const { user } = await openMap('Dm');
+    for (const c of ['Dm', 'A7', 'Dm', 'C7', 'F']) await user.click(chord(c));
+    await user.click(screen.getByRole('button', { name: 'Make F major home' }));
+    for (const c of ['D7', 'Gm', 'C7', 'F']) await user.click(chord(c));
+    await user.click(screen.getByRole('button', { name: 'See it all' }));
+    const dialog = screen.getByRole('dialog', { name: 'What you played' });
+    const minor = within(dialog).getByRole('region', { name: 'D minor' });
+    expect(within(minor).getAllByRole('listitem').map((li) => li.textContent)).toEqual(['Dmi', 'A7V', 'Dmi', 'C7V of III', 'FIII']);
+    expect(within(within(dialog).getByRole('region', { name: 'F major' })).getAllByRole('listitem')).toHaveLength(4);
+
+    const writeText = vi.fn(async () => {});
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+    await user.type(within(dialog).getByRole('textbox', { name: 'Name' }), 'Cochichando, by ear');
+    await user.click(within(dialog).getByRole('button', { name: 'Copy as cifra.md' }));
+    expect(writeText).toHaveBeenCalledTimes(1);
+    const text = writeText.mock.calls[0][0];
+    expect(text.split('\n').slice(0, 9)).toEqual([
+      '# Cochichando, by ear', '- key: Dm', '- notation: brazilian', '', '## D minor', '```', 'Dm | A7 | Dm | C7', 'F', '```',
+    ]);
+    expect(text).toContain('## F major\n```\nD7 | Gm | C7 | F\n```\n\nFunctions: V of ii · ii · V · I\n');
+    expect(within(dialog).getByRole('status')).toHaveTextContent('Copied: paste it into Estante de Cifras, or anywhere.');
+    expect(within(dialog).getByRole('textbox', { name: 'The cifra.md text' })).toHaveValue(text);
+
+    // A browser that will not copy: say so, and the text is there to select.
+    writeText.mockRejectedValueOnce(new Error('denied'));
+    await user.click(within(dialog).getByRole('button', { name: 'Copy as cifra.md' }));
+    expect(within(dialog).getByRole('status')).toHaveTextContent('select the text below');
+    await user.click(within(dialog).getByRole('button', { name: 'Close' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
   it('moves to the parallel key and back, the dominant unchanged', async () => {
     const { user } = await openMap('Dm');
     await user.click(screen.getByRole('radio', { name: 'major' }));

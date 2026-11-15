@@ -122,6 +122,11 @@ The map is the main instrument: tap the chord you hear. Mockups:
   playback speed; *Undo* takes back the last step, a change of home
   included; each chord in the strip can be taken out (×); *Reset* clears it
   all and goes back to the home you started from.
+- **See it all** shows the whole run as a chart, a section for each home,
+  every chord with its function, and copies it as a **cifra.md** chart (one
+  chord to a bar, four bars to a line, the functions as notes under each
+  block), in the canonical form, so it pastes into Estante de Cifras as it
+  is. The map records no rhythm, so a bar is a chord.
 
 - **Columns by fifths**, so each dominant sits above its destination and a
   chain of dominants (F#7 B7 E7 A7) steps one column to the right:

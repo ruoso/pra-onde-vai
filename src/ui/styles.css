@@ -358,6 +358,19 @@ button { font: inherit; }
 .about-body .card { flex: 1 1 0; }
 .overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 20; }
 .modal { max-width: 460px; width: calc(100% - 32px); }
+.modal.wide { max-width: 900px; max-height: calc(100vh - 40px); overflow-y: auto; }
+.chart-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.chart-name { display: flex; flex-direction: column; gap: 6px; }
+.chart-name input { min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font: inherit; }
+.chart-view { display: flex; flex-direction: column; gap: 12px; }
+.chart-section { margin: 0 0 6px; font-family: var(--display); font-size: 16px; color: var(--blue-soft); }
+.chart-bars { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.chart-bars li { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); }
+.chart-bars .sym { font-family: var(--display); font-weight: 700; font-size: 18px; }
+.chart-bars .fn { font-size: 12px; color: var(--muted); }
+.copy-status { align-self: center; font-size: 14px; color: var(--sub); }
+.chart-source summary { cursor: pointer; font-size: 14px; color: var(--sub); }
+.chart-source textarea { width: 100%; margin-top: 8px; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: ui-monospace, monospace; font-size: 13px; }
 .dialog { padding: 22px; border-radius: 18px; background: var(--surface); border: 1px solid var(--border); display: flex; flex-direction: column; gap: 14px; outline: none; }
 
 .meet-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
