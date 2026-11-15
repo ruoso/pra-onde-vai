@@ -134,7 +134,7 @@ describe('the map', () => {
     expectName(chord('A7'), 'A7, V, a sometimes next move');
     await user.click(chord('A7'));
     expectName(chord('Dm'), 'Dm, i, a usual next move, Home');
-    expect(within(screen.getByRole('list', { name: 'Played' })).getAllByRole('listitem').map((x) => x.textContent)).toEqual(['Dm', 'A7']);
+    expect(within(screen.getByRole('list', { name: 'Played' })).getAllByRole('button').map((x) => x.getAttribute('aria-label'))).toEqual(['Remove Dm', 'Remove A7']);
   });
 
   it('asks "visiting, or moving in?" on a destination, and makes it home', async () => {
@@ -173,6 +173,29 @@ describe('the map', () => {
     expect(within(screen.getByRole('list', { name: 'Played' })).queryAllByRole('listitem')).toHaveLength(0);
     expect(playBack).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Reset' })).toBeDisabled();
+  });
+
+  it('takes a chord out of what was played, and undoes step by step, a change of home too', async () => {
+    const { user } = await openMap('Dm');
+    for (const c of ['Dm', 'A7', 'Dm', 'C7', 'F']) await user.click(chord(c));
+    const playedList = () => within(screen.getByRole('list', { name: 'Played' }));
+    // A wrong tap in the middle: take the A7 out.
+    await user.click(playedList().getByRole('button', { name: 'Remove A7' }));
+    expect(playedList().getAllByRole('button').map((b) => b.getAttribute('aria-label'))).toEqual(['Remove Dm', 'Remove Dm', 'Remove C7', 'Remove F']);
+    await user.click(screen.getByRole('button', { name: 'Make F major home' }));
+    expect(playedList().getByText('home: F major')).toBeInTheDocument();
+    // Undo the change of home: D minor is home again, on the F.
+    await user.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(screen.getByRole('button', { name: startsWith('Current home: D minor,') })).toBeInTheDocument();
+    expect(playedList().queryByText('home: F major')).toBeNull();
+    expect(screen.getByText('You are on F, the III of D minor.')).toBeInTheDocument();
+    // Undo a chord: the C7 is current again.
+    await user.click(screen.getByRole('button', { name: 'Undo' }));
+    synth.playChords.mockClear();
+    await user.click(screen.getByRole('button', { name: 'Play back' }));
+    expect(synth.playChords.mock.calls[0][0].map((c) => c.sym)).toEqual(['Dm', 'Dm', 'C7']);
+    for (let i = 0; i < 3; i += 1) await user.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled();
   });
 
   it('moves to the parallel key and back, the dominant unchanged', async () => {

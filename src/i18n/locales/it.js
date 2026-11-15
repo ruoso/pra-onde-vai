@@ -99,6 +99,8 @@ export default {
     iiNote: 'Il suo ii è {fn}',
   },
   map: {
+    undo: 'Annulla',
+    remove: 'Togli {sym}',
     playBack: 'Riascolta',
     reset: 'Ricomincia',
     newHome: 'Nuova casa',

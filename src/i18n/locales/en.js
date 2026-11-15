@@ -100,6 +100,8 @@ export default {
     iiNote: 'Its ii is the {fn}',
   },
   map: {
+    undo: 'Undo',
+    remove: 'Remove {sym}',
     playBack: 'Play back',
     reset: 'Reset',
     newHome: 'New home',

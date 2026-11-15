@@ -119,8 +119,9 @@ The map is the main instrument: tap the chord you hear. Mockups:
   the next tune; a reload asks again too.
 - **What you played** stays in a strip under the board. *Play back* plays
   every chord since home was chosen, changes of home included, at the
-  playback speed; *Reset* clears it and goes back to the home you started
-  from.
+  playback speed; *Undo* takes back the last step, a change of home
+  included; each chord in the strip can be taken out (×); *Reset* clears it
+  all and goes back to the home you started from.
 
 - **Columns by fifths**, so each dominant sits above its destination and a
   chain of dominants (F#7 B7 E7 A7) steps one column to the right:

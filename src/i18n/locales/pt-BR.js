@@ -100,6 +100,8 @@ export default {
     iiNote: 'O ii dele é o {fn}',
   },
   map: {
+    undo: 'Desfazer',
+    remove: 'Tirar {sym}',
     playBack: 'Tocar de novo',
     reset: 'Recomeçar',
     newHome: 'Nova casa',

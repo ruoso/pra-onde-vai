@@ -15,7 +15,7 @@ import { playChords, stop } from '../../audio/synth.js';
 import { fnName, keyName } from '../words.js';
 import { href } from '../router.js';
 import HomePicker from '../components/HomePicker.jsx';
-import { initialMap, resetMap } from '../mapState.js';
+import { initialMap, resetMap, addChord, changeHome, currentOf, movedOf, playedOf, removeChord, undo } from '../mapState.js';
 import { BAR_SECONDS } from './PracticeScreen.jsx';
 
 const RELATIONS = { 'maj:vi': 'relative', 'min:III': 'relative', 'maj:IV': 'subdominant', 'min:iv': 'subdominant', 'maj:V': 'dominant', 'min:V': 'dominant' };
@@ -34,18 +34,20 @@ export default function MapScreen() {
   const centre = map.centres[map.centres.length - 1].key;
   const mode = centre.mode;
   const board = settings.mapScope === 'all' ? null : boardAt(level, mode);
-  const lit = map.current
-    ? nextMoves(data.stats, mode, map.current, board)
+  const current = currentOf(map);
+  const moved = movedOf(map);
+  const played = playedOf(map);
+  const lit = current
+    ? nextMoves(data.stats, mode, current, board)
     : new Map([[homeId(mode), 'lit'], ['V', 'lit']]);
-  const push = (trail, item) => [...trail, item].slice(-TRAIL);
 
   const pick = (id, name) => {
     playChords([{ sym: name, d: 0.5 }], { pattern: false });
-    setMap((m) => ({ ...m, current: id, moved: false, trail: push(m.trail, { t: name }), played: [...(m.played ?? []), name] }));
+    setMap((m) => addChord(m, id, name));
   };
 
   // "Make this home": offered on a destination other than home that can be a key.
-  const stay = map.current && canBeHome(mode, map.current) && (!board || board.has(map.current)) ? map.current : null;
+  const stay = current && canBeHome(mode, current) && (!board || board.has(current)) ? current : null;
   let stayInfo = null;
   if (stay) {
     const d = chordDef(mode, stay);
@@ -56,10 +58,7 @@ export default function MapScreen() {
 
   const makeHome = () => {
     const { next, rel } = stayInfo;
-    setMap((m) => ({
-      ...m, centres: [...m.centres, { key: next, rel }], current: homeId(next.mode), moved: true,
-      trail: push(m.trail, { t: t('map.trailHome', { key: keyName(next) }), mark: true }),
-    }));
+    setMap((m) => changeHome(m, [...m.centres, { key: next, rel }], { current: homeId(next.mode) }));
   };
 
   const flip = (to) => {
@@ -70,16 +69,12 @@ export default function MapScreen() {
       const centres = below && below.key.pc === top.key.pc && below.key.mode === to
         ? m.centres.slice(0, -1)
         : [...m.centres, { key: { ...top.key, mode: to }, rel: 'parallel' }];
-      const now = centres[centres.length - 1].key;
-      return { ...m, centres, current: homeId(to), moved: true, trail: push(m.trail, { t: t('map.trailHome', { key: keyName(now) }), mark: true }) };
+      return changeHome(m, centres, { current: homeId(to) });
     });
   };
 
   const back = (i) => {
-    setMap((m) => (i === m.centres.length - 1 ? m : {
-      ...m, centres: m.centres.slice(0, i + 1), current: null, moved: false,
-      trail: push(m.trail, { t: t('map.trailHome', { key: keyName(m.centres[i].key) }), mark: true }),
-    }));
+    setMap((m) => (i === m.centres.length - 1 ? m : changeHome(m, m.centres.slice(0, i + 1), { moved: false })));
   };
 
   const first = map.centres[0].key;
@@ -120,7 +115,7 @@ export default function MapScreen() {
             </div>
             <Button className="button primary" onPress={makeHome}>{t('map.makeHome', { key: keyName(stayInfo.next) })}</Button>
           </>
-        ) : map.moved ? (
+        ) : moved ? (
           <div>
             <div className="banner-title">{t('map.movedTitle', { key: keyName(centre) })}</div>
             <div className="banner-text">{map.centres.length > 1 ? t('map.movedBack', { key: keyName(first) }) : t('map.movedParallel')}</div>
@@ -131,19 +126,30 @@ export default function MapScreen() {
       </div>
 
       <div className="fifths-note" aria-hidden="true">{t('map.fifths')} →</div>
-      <Board centre={centre} board={board} lit={lit} current={map.current} onPick={pick} size="map" />
+      <Board centre={centre} board={board} lit={lit} current={current} onPick={pick} size="map" />
 
       <div className="trail">
         <span className="trail-label">{t('map.played')}</span>
         <ol className="trail-items" aria-label={t('map.played')}>
-          {map.trail.map((x, i) => <li key={i} className={x.mark ? 'is-mark' : ''}>{x.t}</li>)}
+          {map.log.slice(-TRAIL).map((x) => (x.kind === 'home' ? (
+            <li key={x.id} className="is-mark">{t('map.trailHome', { key: keyName(x.key) })}</li>
+          ) : (
+            <li key={x.id}>
+              <Button className="trail-chord" aria-label={t('map.remove', { sym: x.sym })} onPress={() => setMap((m) => removeChord(m, x.id))}>
+                {x.sym}<span className="trail-x" aria-hidden="true">×</span>
+              </Button>
+            </li>
+          )))}
         </ol>
         <div className="trail-actions">
-          <Button className="button" isDisabled={!map.played.length}
-            onPress={() => playChords(map.played.map((sym) => ({ sym, d: 0.5 })), { barSeconds: BAR_SECONDS[settings.speed] ?? 1.6 })}>
+          <Button className="button" isDisabled={!played.length}
+            onPress={() => playChords(played.map((sym) => ({ sym, d: 0.5 })), { barSeconds: BAR_SECONDS[settings.speed] ?? 1.6 })}>
             {t('map.playBack')}
           </Button>
-          <Button className="button" isDisabled={!map.played.length && map.centres.length === 1}
+          <Button className="button" isDisabled={!map.log.length} onPress={() => setMap((m) => undo(m))}>
+            {t('map.undo')}
+          </Button>
+          <Button className="button" isDisabled={!map.log.length && map.centres.length === 1}
             onPress={() => { stop(); setMap(resetMap(map)); }}>
             {t('map.reset')}
           </Button>

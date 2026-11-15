@@ -100,6 +100,8 @@ export default {
     iiNote: 'Su ii es el {fn}',
   },
   map: {
+    undo: 'Deshacer',
+    remove: 'Quitar {sym}',
     playBack: 'Volver a tocar',
     reset: 'Reiniciar',
     newHome: 'Nueva casa',
