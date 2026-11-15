@@ -144,6 +144,15 @@ The map is the main instrument: tap the chord you hear. Mockups:
   `#I°`, the other approach to ii), `bVII7` (beside `bII`), `IV7` (beside
   `iv`); minor `bII7` (under i, the tritone substitute of V) and `IV7` (under
   iv). Rows and columns stay where they were: nothing moves.
+- **The flat side**, also at level 7: beyond IV the line of fifths goes on,
+  bVII, bIII and bVI in major (VII in minor), the chords borrowed from the
+  parallel minor, each under the dominant that leads into it: IV7 over bVII,
+  bVII7 over bIII, bIII7 over bVI, with bVI7 as bVI's colour. IV7 and bVII7
+  moved there from the colour row, the one time positions moved, before
+  the board was fixed. Choro plays the flat side a little (bVII7 1%, IV7
+  0.9% of chord changes in major); jazz plays it much more
+  (docs/other-styles.md), which is why it is there. On a phone the board
+  scrolls sideways, starting with home in the middle.
 - **Fixed positions**: a button never moves, so the hand learns the map like
   an instrument. Every button shows both its function and its chord name
   ("V of ii · D7"), so the two fuse.
@@ -285,7 +294,7 @@ how many of the 295 have at least 80% of their changes on the board.
 | 4 | Going to ii and iv: V of ii, vi / V of iv | 73% / 73% | 75% | 111 |
 | 5 | The other secondary dominants, iii / III, VI; parallel and subdominant keys | 84% / 81% | 85% | 199 |
 | 6 | Diminished and borrowed colour: #IV°, #I°, bII / #IV°, bII, bVI7 | 86% / 86% | 88% | 225 |
-| 7 | The ii before a secondary dominant; bIII°, IV7, bVII7 / IV7, bII7 | 91% / 89% | 93% | 256 |
+| 7 | The ii before a secondary dominant; bIII°; the flat side (bVII, bIII, bVI with IV7, bVII7, bIII7, bVI7) / IV7, bII7, VII | 93% / 90% | 94% | 270 |
 
 - **Below level 4 whole tunes are mostly played for you**, so levels 1–3
   practise on drills: short progressions that walk the corpus's usual moves,

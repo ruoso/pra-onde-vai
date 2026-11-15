@@ -264,7 +264,8 @@ describe('the map', () => {
   it('shows the whole board, and only the learner’s level when asked, in the same places', async () => {
     const { user } = await openMap('Dm');
     const chords = () => document.querySelectorAll('.board .chord');
-    expect(chords()).toHaveLength(18);
+    expect(chords()).toHaveLength(19);
+    expect(chord('C')).toBeInTheDocument(); // VII, the flat side of D minor
     await user.click(screen.getByRole('radio', { name: 'Level 1' }));
     expect(chords()).toHaveLength(2);
     expect(screen.queryByRole('button', { name: startsWith('E7,') })).toBeNull();

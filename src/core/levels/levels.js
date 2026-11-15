@@ -11,8 +11,8 @@ export const LEVELS = [
   { n: 6, key: 'colour', maj: ['#IV°', '#I°', 'bII'], min: ['#IV°', 'bII', 'bVI7'] },
   {
     n: 7, key: 'secondaryTwo',
-    maj: ['ii/IV', 'ii/vi', 'ii/iii', 'ii/ii', 'bIII°', 'IV7', 'bVII7'],
-    min: ['ii/iv', 'ii/V', 'ii/VI', 'IV7', 'bII7'],
+    maj: ['ii/IV', 'ii/vi', 'ii/iii', 'ii/ii', 'bIII°', 'IV7', 'bVII7', 'bVII', 'bIII', 'bIII7', 'bVI', 'bVI7'],
+    min: ['ii/iv', 'ii/V', 'ii/VI', 'IV7', 'bII7', 'VII'],
   },
 ];
 

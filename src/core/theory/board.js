@@ -3,6 +3,10 @@
 // the dominant that leads in, the destination, and colour. Positions never
 // move; a level only decides which buttons are shown (core/levels).
 //
+// Beyond IV the line of fifths goes on to the flat side (docs/other-styles.md):
+// bVII, bIII and bVI in major, VII in minor, the borrowed chords, each with
+// the dominant that leads into it — IV7 over bVII, bVII7 over bIII.
+//
 // Each chord: [id, letter step, semitones, suffix] from the home key's tonic.
 // The suffix is how the button spells the chord; marking never looks at it.
 
@@ -14,8 +18,11 @@ const MAJOR = [
   { t: def('ii', 1, 2, 'm'), a: def('V/ii', 5, 9, '7'), ii: def('ii/ii', 2, 4, 'm7(b5)'),
     c: [def('#I°', 0, 1, '°'), def('bIII°', 2, 3, '°')] },
   { t: def('V', 4, 7, '7'), a: def('V/V', 1, 2, '7'), ii: null, iiNote: 'vi', c: [def('#IV°', 3, 6, '°')] },
-  { t: def('I', 0, 0, ''), a: null, aNote: 'V', ii: null, home: true, c: [def('bII', 1, 1, ''), def('bVII7', 6, 10, '7')] },
-  { t: def('IV', 3, 5, ''), a: def('V/IV', 0, 0, '7'), ii: def('ii/IV', 4, 7, 'm7'), c: [def('iv', 3, 5, 'm6'), def('IV7', 3, 5, '7')] },
+  { t: def('I', 0, 0, ''), a: null, aNote: 'V', ii: null, home: true, c: [def('bII', 1, 1, '')] },
+  { t: def('IV', 3, 5, ''), a: def('V/IV', 0, 0, '7'), ii: def('ii/IV', 4, 7, 'm7'), c: [def('iv', 3, 5, 'm6')] },
+  { t: def('bVII', 6, 10, ''), a: def('IV7', 3, 5, '7'), ii: null, flat: true, c: [] },
+  { t: def('bIII', 2, 3, ''), a: def('bVII7', 6, 10, '7'), ii: null, flat: true, c: [] },
+  { t: def('bVI', 5, 8, ''), a: def('bIII7', 2, 3, '7'), ii: null, flat: true, c: [def('bVI7', 5, 8, '7')] },
 ];
 
 const MINOR = [
@@ -24,7 +31,8 @@ const MINOR = [
   { t: def('iiø', 1, 2, 'm7(b5)'), a: null, aNote: 'VI', ii: null, c: [def('bII', 1, 1, '')] },
   { t: def('V', 4, 7, '7'), a: def('V/V', 1, 2, '7'), ii: def('ii/V', 5, 9, 'm7(b5)'), c: [def('#IV°', 3, 6, '°')] },
   { t: def('i', 0, 0, 'm'), a: null, aNote: 'V', ii: null, home: true, c: [def('bII7', 1, 1, '7')] },
-  { t: def('iv', 3, 5, 'm'), a: def('V/iv', 0, 0, '7'), ii: def('ii/iv', 4, 7, 'm7(b5)'), c: [def('IV7', 3, 5, '7')] },
+  { t: def('iv', 3, 5, 'm'), a: def('V/iv', 0, 0, '7'), ii: def('ii/iv', 4, 7, 'm7(b5)'), c: [] },
+  { t: def('VII', 6, 10, ''), a: def('IV7', 3, 5, '7'), ii: null, flat: true, c: [] },
 ];
 
 export const MODES = ['maj', 'min'];

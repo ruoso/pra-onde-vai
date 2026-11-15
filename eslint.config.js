@@ -27,7 +27,7 @@ export default [
     },
   },
   {
-    files: ['**/*.test.{js,jsx}', 'src/test/**', '*.config.js', 'scripts/**', 'e2e/**'],
+    files: ['**/*.test.{js,jsx}', 'src/test/**', '*.config.js', 'scripts/**', 'e2e/**', 'research/**'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
 ];

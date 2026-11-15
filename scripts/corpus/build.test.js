@@ -82,7 +82,7 @@ describe('the figures in the design', () => {
   it('gives each level’s coverage, median tune and tunes as design §8 tabulates them', () => {
     expect(s().levels.map((l) => [l.cover.maj, l.cover.min, l.median, l.tunes80])).toEqual([
       [41, 46, 43, 2], [57, 62, 58, 20], [62, 67, 64, 36], [73, 73, 75, 111],
-      [84, 81, 85, 199], [86, 86, 88, 225], [91, 89, 93, 256],
+      [84, 81, 85, 199], [86, 86, 88, 225], [93, 90, 94, 270],
     ]);
   });
 

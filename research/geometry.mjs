@@ -14,14 +14,14 @@
 
 import { readFileSync } from 'node:fs';
 import { chordInfo } from '../src/core/theory/chord.js';
-import { isOnBoard } from '../src/core/theory/board.js';
+import { isOnBoard, columns } from '../src/core/theory/board.js';
 import { parseKey, mod } from '../src/core/theory/pitch.js';
 import { cifra, keyOf, labels } from './jazz.mjs';
 
 // A root's place on the line of fifths from home: 0 home, -1 IV, +1 V, ...
 const FIFTHS = new Map([[0, 0], [7, 1], [2, 2], [9, 3], [4, 4], [11, 5], [6, 6], [5, -1], [10, -2], [3, -3], [8, -4], [1, -5]]);
-// The board's columns, from home: iii vi ii V I IV (major); III VI ii V i iv (minor, by root).
-const COLUMNS = { maj: new Set([4, 3, 2, 1, 0, -1]), min: new Set([-3, -4, 2, 1, 0, -1]) };
+// The board's columns, read from the board, by their destination's root.
+const COLUMNS = Object.fromEntries(['maj', 'min'].map((m) => [m, new Set(columns(m).map((c) => FIFTHS.get(c.t.semis)))]));
 
 function measure(name, tunes) {
   const motion = new Map();

@@ -3,6 +3,7 @@
 // colour. A button never moves; chords not yet on the learner's board leave
 // their place empty. Every button shows its function and its chord name.
 
+import { useEffect, useRef } from 'react';
 import { Button } from 'react-aria-components';
 import { t } from '../../i18n/index.js';
 import { columns, homeId } from '../../core/theory/board.js';
@@ -49,7 +50,18 @@ export default function Board({ centre, board = null, lit = null, current = null
   const hasIi = cols.some((c) => shows(c.ii));
   const hasColour = cols.some((c) => c.c.some(shows));
   const props = { centre, lit, current, onPick, disabled };
+  // On a narrow screen the board scrolls sideways; it starts with home in the middle.
+  const scroller = useRef(null);
+  useEffect(() => {
+    const el = scroller.current;
+    const home = el?.querySelector('.is-home');
+    if (!el || !home || el.scrollWidth <= el.clientWidth) return;
+    const box = home.getBoundingClientRect();
+    const frame = el.getBoundingClientRect();
+    el.scrollLeft += box.left + box.width / 2 - (frame.left + frame.width / 2);
+  }, [centre.pc, centre.mode]);
   return (
+    <div className="board-scroll" ref={scroller}>
     <div className={`board board-${size}`} role="group" aria-labelledby={labelledBy} aria-label={labelledBy ? undefined : t('board.label')}>
       <div className="row-labels" aria-hidden="true">
         {hasIi && <span className="row-ii">{t('board.rowIi')}</span>}
@@ -72,6 +84,7 @@ export default function Board({ centre, board = null, lit = null, current = null
           )}
         </div>
       ))}
+    </div>
     </div>
   );
 }

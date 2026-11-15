@@ -45,10 +45,24 @@ describe('spelling', () => {
 
 describe('the boards', () => {
   it('puts columns in fifths, home fifth from the left (design §4)', () => {
-    expect(columns('maj').map((c) => c.t.id)).toEqual(['iii', 'vi', 'ii', 'V', 'I', 'IV']);
-    expect(columns('min').map((c) => c.t.id)).toEqual(['III', 'VI', 'iiø', 'V', 'i', 'iv']);
-    expect(columns('maj').map((c) => c.a?.id ?? null)).toEqual(['V/iii', 'V/vi', 'V/ii', 'V/V', null, 'V/IV']);
+    expect(columns('maj').map((c) => c.t.id)).toEqual(['iii', 'vi', 'ii', 'V', 'I', 'IV', 'bVII', 'bIII', 'bVI']);
+    expect(columns('min').map((c) => c.t.id)).toEqual(['III', 'VI', 'iiø', 'V', 'i', 'iv', 'VII']);
+    expect(columns('maj').map((c) => c.a?.id ?? null)).toEqual(['V/iii', 'V/vi', 'V/ii', 'V/V', null, 'V/IV', 'IV7', 'bVII7', 'bIII7']);
     expect(homeId('maj')).toBe('I');
+  });
+
+  it('goes on past IV to the flat side, each borrowed chord under the dominant that leads into it', () => {
+    const flat = (mode) => columns(mode).filter((c) => c.flat).map((c) => `${c.a.id}>${c.t.id}`);
+    expect(flat('maj')).toEqual(['IV7>bVII', 'bVII7>bIII', 'bIII7>bVI']);
+    expect(flat('min')).toEqual(['IV7>VII']);
+    // In C: F7 over Bb, Bb7 over Eb, Eb7 over Ab.
+    const C = parseKey('C');
+    expect(['IV7', 'bVII', 'bVII7', 'bIII', 'bIII7', 'bVI', 'bVI7'].map((id) => name(C, 'maj', id))).toEqual(['F7', 'Bb', 'Bb7', 'Eb', 'Eb7', 'Ab', 'Ab7']);
+    expect(name(parseKey('Am'), 'min', 'VII')).toBe('G');
+    expect(labelSymbol('Bb', C)).toBe('bVII');
+    expect(labelSymbol('Eb7', C)).toBe('bIII7');
+    expect(labelSymbol('G', parseKey('Am'))).toBe('VII');
+    expect(canBeHome('maj', 'bIII')).toBe(true);
   });
 
   it('names every button in D minor and F major as the mockups do', () => {

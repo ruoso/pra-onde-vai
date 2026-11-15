@@ -20,6 +20,7 @@ chords bar by bar and **one key**. CC BY-NC-SA 4.0, like the choro corpus.
 | 5 | 76% / 69% | 80% | 580 | 207 |
 | 6 | 78% / 74% | 82% | 650 | 268 |
 | 7 | 88% / 83% | 93% | 897 | 702 |
+| 7, with the flat side | 92% / 85% | 96% | 1,007 | 824 |
 
 For choro the same board gives 91% / 89% and a median tune of 93% (design
 §8). So the board reaches jazz almost as far as choro, but by another road:
@@ -86,6 +87,17 @@ in", "destination" rows read left to right. Two things do not fit:
 The rest, a column's chord in another quality, is the parallel mode's
 colour, which the colour row already holds a few of.
 
+### With the flat side
+
+The board now has the flat side (design §4): bVII, bIII and bVI after IV,
+under IV7, bVII7 and bIII7. Run again, jazz's chords with no place on the
+board drop from 13% to 9% of all chords, and level 7 covers 92% / 85% of
+jazz's chord changes (choro's: 93% / 90%). What is left off the board is
+now mostly two things: a column's chord in another quality (56% of it: Im,
+bIIIm, bVIIm…), and the chords a tritone from home (29%: bII and #IV,
+mostly tritone substitutes, 11% of jazz's dominants). The first is the
+parallel mode's colour; the second, the substitute row.
+
 ## What a jazz style would take
 
 From this, and from the parts of the app that are choro's (the board's
@@ -96,7 +108,7 @@ maj7, the same-job pairs, four-bar phrases, the violão pattern):
    its V and its substitute, and their pairs in the same-job list.
 2. **The flat side**: columns for bVII and bIII (and bVI) to the right of
    IV, for the borrowed chords and the backdoor, and the parallel mode's
-   chords as colour.
+   chords as colour. *Done*: the board now has them (design §4), at level 7.
 3. **Levels computed from jazz's frequencies**, not choro's order.
 4. **Key regions**, so a bridge's ii–V–I is heard in its own key: from an
    analyser, before the figures above can be trusted function by function.
