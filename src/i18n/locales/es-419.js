@@ -42,6 +42,8 @@ export default {
     iiNote: 'Su ii es el {fn}',
   },
   map: {
+    playBack: 'Volver a tocar',
+    reset: 'Reiniciar',
     newHome: 'Nueva casa',
     askTitle: '¿Dónde está la casa?',
     askText: 'Elige la tonalidad en la que descansa el tema: el acorde al que vuelven sus frases. El tablero se arma desde ahí.',

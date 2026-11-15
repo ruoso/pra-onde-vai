@@ -2,7 +2,7 @@
 // map, choosing and practising a tune, how it went, the levels, the listening
 // help and the settings. Each screen is checked with axe too.
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, within, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
@@ -11,6 +11,10 @@ import App from './App.jsx';
 import { openStore } from '../storage/db.js';
 import { realTunes, realStats } from '../test/data.js';
 import { attemptOf } from '../core/levels/progress.js';
+
+// The synth, watched: what the app asks it to play is part of what it does.
+vi.mock('../audio/synth.js', () => ({ playChords: vi.fn(() => Promise.resolve()), playNotes: vi.fn(), stop: vi.fn(), setDetune: vi.fn() }));
+const synth = await import('../audio/synth.js');
 
 const data = { tunes: realTunes(), stats: realStats() };
 let n = 0;
@@ -92,6 +96,27 @@ describe('the map', () => {
     await user.click(screen.getByRole('button', { name: startsWith('Go back to D minor,') }));
     expect(screen.getByRole('button', { name: startsWith('Current home: D minor,') })).toBeInTheDocument();
     expect(startsWith('D7, V of iv')(computeAccessibleName(chord('D7')))).toBe(true);
+  });
+
+  it('plays back what was played, across a change of home, and resets to the first home', async () => {
+    const { user } = await openMap('Dm');
+    const playBack = screen.getByRole('button', { name: 'Play back' });
+    expect(playBack).toBeDisabled();
+    await user.click(screen.getByRole('radio', { name: 'Whole board' }));
+    for (const c of ['Dm', 'A7', 'Dm', 'C7', 'F']) await user.click(chord(c));
+    await user.click(screen.getByRole('button', { name: 'Make F major home' }));
+    await user.click(chord('D7'));
+    synth.playChords.mockClear();
+    await user.click(playBack);
+    expect(synth.playChords).toHaveBeenCalledTimes(1);
+    expect(synth.playChords.mock.calls[0][0].map((c) => c.sym)).toEqual(['Dm', 'A7', 'Dm', 'C7', 'F', 'D7']);
+
+    await user.click(screen.getByRole('button', { name: 'Reset' }));
+    expect(screen.getByRole('button', { name: startsWith('Current home: D minor,') })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Go back to/ })).toBeNull();
+    expect(within(screen.getByRole('list', { name: 'Played' })).queryAllByRole('listitem')).toHaveLength(0);
+    expect(playBack).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Reset' })).toBeDisabled();
   });
 
   it('moves to the parallel key and back, the dominant unchanged', async () => {

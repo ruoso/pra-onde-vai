@@ -11,11 +11,12 @@ import { canBeHome, chordDef, homeId, homeModeOf } from '../../core/theory/board
 import { spell } from '../../core/theory/pitch.js';
 import { nextMoves } from '../../core/stats/tiers.js';
 import { boardAt } from '../../core/levels/levels.js';
-import { playChords } from '../../audio/synth.js';
+import { playChords, stop } from '../../audio/synth.js';
 import { fnName, keyName } from '../words.js';
 import { href } from '../router.js';
 import HomePicker from '../components/HomePicker.jsx';
-import { initialMap } from '../mapState.js';
+import { initialMap, resetMap } from '../mapState.js';
+import { BAR_SECONDS } from './PracticeScreen.jsx';
 
 const RELATIONS = { 'maj:vi': 'relative', 'min:III': 'relative', 'maj:IV': 'subdominant', 'min:iv': 'subdominant', 'maj:V': 'dominant', 'min:V': 'dominant' };
 const TRAIL = 9;
@@ -40,7 +41,7 @@ export default function MapScreen() {
 
   const pick = (id, name) => {
     playChords([{ sym: name, d: 0.5 }], { pattern: false });
-    setMap((m) => ({ ...m, current: id, moved: false, trail: push(m.trail, { t: name }) }));
+    setMap((m) => ({ ...m, current: id, moved: false, trail: push(m.trail, { t: name }), played: [...(m.played ?? []), name] }));
   };
 
   // "Make this home": offered on a destination other than home that can be a key.
@@ -56,7 +57,7 @@ export default function MapScreen() {
   const makeHome = () => {
     const { next, rel } = stayInfo;
     setMap((m) => ({
-      centres: [...m.centres, { key: next, rel }], current: homeId(next.mode), moved: true,
+      ...m, centres: [...m.centres, { key: next, rel }], current: homeId(next.mode), moved: true,
       trail: push(m.trail, { t: t('map.trailHome', { key: keyName(next) }), mark: true }),
     }));
   };
@@ -70,13 +71,13 @@ export default function MapScreen() {
         ? m.centres.slice(0, -1)
         : [...m.centres, { key: { ...top.key, mode: to }, rel: 'parallel' }];
       const now = centres[centres.length - 1].key;
-      return { centres, current: homeId(to), moved: true, trail: push(m.trail, { t: t('map.trailHome', { key: keyName(now) }), mark: true }) };
+      return { ...m, centres, current: homeId(to), moved: true, trail: push(m.trail, { t: t('map.trailHome', { key: keyName(now) }), mark: true }) };
     });
   };
 
   const back = (i) => {
     setMap((m) => (i === m.centres.length - 1 ? m : {
-      centres: m.centres.slice(0, i + 1), current: null, moved: false,
+      ...m, centres: m.centres.slice(0, i + 1), current: null, moved: false,
       trail: push(m.trail, { t: t('map.trailHome', { key: keyName(m.centres[i].key) }), mark: true }),
     }));
   };
@@ -137,6 +138,16 @@ export default function MapScreen() {
         <ol className="trail-items" aria-label={t('map.played')}>
           {map.trail.map((x, i) => <li key={i} className={x.mark ? 'is-mark' : ''}>{x.t}</li>)}
         </ol>
+        <div className="trail-actions">
+          <Button className="button" isDisabled={!map.played.length}
+            onPress={() => playChords(map.played.map((sym) => ({ sym, d: 0.5 })), { barSeconds: BAR_SECONDS[settings.speed] ?? 1.6 })}>
+            {t('map.playBack')}
+          </Button>
+          <Button className="button" isDisabled={!map.played.length && map.centres.length === 1}
+            onPress={() => { stop(); setMap(resetMap(map)); }}>
+            {t('map.reset')}
+          </Button>
+        </div>
         <span className="trail-caption">{t('map.caption', { n: data.stats.tunes })}</span>
       </div>
     </div>

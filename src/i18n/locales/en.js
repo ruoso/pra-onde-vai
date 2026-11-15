@@ -42,6 +42,8 @@ export default {
     iiNote: 'Its ii is the {fn}',
   },
   map: {
+    playBack: 'Play back',
+    reset: 'Reset',
     newHome: 'New home',
     askTitle: 'Where is home?',
     askText: 'Pick the key the tune rests in: the chord its phrases come home to. The board is laid out from there.',

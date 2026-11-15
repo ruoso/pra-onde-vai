@@ -41,6 +41,8 @@ export default {
     iiNote: 'Il suo ii è {fn}',
   },
   map: {
+    playBack: 'Riascolta',
+    reset: 'Ricomincia',
     newHome: 'Nuova casa',
     askTitle: 'Dov’è la casa?',
     askText: 'Scegli la tonalità in cui il brano si riposa: l’accordo a cui tornano le sue frasi. La tavola si dispone da lì.',

@@ -42,6 +42,8 @@ export default {
     iiNote: 'O ii dele é o {fn}',
   },
   map: {
+    playBack: 'Tocar de novo',
+    reset: 'Recomeçar',
     newHome: 'Nova casa',
     askTitle: 'Onde é a casa?',
     askText: 'Escolha o tom em que a música repousa: o acorde para onde as frases voltam. O quadro se organiza a partir dele.',

@@ -178,7 +178,8 @@ button { font: inherit; }
 .trail-items { display: flex; gap: 8px; flex: 1 1 auto; min-width: 0; overflow: hidden; }
 .trail-items li { padding: 6px 12px; border-radius: 10px; background: var(--surface-2); font-family: var(--display); font-weight: 500; font-size: 16px; white-space: nowrap; }
 .trail-items li.is-mark { background: var(--blue-bg); border: 1px solid var(--blue); color: var(--blue-soft); }
-.trail-caption { font-size: 13px; color: var(--muted); }
+.trail-caption { font-size: 13px; color: var(--muted); flex-basis: 100%; }
+.trail-actions { display: flex; gap: 8px; }
 
 /* Practice */
 .home-tile { display: flex; flex-direction: column; justify-content: center; gap: 4px; min-height: 52px; padding: 0 16px; border-radius: 14px; border: 2px solid var(--blue); background: var(--blue-bg); }
