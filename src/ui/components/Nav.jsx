@@ -6,6 +6,7 @@ import { useApp } from '../AppContext.jsx';
 import { href } from '../router.js';
 
 const ITEMS = [
+  ['guide', ['guide']],
   ['map', ['map']],
   ['listen', ['listen']],
   ['tunes', ['tunes', 'practice', 'review']],
@@ -14,7 +15,8 @@ const ITEMS = [
 ];
 
 export default function Nav() {
-  const { route, level } = useApp();
+  const { route, level, settings } = useApp();
+  const here = route.name === 'start' ? (settings.guided ? 'map' : 'guide') : route.name;
   return (
     <header className="nav">
       <a className="skip" href="#main">{t('nav.skip')}</a>
@@ -23,7 +25,7 @@ export default function Nav() {
         <ul>
           {ITEMS.map(([name, covers]) => (
             <li key={name}>
-              <a href={href(name)} aria-current={covers.includes(route.name) ? 'page' : undefined}>
+              <a href={href(name)} aria-current={covers.includes(here) ? 'page' : undefined}>
                 {t(`nav.${name}`)}
               </a>
             </li>

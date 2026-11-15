@@ -20,11 +20,12 @@ import ReviewScreen from './screens/ReviewScreen.jsx';
 import LevelsScreen from './screens/LevelsScreen.jsx';
 import MeetScreen from './screens/MeetScreen.jsx';
 import AboutScreen from './screens/AboutScreen.jsx';
+import GuideScreen from './screens/GuideScreen.jsx';
 
-export const DEFAULT_SETTINGS = { language: null, hints: true, speed: 'normal', mapScope: 'all', cents: 0, unlockedLevel: null };
+export const DEFAULT_SETTINGS = { language: null, hints: true, speed: 'normal', mapScope: 'all', cents: 0, unlockedLevel: null, guided: false };
 
 const SCREENS = {
-  map: MapScreen, listen: ListenScreen, tunes: ChooseScreen, practice: PracticeScreen,
+  guide: GuideScreen, map: MapScreen, listen: ListenScreen, tunes: ChooseScreen, practice: PracticeScreen,
   review: ReviewScreen, levels: LevelsScreen, meet: MeetScreen, about: AboutScreen,
 };
 
@@ -68,6 +69,13 @@ export default function App({ store: givenStore = null, data: givenData = null }
 
   useEffect(() => { setDetune(settings.cents ?? 0); }, [settings.cents]);
 
+  // The bare address opens the guide the first time: go to its own address,
+  // so the guide stays put once it has marked itself seen.
+  useEffect(() => {
+    // The hashchange listener takes the route from there.
+    if (ready && route.name === 'start' && !settings.guided) window.location.replace('#/guide');
+  }, [ready, route.name, settings.guided]);
+
   const setSetting = useCallback((key, value) => {
     setSettings((s) => ({ ...s, [key]: value }));
     store?.setSetting(key, value);
@@ -99,7 +107,8 @@ export default function App({ store: givenStore = null, data: givenData = null }
     map, setMap, run, setRun, persistent: store?.persistent ?? false,
   }), [data, settings, setSetting, attempts, addAttempts, resetProgress, level, earned, route, navigate, map, run, store]);
 
-  const Screen = SCREENS[route.name] ?? MapScreen;
+  // The bare address is the map, once the guide has been seen (above).
+  const Screen = route.name === 'start' ? (settings.guided ? MapScreen : GuideScreen) : SCREENS[route.name] ?? MapScreen;
   return (
     <LocaleRoot language={settings.language}>
       <AppContext.Provider value={value}>

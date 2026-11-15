@@ -46,6 +46,44 @@ async function openMap(home = 'Dm') {
   return opened;
 }
 
+describe('the guide', () => {
+  it('opens the first time, explains the parts, and leads into each', async () => {
+    const { user, store } = await open('');
+    expect(screen.getByRole('heading', { level: 1, name: 'Pra Onde Vai' })).toBeInTheDocument();
+    for (const name of ['The map', 'What am I hearing?', 'Practise with a tune', 'Levels and drills', 'How answers are marked', 'Where to start']) {
+      expect(screen.getByRole('heading', { name })).toBeInTheDocument();
+    }
+    expect(screen.getByText(/each chord sounds, then waits for you to find it/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Guide' })).toHaveAttribute('aria-current', 'page');
+    expect((await store.getSettings()).guided).toBe(true);
+    await user.click(screen.getByRole('link', { name: 'Continue level 1 →' }));
+    expect(await screen.findByRole('heading', { name: 'Your levels' })).toBeInTheDocument();
+  });
+
+  it('after the first time, the app opens on the map, and the guide is in the navigation', async () => {
+    const store = await openStore(`app-test-${n++}`);
+    await store.setSetting('guided', true);
+    const { user } = await open('', { store });
+    expect(screen.getByRole('heading', { name: 'Where is home?' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Map' })).toHaveAttribute('aria-current', 'page');
+    await user.click(screen.getByRole('link', { name: 'Guide' }));
+    expect(await screen.findByRole('heading', { name: 'How answers are marked' })).toBeInTheDocument();
+  });
+
+  it('links each part to its screen', async () => {
+    await open('#/guide');
+    expect(screen.getByRole('link', { name: 'Open the map →' })).toHaveAttribute('href', '#/map');
+    expect(screen.getByRole('link', { name: 'Find home by ear →' })).toHaveAttribute('href', '#/listen');
+    expect(screen.getByRole('link', { name: 'Choose a tune →' })).toHaveAttribute('href', '#/tunes');
+    expect(screen.getByRole('link', { name: 'Credits and settings' })).toHaveAttribute('href', '#/about');
+  });
+
+  it('has no accessibility violations', async () => {
+    const { view } = await open('#/guide');
+    expect(await axe(view.container)).toHaveNoViolations();
+  });
+});
+
 describe('the map', () => {
   it('asks where home is, and never assumes one', async () => {
     const { user } = await open('#/map');

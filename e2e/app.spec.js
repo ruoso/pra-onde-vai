@@ -63,7 +63,7 @@ test('keeps progress across a reload', async ({ page }) => {
   await expect(page.getByText('Kept on this device: 1 answer.')).toBeVisible();
 });
 
-for (const path of ['#/map', '#/tunes/cochichando', '#/levels', '#/listen', '#/about']) {
+for (const path of ['#/guide', '#/map', '#/tunes/cochichando', '#/levels', '#/listen', '#/about']) {
   test(`meets WCAG 2.1 AA: ${path}`, async ({ page }) => {
     await page.goto(`./${path}`);
     await expect(page.getByRole('navigation', { name: 'Screens' })).toBeVisible();

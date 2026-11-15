@@ -3,7 +3,9 @@ import { parseRoute, href } from './router.js';
 
 describe('routes', () => {
   it('read every screen’s address, and fall back to the map', () => {
-    expect(parseRoute('')).toEqual({ name: 'map', params: {} });
+    expect(parseRoute('')).toEqual({ name: 'start', params: {} });
+    expect(parseRoute('#/')).toEqual({ name: 'start', params: {} });
+    expect(parseRoute('#/guide')).toEqual({ name: 'guide', params: {} });
     expect(parseRoute('#/map')).toEqual({ name: 'map', params: {} });
     expect(parseRoute('#/tunes/cochichando')).toEqual({ name: 'tunes', params: { tune: 'cochichando' } });
     expect(parseRoute('#/levels/3')).toEqual({ name: 'levels', params: { level: '3' } });

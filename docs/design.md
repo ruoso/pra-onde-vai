@@ -48,6 +48,10 @@ nearly forced (V → I three times in four; the V of V → V four times in five)
    chord on the map, marked against the songbook's version, with levels that
    grow the board.
 
+A **guide** opens the first time: the idea, each part with a way into it,
+how answers are marked, and where to start. After that the app opens on the
+map, and the guide stays in the navigation.
+
 The earlier experiment `explore-scales` (a mode explorer: pick a tonic and a
 mode, get the diatonic chords and canned progressions) was the starting point
 and the counter-example: a mode's chord palette cannot explain choro, whose
