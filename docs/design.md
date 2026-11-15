@@ -106,6 +106,13 @@ The map is the main instrument: tap the chord you hear. Mockups:
 - **Three rows**: the dominant that leads in (V of …), the destination, and
   colour — major `#I°` (under ii), `#IV°` (under V), `bII` (under I), `iv` as
   m6 (under IV); minor `bVI7` (under VI), `bII` (under iiø), `#IV°` (under V).
+- **A fourth row at level 7**, above the dominants: *its ii*, the ii a
+  secondary dominant brings with it (major: ii of iii, of vi, of ii, of IV;
+  minor: ii of VI, of V, of iv), where it is not already a destination (the ii
+  of V in major is the vi). Level 7 also adds colour: major `bIII°` (beside
+  `#I°`, the other approach to ii), `bVII7` (beside `bII`), `IV7` (beside
+  `iv`); minor `bII7` (under i, the tritone substitute of V) and `IV7` (under
+  iv). Rows and columns stay where they were: nothing moves.
 - **Fixed positions**: a button never moves, so the hand learns the map like
   an instrument. Every button shows both its function and its chord name
   ("V of ii · D7"), so the two fuse.
@@ -234,7 +241,7 @@ how many of the 295 have at least 80% of their changes on the board.
 | 4 | Going to ii and iv: V of ii, vi / V of iv | 73% / 73% | 75% | 111 |
 | 5 | The other secondary dominants, iii / III, VI; parallel and subdominant keys | 84% / 81% | 85% | 199 |
 | 6 | Diminished and borrowed colour: #IV°, #I°, bII / #IV°, bII, bVI7 | 86% / 86% | 88% | 225 |
-| 7 | The ii before a secondary dominant (and IV7, bVII7, bII7) | 91% / 92% | 94% | 261 |
+| 7 | The ii before a secondary dominant; bIII°, IV7, bVII7 / IV7, bII7 | 91% / 89% | 93% | 256 |
 
 - **Below level 4 whole tunes are mostly played for you**, so levels 1–3
   practise on drills: short progressions that walk the corpus's usual moves,
@@ -242,7 +249,13 @@ how many of the 295 have at least 80% of their changes on the board.
 - **"Something else"**: a chord not yet on your board is answered with a
   *Something else* button; noticing it is part of the training.
 - **Level 7 is an idea more than new chords**: any secondary dominant can bring
-  its own ii (Bm7(b5) → E7 → A7 in Cochichando).
+  its own ii (Em7(b5) → A7 → Dm in F major; Am7(b5) → D7 → Gm in D minor). The
+  corpus's degrees cannot tell such a ii from any other chord on that degree,
+  so the data build reads it from what follows: a minor chord not on the board,
+  played right before a dominant a fourth above it, is that dominant's ii; a
+  minor sixth chord is heard as the half-diminished a sixth above (Cm6 is
+  Am7(b5)). Read this way, level 7's coverage is the figure above; read by
+  degree alone, as the first estimate did, it was 91% / 92%.
 - **Unlocking**: each chord right, or another way of the same move, 17 of its
   last 20 times, in at least 3 keys; one question in five from earlier levels.
 - Each level has three ways in: *Meet it* (the new chord in three corpus tunes
@@ -260,9 +273,18 @@ how many of the 295 have at least 80% of their changes on the board.
   needed.
 - **A phrase spanning two chords** on the listening screen needs a way to mark
   the split; a *these are bass notes* switch would sharpen suggestions.
-- **The ii of a secondary ii–V** (level 7) has no button on the board yet.
-- **Same job** is a hand-picked list of pairs; *another path* needs testing
-  against more paired versions of tunes.
-- **The mockups do not share state** (the map always opens in D minor), the
-  sound is a simple synthesised pluck, and the mastery and review numbers are
-  examples, not computed.
+- ~~**The ii of a secondary ii–V** (level 7) has no button on the board yet.~~
+  Settled: the board's fourth row (§4), read from context (§8).
+- **Same job** is a hand-picked list of pairs (with level 7, bII7 and V in
+  minor, the tritone substitute); *another path* needs testing against more
+  paired versions of tunes.
+- **Another version** (§7.2) is in the marking engine, but no version reaches
+  it until the user's own books come in.
+- ~~**The mockups do not share state**, and the mastery and review numbers are
+  examples.~~ In the app, home found on the listening screen opens the map
+  there, mastery and the review are computed from your answers, and progress
+  is kept on the device. The sound is still a synthesised pluck, now in a
+  violão pattern (bass on the beat, chord on the off-beat).
+- **Unlocking is strict**: a level opens only when the one before is mastered
+  in both modes. A player who already knows the early chords has to show it
+  in drills first; a way to skip ahead may be wanted.

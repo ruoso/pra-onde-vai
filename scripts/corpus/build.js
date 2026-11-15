@@ -10,7 +10,9 @@ import { roundHalfEven, median } from './numbers.js';
 import { fromCorpus } from '../../src/core/theory/chord.js';
 import { parseKey, keyText } from '../../src/core/theory/pitch.js';
 import { chords, MODES } from '../../src/core/theory/board.js';
-import { LEVELS, boardAt } from '../../src/core/levels/levels.js';
+import { LEVELS, boardAt, levelOf } from '../../src/core/levels/levels.js';
+import { buildSequence } from '../../src/core/practice/sequence.js';
+import { relationOf } from '../../src/core/practice/relations.js';
 
 // The two transcriptions with no rows in the table (corpus-notes.md).
 export const LEFT_OUT = ['2_chorinho_pra_voce_WF.txt', '3_um_chorinho_na_aldeia_WF.txt'];
@@ -322,20 +324,40 @@ export function buildAll(tableText, transcriptions) {
     frequencies[m] = { total: t, top: [...freq[m].entries()].sort((a, b) => b[1] - a[1]).slice(0, 24).map(([l, n]) => [l, n, roundHalfEven((1000 * n) / t) / 10]) };
   }
 
-  // Where the B section of a minor-key choro goes (design §1).
-  const bMoves = { tunes: 0, relative: 0, parallel: 0, same: 0, other: 0 };
+  // Where the B section goes (design §1), by the key of its first chord.
+  const bMoves = {
+    min: { tunes: 0, relative: 0, parallel: 0, same: 0, other: 0 },
+    maj: { tunes: 0, relative: 0, subdominant: 0, dominant: 0, parallel: 0, same: 0, other: 0 },
+  };
   for (const b of built) {
-    if (b.tune.mode !== 'min') continue;
-    const sec = b.tune.sections.find((s) => s.part === 'PartB');
+    const sec = b.tune.sections.find((x) => x.part === 'PartB');
     if (!sec) continue;
-    bMoves.tunes += 1;
     const home = parseKey(b.tune.key);
-    const firstChord = b.tune.phrases[sec.phrases[0]].bars.flat().find((c) => c && c.k);
+    const firstChord = sec.phrases.flatMap((p) => b.tune.phrases[p].bars.flat()).find((c) => c && c.k);
     const bk = parseKey(firstChord.k);
-    if (bk.mode === 'maj' && bk.pc === (home.pc + 3) % 12) bMoves.relative += 1;
-    else if (bk.mode === 'maj' && bk.pc === home.pc) bMoves.parallel += 1;
-    else if (bk.mode === 'min' && bk.pc === home.pc) bMoves.same += 1;
-    else bMoves.other += 1;
+    const m = bMoves[b.tune.mode];
+    m.tunes += 1;
+    m[relationOf(home, bk)] += 1;
+  }
+
+  // Meet it (design §8): each chord in three tunes where it is easy to hear —
+  // the tunes most on the board at the chord's level, at a place where the
+  // chords around it are on that board too.
+  const meet = { maj: {}, min: {} };
+  for (const mode of MODES) {
+    for (const id of chords(mode).keys()) {
+      const level = levelOf(mode, id);
+      const found = [];
+      for (const t of [...built.map((b) => b.tune)].sort((x, y) => y.coverage[level - 1] - x.coverage[level - 1])) {
+        const ev = buildSequence(t, { sections: 'all', level });
+        const hit = ev.findIndex((e) => e.asked && !e.moveTo && !e.arrival && e.expected === id && e.inKey.mode === mode
+          && e.prevFn && boardAt(level, mode).has(e.prevFn) && e.nextFn && boardAt(level, mode).has(e.nextFn));
+        if (hit < 0) continue;
+        found.push({ tune: t.id, section: ev[hit].section, bar: ev[hit].bar });
+        if (found.length === 3) break;
+      }
+      meet[mode][id] = found;
+    }
   }
 
   const tunes = built.map((b) => b.tune).sort((a, b) => a.title.localeCompare(b.title, 'pt'));
@@ -347,6 +369,7 @@ export function buildAll(tableText, transcriptions) {
     levels,
     frequencies,
     bMoves,
+    meet,
     medianFit: roundHalfEven(median(tunes.map((t) => roundHalfEven(100 * t.coverage[5])))),
   };
   return { tunes, stats };

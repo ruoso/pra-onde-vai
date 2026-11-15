@@ -9,7 +9,9 @@ import { workbox } from './src/pwa/workbox.js';
 // BASE (docs/implementation-plan.md, "Hosting and deploying").
 export default defineConfig({
   base: BASE,
-  build: { target: 'es2022', outDir: 'dist' },
+  // Everything is precached on the first visit, so the size of a chunk costs
+  // one download, not a delay on every screen; the tunes load on their own.
+  build: { target: 'es2022', outDir: 'dist', chunkSizeWarningLimit: 1200 },
   plugins: [
     react({
       babel: { plugins: [['babel-plugin-react-compiler', { target: '19' }]] },

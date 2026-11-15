@@ -57,7 +57,12 @@ export function isDone(st) {
 export function answer(st, picked, stats) {
   const ev = current(st);
   if (!ev) return st;
-  const m = picked === 'something' ? { kind: 'miss' } : mark(questionOf(ev), picked, stats);
+  // A chord not yet on the board is answered "Something else"; noticing it is
+  // part of the training (design §8).
+  let m;
+  if (ev.expected === 'something') m = { kind: picked === 'something' ? 'right' : 'miss' };
+  else if (picked === 'something') m = { kind: 'miss' };
+  else m = mark(questionOf(ev), picked, stats);
   const results = { ...st.results, [st.idx]: { kind: m.kind, reason: m.reason ?? null, picked } };
   let answered = st.idx;
   if (m.consumes) {

@@ -129,6 +129,18 @@ describe('the figures in the design', () => {
   });
 
   it('puts B in the relative major in 49 of the 109 minor-key choros with a B section', () => {
-    expect(s().bMoves).toEqual({ tunes: 109, relative: 49, parallel: 12, same: 35, other: 13 });
+    expect(s().bMoves.min).toEqual({ tunes: 109, relative: 49, parallel: 12, same: 35, other: 13 });
+    expect(s().bMoves.maj.tunes).toBe(295 - corpus().tunes.filter((t) => t.mode === 'min').length
+      - corpus().tunes.filter((t) => t.mode === 'maj' && !t.sections.some((x) => x.part === 'PartB')).length);
+  });
+
+  it('finds every chord of the board in three tunes, for Meet it', () => {
+    for (const mode of ['maj', 'min']) {
+      for (const [id, found] of Object.entries(s().meet[mode])) {
+        expect(found.length, `${mode} ${id}`).toBe(3);
+        expect(new Set(found.map((f) => f.tune)).size).toBe(3);
+      }
+    }
+    expect(s().meet.maj['V/ii'][0]).toMatchObject({ tune: expect.any(String), bar: expect.any(Number) });
   });
 });

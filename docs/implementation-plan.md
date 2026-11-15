@@ -1,8 +1,9 @@
 # Implementation plan
 
-How to turn the design (`docs/design.md`) and the mockups (`mockups/`) into
-the app. It proposes an architecture and an order of work; the decisions still
-open are at the end, to settle with the user before or as each is reached.
+How the design (`docs/design.md`) and the mockups (`mockups/`) became the
+app: its architecture, its tune data, the order the work went in, and the
+decisions taken and still open. All seven steps of the order of work are
+built; what is left is the later work at the end of that section.
 
 ## What the app is
 
@@ -119,15 +120,24 @@ you will read it in a chart.
 A build step reads the corpus (`docs/corpus-notes.md`) and writes the app's
 tune file, under CC BY-NC-SA 4.0 like the corpus. Per tune:
 
-- `id`, `title`, `composers[]`, `year?`, `genre`, `songbook` (volume),
-  `key` (global key and mode), `meter`;
-- `sections`: each part (A, B, …) with its own key, and its bars **as
-  written**, taken from the transcription (held bars included); each chord has
-  its symbol (with `°` for `o`), its local key and mode, and its function
-  (the board's id, or the corpus label when it has no button);
-- `form`: the play order of the sections and of the returns with new endings
-  (the transcription's `S` line);
-- `arrivals`: computed from the bars (design §7.2).
+- `id`, `title`, `composers[]`, `year`, `genre`, `songbook` (volume),
+  `key` (global key, as a chart writes it: `Dm`), `mode`, `meter`;
+- `phrases`: each phrase once, its bars **as written**, taken from the
+  transcription (a held bar is `null`); each chord has its symbol `s` (with
+  `°` for `o`; a `.` merged into the chord it carries on), its local key `k`,
+  its function `f` (the board's id, or the corpus label when it has no
+  button) and its length `d` in whole notes. A phrase is labelled the same
+  every time it is played, which the build relies on;
+- `sections`: the form in play order (the transcription's `S` line), each a
+  list of phrases with what it is: a part (`A`, `B2`), a return to one with a
+  new ending (`again`, `end`), an intro, a coda, a link;
+- `coverage`: the share of the tune's chord changes on the board at each of
+  the seven levels; `keys`: how many keys it visits; `notes`: the corpus
+  traps the build met in it.
+
+Arrivals are not stored: `core/practice/sequence.js` finds them from the bars
+as played (the first chord of every fourth bar of a section, a section's first
+chord, a change of home), so one function decides them.
 
 The functions come from the table's labels, aligned to the transcription's
 chords by order (the table has no rows for held bars, and repeats a phrase each
@@ -135,10 +145,13 @@ time it is played). The build must check, for every tune, that the alignment
 holds chord for chord, and fail otherwise. The statistics (tiers, openings,
 coverage) are computed in the same build.
 
-`research/dcml2cifra.py` and `research/verify.py` already parse the
-transcriptions and check play order against them; `research/corpus_labels.py`
-maps the table's labels to board ids. They are the starting point, not code to
-ship.
+The build is `scripts/corpus/` (the readers, the alignment, the labels, the
+statistics) under `scripts/build-data.js`; it ports `research/corpus_labels.py`,
+`tiers.py`, `levels.py` and `fit.py`, rounding as Python does, and
+`scripts/corpus/build.test.js` checks that the design's figures come out the
+same. The statistics also hold, for each chord of the board, three tunes to
+meet it in (design §8, *Meet it*), and where the B section of a major or
+minor tune goes.
 
 ## Order of work
 
@@ -146,9 +159,10 @@ Each step ends with tests that go the whole way through what the user does
 (see `CLAUDE.md`), and the app building.
 
 1. **Scaffold**: the stack (§Stack), lint, tests, build, the workflow that
-   runs them and publishes to GitHub Pages (§Hosting and deploying); the copy of `cifra-md` with its tests passing here; i18n with
-   its four languages and its tests, so every screen is written with `t()`
-   from the start.
+   runs them and publishes to GitHub Pages (§Hosting and deploying,
+   `.github/workflows/pages.yml`); the copy of `cifra-md` with its tests
+   passing here; i18n with its four languages and its tests, so every screen
+   is written with `t()` from the start.
 2. **The data build**: the tune file and the statistics from the corpus. Done
    when every tune aligns, the 295 tunes load, and the figures in
    `docs/design.md` and `docs/corpus-notes.md` come out of it (e.g. the tiers,
@@ -171,9 +185,18 @@ Each step ends with tests that go the whole way through what the user does
 7. **Offline and credits**: installable PWA, works with no network, an About
    screen crediting DCML and the Choro Songbook, with the licence.
 
+Every step is built, each with its tests: the data build's against the real
+corpus (`scripts/corpus/*.test.js`), the core's (`src/core/**`), the screens'
+driven as the user drives them (`src/ui/App.test.jsx`), and the build in
+Chromium (`e2e/`). Step 3's map follows Cochichando's A and B by tapping, with
+the key change, in `App.test.jsx`; step 4's done-when is
+`src/core/practice/session.test.js`.
+
 Later, each needing design first: Follow mode (real-time, with a rhythm
-engine), voicings for the 6-string guitar, the user's own cifra.md books as
-practice tunes and second versions (design §7.2, *another version*).
+engine; the tune chooser shows it, switched off), voicings for the 6-string
+guitar, the user's own cifra.md books as practice tunes and second versions
+(design §7.2, *another version*: the marking engine already takes other
+versions, as `alts`).
 
 ## Decisions taken
 

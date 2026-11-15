@@ -77,11 +77,22 @@ added extensions bass_note songbook title composer sub_genre year filename`.
 - **Keys can be off.** *Sonoroso*'s global key is `D` though it is in D minor.
   Check a tune's key against its last cadence before relying on it.
 - Some chords have `sd` `NC` (no chord); skip them.
+- **`.` has a row.** `D . Em7 A7` is four rows, the second a `D` again: the
+  chord carries on, and the table repeats it.
+- **A counted phrase is played once.** Only two transcriptions write a count
+  (`$P0*14` in *Alvorada*, `$P0*3` in *Forró de gala*), and in both the table
+  plays the phrase once.
+- **A phrase name can be defined twice.** *Aguenta seu Fulgêncio* and *Meu
+  sabiá* each write `P7` twice; the table plays the first in one and the
+  second in the other. The build takes the definition that aligns.
+- With those three read as the table reads them, all 295 tunes align with the
+  table chord for chord (`scripts/corpus/build.test.js`).
 
 ## Figures used in the design
 
-Reproduced by the scripts in `research/`; see `docs/design.md` for where each
-is used.
+Reproduced by the scripts in `research/`, and by the app's data build
+(`npm run data`), whose tests pin them; see `docs/design.md` for where each is
+used.
 
 - Function frequencies: major I 22%, V 18.5%, ii 9.3%, V of ii 6.0%, V of V
   5.2%, vi 4.8%; minor i 24.2%, V 21.6%, iv 11.7%, V of iv 6.2%, V of V 5.4%,

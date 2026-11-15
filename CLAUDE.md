@@ -4,20 +4,39 @@
 a tune is going and follow it on the 6-string guitar, including tunes there is
 no chart for. Free and non-commercial, offline, tablet first.
 
-**Status: designed, not implemented.** This repository holds the design, the
-mockups and the research behind them. The next step is building the app.
+**Status: built.** The app (`src/`) implements the design's seven steps of
+the implementation plan; Follow mode, guitar voicings and the user's own books
+are the later work, each needing design first (design §9). The design, the
+mockups and the research behind them are kept beside it.
 
 ## Read first
 
 1. `docs/design.md` — the design of record: the map of chord functions,
    listening help, checked practice, marking, levels, open questions.
-2. `docs/implementation-plan.md` — the proposed architecture, the tune data
-   format, the order of work, and the decisions still open.
+2. `docs/implementation-plan.md` — the architecture, the tune data format,
+   the order of work, and the decisions taken and still open.
 3. `docs/corpus-notes.md` — the DCML corpus's formats and traps (the table
    repeats phrases as played; `bar_no` skips held bars).
 4. `mockups/index.html` — every screen, live. The mockups' JavaScript is the
    reference behaviour for the boards, spelling, tiers, the listening rankings
-   and the marking rules; `tests/practice-marking.test.mjs` pins the marking.
+   and the marking rules; `tests/practice-marking.test.mjs` pins the marking,
+   and `src/core/practice/session.test.js` runs the same run on the real engine.
+
+## Where things are
+
+- `scripts/` — the data build (`npm run data`): reads the corpus at the commit
+  `scripts/corpus.json` pins (`npm run corpus` fetches it into
+  `vendor/dcml-choro`), aligns every tune with the table, labels every chord,
+  and writes `src/data/generated/` (not committed). `scripts/corpus/build.test.js`
+  pins every figure the design states.
+- `src/core/` — pure logic, no DOM: theory (spelling, the boards, chord
+  reading), stats (tiers), marking, practice (the run, the review, any key),
+  levels (mastery), drills, listen (the rankings).
+- `src/audio/`, `src/storage/`, `src/i18n/`, `src/pwa/` — sound and pitch
+  detection, IndexedDB, the four languages, the install.
+- `src/ui/` — the screens. `src/ui/App.test.jsx` drives each one as the user
+  does; `e2e/` runs the build in Chromium (offline, install, axe).
+- `lib/cifra-md/` — the copy of Estante's cifra.md (see `COPIED-FROM.md`).
 
 ## Decisions already taken
 
@@ -81,13 +100,17 @@ Ask for it when a step needs it.
 
 ```
 npm install
-npm test          # the mockups in jsdom, and the marking rules
+npm run corpus    # the DCML corpus, at its pinned commit, into vendor/
+npm test          # data build, unit and screen tests, cifra-md, the mockups
+npm run lint
+npm run build     # into dist/, served under /pra-onde-vai/
+npm run test:e2e  # Playwright against the build (npx playwright install chromium)
+npm run dev       # http://localhost:5173/pra-onde-vai/
 ```
 
-The research scripts need the corpus (not in this repository):
+The research scripts read the same corpus:
 
 ```
-git clone --depth 1 https://github.com/DCMLab/choro.git vendor/dcml-choro
 python3 -I research/levels.py vendor/dcml-choro/data/choro.tsv
 ```
 

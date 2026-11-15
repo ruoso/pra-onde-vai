@@ -1,0 +1,273 @@
+// The app as the user meets it, screen by screen, on the real tune data: the
+// map, choosing and practising a tune, how it went, the levels, the listening
+// help and the settings. Each screen is checked with axe too.
+
+import { describe, it, expect, beforeEach } from 'vitest';
+import { render, screen, within, waitFor, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { axe } from 'vitest-axe';
+import { computeAccessibleName } from 'dom-accessibility-api';
+import App from './App.jsx';
+import { openStore } from '../storage/db.js';
+import { realTunes, realStats } from '../test/data.js';
+import { attemptOf } from '../core/levels/progress.js';
+
+const data = { tunes: realTunes(), stats: realStats() };
+let n = 0;
+
+async function open(hash = '#/map', { store = null } = {}) {
+  window.location.hash = hash;
+  const s = store ?? (await openStore(`app-test-${n++}`));
+  const user = userEvent.setup();
+  const view = render(<App data={data} store={s} />);
+  await screen.findByRole('navigation', { name: 'Screens' });
+  await waitFor(() => expect(screen.queryByText('Loading the tunes…')).toBeNull());
+  return { user, store: s, view };
+}
+
+// jsdom's name computation drops the spaces at the edges of the visually
+// hidden pieces a browser reads ("Current home: D minor" comes out without
+// the space), so names are compared with whitespace left out.
+const squash = (x) => x.replace(/\s+/g, '');
+const startsWith = (prefix) => (name) => squash(name).startsWith(squash(prefix));
+const expectName = (el, text) => expect(squash(computeAccessibleName(el))).toBe(squash(text));
+const chord = (name) => screen.getByRole('button', { name: startsWith(`${name},`) });
+
+beforeEach(() => { document.documentElement.lang = 'en'; });
+
+describe('the map', () => {
+  it('opens in D minor with home and its dominant, and lights the usual moves from the chord you tap', async () => {
+    const { user } = await open('#/map');
+    expect(screen.getByRole('button', { name: startsWith('Current home: D minor,') })).toBeInTheDocument();
+    expectName(chord('Dm'), 'Dm, i, Home');
+    expect(chord('A7')).toBeInTheDocument();
+    await user.click(chord('Dm'));
+    expectName(chord('A7'), 'A7, V, a sometimes next move');
+    await user.click(chord('A7'));
+    expectName(chord('Dm'), 'Dm, i, a usual next move, Home');
+    expect(within(screen.getByRole('list', { name: 'Played' })).getAllByRole('listitem').map((x) => x.textContent)).toEqual(['Dm', 'A7']);
+  });
+
+  it('asks "visiting, or moving in?" on a destination, and makes it home', async () => {
+    const { user } = await open('#/map');
+    await user.click(screen.getByRole('radio', { name: 'Whole board' }));
+    await user.click(chord('C7'));
+    expectName(chord('F'), 'F, III, a usual next move');
+    await user.click(chord('F'));
+    expect(screen.getByText('You are on F, the III of D minor.')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Make F major home' }));
+    expect(screen.getByRole('button', { name: startsWith('Current home: F major,') })).toBeInTheDocument();
+    expect(screen.getByText('Home is now F major. Same positions, new chord names.')).toBeInTheDocument();
+    // Same positions, new names: the D7 is now the V of ii.
+    expect(startsWith('D7, V of ii')(computeAccessibleName(chord('D7')))).toBe(true);
+    await user.click(screen.getByRole('button', { name: startsWith('Go back to D minor,') }));
+    expect(screen.getByRole('button', { name: startsWith('Current home: D minor,') })).toBeInTheDocument();
+    expect(startsWith('D7, V of iv')(computeAccessibleName(chord('D7')))).toBe(true);
+  });
+
+  it('moves to the parallel key and back, the dominant unchanged', async () => {
+    const { user } = await open('#/map');
+    await user.click(screen.getByRole('radio', { name: 'major' }));
+    expect(screen.getByRole('button', { name: startsWith('Current home: D major,') })).toBeInTheDocument();
+    expect(chord('A7')).toBeInTheDocument();
+    await user.click(screen.getByRole('radio', { name: 'minor' }));
+    expect(screen.getByRole('button', { name: startsWith('Current home: D minor,') })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /D major/ })).toBeNull();
+  });
+
+  it('shows only the learner’s level, in fixed places', async () => {
+    await open('#/map');
+    expect(screen.queryByRole('button', { name: /^E7,/ })).toBeNull();
+    expect(screen.getAllByRole('button', { name: /^[A-G]/ }).filter((b) => b.classList.contains('chord'))).toHaveLength(2);
+  });
+
+  it('has no accessibility violations', async () => {
+    const { view } = await open('#/map');
+    expect(await axe(view.container)).toHaveNoViolations();
+  });
+});
+
+describe('practising a tune', () => {
+  it('chooses Cochichando, plays it, marks each answer, asks if home moved, and says how it went', async () => {
+    const { user, store } = await open('#/tunes/cochichando');
+    expect(screen.getByRole('heading', { name: 'Cochichando' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: startsWith('Cochichando, Pixinguinha') })).toHaveAttribute('aria-selected', 'true');
+    await user.click(screen.getByRole('button', { name: /Start/ }));
+
+    expect(screen.getByRole('heading', { name: 'Cochichando' })).toBeInTheDocument();
+    expect(screen.getByText('Bar 2: after Dm, what comes next?')).toBeInTheDocument();
+    await user.click(chord('A7'));
+    expect(screen.getByText('Right: A7, the V.')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: '1 right, 0 another way, 0 missed' })).toBeInTheDocument();
+
+    // A wrong answer: A7 where the tune goes home.
+    await user.click(chord('A7'));
+    expect(screen.getByText('It was Dm, the i.')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Show me' }));
+    expect(screen.getByText(/^Shown, and counted as a miss\. Bar \d+: after /)).toBeInTheDocument();
+
+    // Show the rest of A, to the change of home.
+    while (!screen.queryByRole('button', { name: 'Make F major home' })) {
+      await user.click(screen.getByRole('button', { name: 'Show me' }));
+    }
+    expect(screen.getByText('A new section, and it lands on F. Has home moved?')).toBeInTheDocument();
+    expect(screen.getByText('You heard C7, then F, the III. A visit, or the new home?')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Make F major home' }));
+    expect(screen.getByText('Right: home is F major now.')).toBeInTheDocument();
+    expect(screen.getByText('F major')).toBeInTheDocument();
+    // At level 1, D7 (the V of ii) and Gm (the ii) are played for you: C7 is asked.
+    expect(screen.getByText(/Bar 3: after Gm, what comes next\?$/)).toBeInTheDocument();
+    await user.click(chord('C7'));
+    expect(screen.getByText('Right: C7, the V.')).toBeInTheDocument();
+
+    while (!screen.queryByRole('link', { name: 'See how it went' })) {
+      await user.click(screen.getByRole('button', { name: 'Show me' }));
+    }
+    await user.click(screen.getByRole('link', { name: 'See how it went' }));
+    expect(await screen.findByRole('heading', { name: 'How it went' })).toBeInTheDocument();
+    expect(screen.getByText('Found')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: (n) => squash(n).startsWith('A1–4') && n.includes('Lost at bar 4') })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Practise the \d+ misses/ })).toBeInTheDocument();
+
+    // Every answer was kept for mastery.
+    const kept = await store.attempts();
+    expect(kept.length).toBeGreaterThan(20);
+    expect(kept[0]).toMatchObject({ mode: 'min', fn: 'V', ok: true, key: 'Dm' });
+  });
+
+  it('turns the misses into a drill in random keys', async () => {
+    const { user } = await open('#/tunes/cochichando');
+    await user.click(screen.getByRole('radio', { name: 'A only' }));
+    await user.click(screen.getByRole('button', { name: /Start/ }));
+    while (!screen.queryByRole('link', { name: 'See how it went' })) {
+      await user.click(screen.getByRole('button', { name: 'Show me' }));
+    }
+    await user.click(screen.getByRole('link', { name: 'See how it went' }));
+    await user.click(await screen.findByRole('button', { name: /Practise the \d+ misses/ }));
+    expect(screen.getByRole('heading', { name: 'Drill · your misses' })).toBeInTheDocument();
+    expect(screen.getByText(/^Bar 2: after /)).toBeInTheDocument();
+  });
+
+  it('plays a tune in any key, its chords spelled in that key', async () => {
+    const { user } = await open('#/tunes/cochichando');
+    await user.click(screen.getByRole('radio', { name: 'Any key' }));
+    await user.click(screen.getByRole('button', { name: /Start/ }));
+    const sub = screen.getByText(/A, then B · in /).textContent;
+    expect(sub).not.toMatch(/D minor/);
+  });
+
+  it('finds tunes by title or composer, accents or none', async () => {
+    const { user } = await open('#/tunes');
+    await user.type(screen.getByRole('searchbox', { name: 'Search by title or composer' }), 'tico-tico');
+    // The title, and the composer of A moçada no samba, Tico-Tico.
+    expect(screen.getAllByRole('option').map((o) => o.textContent.split(',')[0]).sort()).toEqual(['A moçada no samba', 'Tico-tico no fubá']);
+    await user.clear(screen.getByRole('searchbox'));
+    await user.type(screen.getByRole('searchbox'), 'joao de barro');
+    expect(screen.getAllByRole('option').length).toBeGreaterThan(1);
+    await user.click(screen.getByRole('radio', { name: 'Major' }));
+    expect(screen.getAllByRole('option').every((o) => !/, in [A-G][#b]?m[^a-z]/.test(o.textContent))).toBe(true);
+  });
+
+  it('has no accessibility violations, choosing or practising', async () => {
+    const { user, view } = await open('#/tunes/cochichando');
+    expect(await axe(view.container)).toHaveNoViolations();
+    await user.click(screen.getByRole('button', { name: /Start/ }));
+    expect(await axe(view.container)).toHaveNoViolations();
+  });
+});
+
+describe('levels', () => {
+  it('starts at level 1, with level 2 locked', async () => {
+    const { user } = await open('#/levels');
+    expect(screen.getByRole('link', { name: 'Level 1' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: startsWith('Level 1 · Home and its dominant, current') })).toHaveAttribute('aria-selected', 'true');
+    await user.click(screen.getByRole('option', { name: startsWith('Level 2 ·') }));
+    expect(screen.getByRole('button', { name: 'Locked: finish level 1 first' })).toBeDisabled();
+  });
+
+  it('moves on to level 2 when level 1 is mastered in both modes', async () => {
+    const store = await openStore(`app-test-${n++}`);
+    const master = (mode, fn) => Array.from({ length: 20 }, (_, i) => attemptOf(mode, fn, 'right', ['C', 'F', 'G'][i % 3], i));
+    await store.addAttempts([...master('maj', 'I'), ...master('maj', 'V'), ...master('min', 'i'), ...master('min', 'V')]);
+    await open('#/levels', { store });
+    expect(screen.getByRole('link', { name: 'Level 2' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: startsWith('Level 1 · Home and its dominant, done') })).toBeInTheDocument();
+  });
+
+  it('starts a drill of the level, with "Something else" for chords not on the board', async () => {
+    const { user } = await open('#/levels/1');
+    await user.click(screen.getByRole('button', { name: 'Continue level 1' }));
+    expect(screen.getByRole('heading', { name: 'Drill · level 1' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Something else' })).toBeInTheDocument();
+  });
+
+  it('meets a chord in three tunes', async () => {
+    const { user } = await open('#/levels/4');
+    await user.click(screen.getByRole('radio', { name: 'Major' }));
+    await user.click(screen.getByRole('link', { name: 'V of ii' }));
+    expect(screen.getByRole('heading', { name: 'Meet it: the V of ii' })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Hear it' })).toHaveLength(3);
+  });
+
+  it('has no accessibility violations', async () => {
+    const { view } = await open('#/levels');
+    expect(await axe(view.container)).toHaveNoViolations();
+  });
+});
+
+describe('what am I hearing?', () => {
+  const tapNotes = async (user, names) => {
+    const pad = screen.getByRole('group', { name: 'Add a note; each one sounds' });
+    for (const nm of names) await user.click(within(pad).getByRole('button', { name: nm }));
+  };
+
+  it('finds home from the notes, then names the chord', async () => {
+    const { user } = await open('#/listen');
+    expect(screen.getByText('Not known yet')).toBeInTheDocument();
+    await tapNotes(user, ['F', 'E', 'G', 'Bb', 'A', 'E', 'C#', 'D']);
+    const cards = screen.getAllByRole('button', { pressed: true });
+    expect(cards[0]).toHaveTextContent(/^D minor8 of 8 notesYour notes come to rest on D, its tonic\./);
+    await user.click(screen.getByRole('button', { name: 'Make D minor home' }));
+    expect(screen.getByText('Step 2: name the chord. Enter the notes you hear, melody or bass.')).toBeInTheDocument();
+    await tapNotes(user, ['E', 'G', 'C#']);
+    expect(screen.getAllByRole('button', { pressed: true })[0]).toHaveTextContent(/^A7V8? ?3 of 3 notesC# is outside D minor: here it is the 3rd\./);
+    await user.click(screen.getByRole('button', { name: 'Open the map in Dm →' }));
+    expect(screen.getByRole('button', { name: startsWith('Current home: D minor,') })).toBeInTheDocument();
+  });
+
+  it('has no accessibility violations', async () => {
+    const { view } = await open('#/listen');
+    expect(await axe(view.container)).toHaveNoViolations();
+  });
+});
+
+describe('settings', () => {
+  it('speaks Portuguese when chosen, and remembers it', async () => {
+    const { user, store } = await open('#/about');
+    await user.click(screen.getByRole('radio', { name: 'Português (Brasil)' }));
+    expect(document.documentElement.lang).toBe('pt-BR');
+    expect(await screen.findByRole('link', { name: 'Mapa' })).toBeInTheDocument();
+    expect((await store.getSettings()).language).toBe('pt-BR');
+    await act(async () => { await user.click(screen.getByRole('radio', { name: 'Automático' })); });
+  });
+
+  it('resets progress after asking', async () => {
+    const store = await openStore(`app-test-${n++}`);
+    await store.addAttempts([attemptOf('maj', 'V', 'right', 'C')]);
+    const { user } = await open('#/about', { store });
+    expect(screen.getByText('Kept on this device: 1 answer.')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Reset progress' }));
+    expect(screen.getByRole('alertdialog', { name: 'Reset your progress?' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Reset' }));
+    expect(await screen.findByText('Your progress has been reset.')).toBeInTheDocument();
+    expect(await store.attempts()).toEqual([]);
+  });
+
+  it('credits the corpus and states the licences', async () => {
+    const { view } = await open('#/about');
+    expect(screen.getByRole('link', { name: 'github.com/DCMLab/choro' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'CC BY-NC-SA 4.0' })).toBeInTheDocument();
+    expect(screen.getByText('The app’s code is under the MIT License.')).toBeInTheDocument();
+    expect(await axe(view.container)).toHaveNoViolations();
+  });
+});

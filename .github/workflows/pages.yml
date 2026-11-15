@@ -1,0 +1,58 @@
+# On every push to main: fetch the corpus at its pinned commit, build the
+# tune data, lint, run the unit, screen and end-to-end tests, build, and
+# publish to GitHub Pages only if all of it passed
+# (docs/implementation-plan.md, "Hosting and deploying").
+name: test and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - name: Fetch the corpus at its pinned commit
+        run: npm run corpus
+      - name: Lint
+        run: npm run lint
+      - name: Data build, unit and screen tests, mockup tests
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: Install Chromium for the end-to-end tests
+        run: npx playwright install --with-deps chromium
+      - name: End-to-end tests against the build
+        run: npm run test:e2e
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          path: dist
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
