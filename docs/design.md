@@ -292,6 +292,11 @@ how many of the 295 have at least 80% of their changes on the board.
   for whichever chord, in whichever mode, is furthest from mastered, and the
   drill and the levels screen show every one with its count (*12 of 17
   right · 2 of 3 keys*).
+- **Moving ahead**: a locked level can be unlocked on request (*Unlock level
+  n now*, after a confirmation). Your level is then the higher of the one
+  your answers earned and the one you chose; the levels skipped are marked
+  *unlocked by you*, stay open for review, and *Go back to level n* returns to
+  the earned one.
 - Each level has three ways in: *Meet it* (the new chord in three corpus tunes
   where it is easy to hear), *Drills* and *Tunes*.
 
@@ -319,6 +324,4 @@ how many of the 295 have at least 80% of their changes on the board.
   screen finds it when you don't know it, mastery and the review are computed from your answers, and progress
   is kept on the device. The sound is still a synthesised pluck, now in a
   violão pattern (bass on the beat, chord on the off-beat).
-- **Unlocking is strict**: a level opens only when the one before is mastered
-  in both modes. A player who already knows the early chords has to show it
-  in drills first; a way to skip ahead may be wanted.
+- ~~**Unlocking is strict**~~: a player can now move ahead (§8).

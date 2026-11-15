@@ -297,6 +297,7 @@ button { font: inherit; }
 .level-row.is-done .dot { background: var(--blue-bg); color: var(--blue); }
 .level-row.is-now .dot { background: var(--amber); color: var(--bg); }
 .level-row.is-locked { opacity: 0.8; }
+.level-row.is-skipped .dot { background: var(--surface-2); color: var(--amber); border: 1px dashed var(--amber-dim); }
 .level-main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .level-name { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; }

@@ -9,6 +9,7 @@ import { parseRoute } from './router.js';
 import { openStore } from '../storage/db.js';
 import { loadData } from '../data/load.js';
 import { currentLevel } from '../core/levels/progress.js';
+import { TOP_LEVEL } from '../core/levels/levels.js';
 import { setDetune } from '../audio/synth.js';
 import Nav from './components/Nav.jsx';
 import MapScreen from './screens/MapScreen.jsx';
@@ -20,7 +21,7 @@ import LevelsScreen from './screens/LevelsScreen.jsx';
 import MeetScreen from './screens/MeetScreen.jsx';
 import AboutScreen from './screens/AboutScreen.jsx';
 
-export const DEFAULT_SETTINGS = { language: null, hints: true, speed: 'normal', mapScope: 'all', cents: 0 };
+export const DEFAULT_SETTINGS = { language: null, hints: true, speed: 'normal', mapScope: 'all', cents: 0, unlockedLevel: null };
 
 const SCREENS = {
   map: MapScreen, listen: ListenScreen, tunes: ChooseScreen, practice: PracticeScreen,
@@ -88,12 +89,15 @@ export default function App({ store: givenStore = null, data: givenData = null }
     setRoute(parseRoute(hash));
   }, []);
 
-  const level = useMemo(() => currentLevel(attempts), [attempts]);
+  // The level earned by mastery, or a higher one the learner unlocked to move
+  // ahead (a setting, kept on the device).
+  const earned = useMemo(() => currentLevel(attempts), [attempts]);
+  const level = Math.max(earned, Math.min(TOP_LEVEL, settings.unlockedLevel ?? 1));
 
   const value = useMemo(() => ({
-    data, settings, setSetting, attempts, addAttempts, resetProgress, level, route, navigate,
+    data, settings, setSetting, attempts, addAttempts, resetProgress, level, earned, route, navigate,
     map, setMap, run, setRun, persistent: store?.persistent ?? false,
-  }), [data, settings, setSetting, attempts, addAttempts, resetProgress, level, route, navigate, map, run, store]);
+  }), [data, settings, setSetting, attempts, addAttempts, resetProgress, level, earned, route, navigate, map, run, store]);
 
   const Screen = SCREENS[route.name] ?? MapScreen;
   return (

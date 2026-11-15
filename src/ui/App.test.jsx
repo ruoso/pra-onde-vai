@@ -295,6 +295,23 @@ describe('levels', () => {
     expect(within(screen.getByRole('region', { name: 'To unlock level 2' })).getByText('Every chord mastered')).toBeInTheDocument();
   });
 
+  it('unlocks a level ahead on request, keeps it, and goes back to the earned level', async () => {
+    const { user, store } = await open('#/levels/3');
+    expect(screen.getByRole('button', { name: 'Locked: finish level 1 first' })).toBeDisabled();
+    await user.click(screen.getByRole('button', { name: 'Unlock level 3 now' }));
+    expect(screen.getByRole('alertdialog', { name: 'Move ahead to level 3?' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Unlock' }));
+    expect(screen.getByRole('link', { name: 'Level 3' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Continue level 3' })).toBeEnabled();
+    expect(screen.getByRole('option', { name: startsWith('Level 1 · Home and its dominant, unlocked by you') })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: startsWith('Level 3 · The V of V, current') })).toBeInTheDocument();
+    expect((await store.getSettings()).unlockedLevel).toBe(3);
+    expect(screen.getByText('You moved ahead to level 3; your answers have earned level 1.')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Go back to level 1' }));
+    expect(screen.getByRole('link', { name: 'Level 1' })).toBeInTheDocument();
+    expect((await store.getSettings()).unlockedLevel).toBeNull();
+  });
+
   it('starts a drill of the level on the whole board, with "Something else" for chords above it', async () => {
     const { user } = await open('#/levels/1');
     await user.click(screen.getByRole('button', { name: 'Continue level 1' }));

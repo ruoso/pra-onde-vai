@@ -3,7 +3,7 @@
 // your answers; a level unlocks when its chords are mastered in both modes.
 
 import { useState } from 'react';
-import { Button, ListBox, ListBoxItem } from 'react-aria-components';
+import { Button, Dialog, DialogTrigger, Heading, ListBox, ListBoxItem, Modal, ModalOverlay } from 'react-aria-components';
 import { t } from '../../i18n/index.js';
 import { useApp } from '../AppContext.jsx';
 import Segmented from '../components/Segmented.jsx';
@@ -15,14 +15,15 @@ import { href } from '../router.js';
 import { levelDrillRun } from '../runs.js';
 
 export default function LevelsScreen() {
-  const { data, attempts, level, route, navigate, setRun } = useApp();
+  const { data, attempts, level, earned, route, navigate, setRun, setSetting } = useApp();
   const [mode, setMode] = useState('min');
   const sel = Number(route.params.level ?? level);
   const info = data.stats.levels[sel - 1];
   const l = LEVELS[sel - 1];
-  const done = sel < level || levelDone(attempts, sel);
+  const done = sel < earned || levelDone(attempts, sel);
   const now = sel === level && !done;
   const locked = sel > level;
+  const skippedTo = level > earned;
 
   const drillNow = () => {
     setRun(levelDrillRun(data.stats, attempts, sel));
@@ -44,12 +45,13 @@ export default function LevelsScreen() {
           selectedKeys={[String(sel)]}
           onSelectionChange={(keys) => { const [k] = [...keys]; if (k) navigate(href('levels', { level: String(k) })); }}>
           {LEVELS.map((x) => {
-            const isDone = x.n < level;
+            const isDone = x.n < earned;
             const isNow = x.n === level;
-            const state = isDone ? t('levels.done') : isNow ? t('levels.current') : t('levels.locked');
+            const isSkipped = !isDone && x.n < level;
+            const state = isDone ? t('levels.done') : isNow ? t('levels.current') : isSkipped ? t('levels.skipped') : t('levels.locked');
             return (
               <ListBoxItem key={x.n} id={String(x.n)} textValue={t(`levels.name.${x.key}`)}
-                className={`level-row ${isDone ? 'is-done' : isNow ? 'is-now' : 'is-locked'}`}>
+                className={`level-row ${isDone ? 'is-done' : isNow ? 'is-now' : isSkipped ? 'is-skipped' : 'is-locked'}`}>
                 <span className="dot" aria-hidden="true">{isDone ? '✓' : x.n}</span>
                 <span className="level-main">
                   <span className="level-name">{t('levels.levelName', { n: x.n, name: t(`levels.name.${x.key}`) })}<span className="sr-only">, {state},</span></span>
@@ -96,6 +98,33 @@ export default function LevelsScreen() {
           <Button className="button primary large" isDisabled={locked} onPress={drillNow}>
             {locked ? t('levels.lockedGo', { n: level }) : done ? t('levels.reviewGo') : now ? t('levels.continueGo', { n: sel }) : t('levels.reviewGo')}
           </Button>
+          {locked && (
+            <DialogTrigger>
+              <Button className="button">{t('levels.unlockGo', { n: sel })}</Button>
+              <ModalOverlay className="overlay" isDismissable>
+                <Modal className="modal">
+                  <Dialog className="dialog" role="alertdialog">
+                    {({ close }) => (
+                      <>
+                        <Heading slot="title" className="card-title">{t('levels.unlockTitle', { n: sel })}</Heading>
+                        <p className="card-text">{t('levels.unlockText', { n: sel })}</p>
+                        <div className="row">
+                          <Button className="button" onPress={close}>{t('about.cancel')}</Button>
+                          <Button className="button primary" onPress={() => { setSetting('unlockedLevel', sel); close(); }}>{t('levels.unlockConfirm')}</Button>
+                        </div>
+                      </>
+                    )}
+                  </Dialog>
+                </Modal>
+              </ModalOverlay>
+            </DialogTrigger>
+          )}
+          {skippedTo && (
+            <p className="note">
+              {t('levels.skippedNote', { level, earned })}{' '}
+              <Button className="button small" onPress={() => setSetting('unlockedLevel', null)}>{t('levels.relock', { n: earned })}</Button>
+            </p>
+          )}
         </aside>
       </div>
     </div>
