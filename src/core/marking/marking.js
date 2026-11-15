@@ -37,7 +37,22 @@ export function preparesDominant(id) {
 }
 
 /**
- * Mark the answer `picked` for the question `q`:
+ * Mark an answer to a chord that was heard (Name it): the answer is in the
+ * sound, so only the exact function is right, and a chord doing the same
+ * job (a dominant and its diminished, ii and IV) is another way of hearing
+ * it. Going straight to the chord after, another path, another version: those
+ * are ways of predicting, not of hearing, and do not apply. At an arrival
+ * only the exact chord counts.
+ */
+export function markHeard(q, picked) {
+  if (picked === q.expected) return { kind: 'right' };
+  if (q.arrival) return { kind: 'miss', reason: 'arrival' };
+  if (sameJob(q.mode, q.expected, picked)) return { kind: 'another', reason: 'job' };
+  return { kind: 'miss' };
+}
+
+/**
+ * Mark the answer `picked` for the question `q` (Predict):
  *   q.expected   the songbook's function;
  *   q.arrival    whether the chord is where a phrase arrives;
  *   q.mode       the mode of the key in force;

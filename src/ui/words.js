@@ -75,5 +75,5 @@ export function feedback(last) {
   if (last.expected === 'something') return { title: t('practice.fb.itWasSomething', p), text: t('practice.fb.itWasSomethingText', p) };
   if (last.picked === 'something') return { title: t('practice.fb.itWas', p), text: t('practice.fb.notSomething', p) };
   if (last.reason === 'arrival') return { title: t('practice.fb.itWas', p), text: t('practice.fb.arrival', p) };
-  return { title: t('practice.fb.itWas', p), text: t('practice.fb.miss', p) };
+  return { title: t('practice.fb.itWas', p), text: t(last.heard ? 'practice.fb.missHeard' : 'practice.fb.miss', p) };
 }

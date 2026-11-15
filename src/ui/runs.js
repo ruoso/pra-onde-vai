@@ -10,19 +10,19 @@ import { pickFocus, attemptOf } from '../core/levels/progress.js';
 import { missDrillPlan } from '../core/practice/review.js';
 import { keyText, transposeCentre, parseKey } from '../core/theory/pitch.js';
 
-export function tuneRun(tune, { sections = 'ab', key = 'original', play = 'predict' }, level, rng = Math.random) {
+export function tuneRun(tune, { sections = 'ab', key = 'original', play = 'name' }, level, rng = Math.random) {
   const transpose = key === 'random' ? pickTransposition(tune, rng) : null;
   const events = buildSequence(tune, { sections, transpose, level });
   const home = transpose ? transposeCentre(parseKey(tune.key), transpose.step, transpose.semis) : parseKey(tune.key);
   return {
     kind: 'tune', tuneId: tune.id, title: tune.title, options: { sections, key, play }, transpose, home,
-    level, st: start(events),
+    level, st: start(events, { mode: play === 'predict' ? 'predict' : 'name' }),
   };
 }
 
 export function levelDrillRun(stats, attempts, level, mode, rng = Math.random) {
   const progressions = drill({ stats, level, mode, rng, focusOf: (_, m) => pickFocus(attempts, level, m, rng) });
-  return { kind: 'drill', title: null, level, mode, st: start(drillSequence(progressions)) };
+  return { kind: 'drill', title: null, level, mode, st: start(drillSequence(progressions), { mode: 'name' }) };
 }
 
 export function missDrillRun(stats, level, pattern, rng = Math.random) {
@@ -32,7 +32,7 @@ export function missDrillRun(stats, level, pattern, rng = Math.random) {
     modeOf: (i) => plan[i % plan.length].mode,
     focusOf: (i) => plan[i % plan.length].id,
   });
-  return { kind: 'misses', title: null, level, mode: plan[0].mode, st: start(drillSequence(progressions)) };
+  return { kind: 'misses', title: null, level, mode: plan[0].mode, st: start(drillSequence(progressions), { mode: 'name' }) };
 }
 
 /** Run a run again: the same tune and options (a new key when it was any key), or a new drill like it. */

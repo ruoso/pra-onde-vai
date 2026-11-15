@@ -154,7 +154,10 @@ describe('practising a tune', () => {
     await user.click(screen.getByRole('button', { name: /Start/ }));
 
     expect(screen.getByRole('heading', { name: 'Cochichando' })).toBeInTheDocument();
-    expect(screen.getByText('Bar 2: after Dm, what comes next?')).toBeInTheDocument();
+    // Name it, the way tunes start: the chord sounds, then you find it.
+    expect(screen.getByText('Cochichando')).toBeInTheDocument();
+    expect(screen.getByText('A, then B · as written · Name it')).toBeInTheDocument();
+    expect(screen.getByText('Bar 2: after Dm, which chord is this?')).toBeInTheDocument();
     await user.click(chord('A7'));
     expect(screen.getByText('Right: A7, the V.')).toBeInTheDocument();
     expect(screen.getByRole('img', { name: '1 right, 0 another way, 0 missed' })).toBeInTheDocument();
@@ -175,7 +178,7 @@ describe('practising a tune', () => {
     expect(screen.getByText('Right: home is F major now.')).toBeInTheDocument();
     expect(screen.getByText('F major')).toBeInTheDocument();
     // At level 1, D7 (the V of ii) and Gm (the ii) are played for you: C7 is asked.
-    expect(screen.getByText(/Bar 3: after Gm, what comes next\?$/)).toBeInTheDocument();
+    expect(screen.getByText(/Bar 3: after Gm, which chord is this\?$/)).toBeInTheDocument();
     await user.click(chord('C7'));
     expect(screen.getByText('Right: C7, the V.')).toBeInTheDocument();
 
@@ -205,6 +208,15 @@ describe('practising a tune', () => {
     await user.click(await screen.findByRole('button', { name: /Practise the \d+ misses/ }));
     expect(screen.getByRole('heading', { name: 'Drill · your misses' })).toBeInTheDocument();
     expect(screen.getByText(/^Bar 2: after /)).toBeInTheDocument();
+  });
+
+  it('can predict instead: it stops before each change and asks what comes next', async () => {
+    const { user } = await open('#/tunes/cochichando');
+    await user.click(screen.getByRole('radio', { name: 'Predict' }));
+    expect(screen.getByText(/Without the melody, several answers can be right\./)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /Start/ }));
+    expect(screen.getByText('A, then B · as written · Predict')).toBeInTheDocument();
+    expect(screen.getByText('Bar 2: after Dm, what comes next?')).toBeInTheDocument();
   });
 
   it('plays a tune in any key, its chords spelled in that key', async () => {

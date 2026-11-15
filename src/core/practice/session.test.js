@@ -5,7 +5,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { buildSequence } from './sequence.js';
-import { start, answer, showMe, resolveMove, current, isDone, counts, homeOf, heardBefore, lastHeard } from './session.js';
+import { start, answer, showMe, resolveMove, current, isDone, counts, homeOf, heardBefore, lastHeard, chordBefore } from './session.js';
 import { mark } from '../marking/marking.js';
 import { questionOf } from './sequence.js';
 import { keyText } from '../theory/pitch.js';
@@ -145,5 +145,44 @@ describe('Predict on Cochichando, A then B', () => {
     expect(asked(3)).toBeLessThan(asked(6));
     const l1 = buildSequence(tune, { sections: 'a', level: 1 });
     expect(l1.filter((e) => e.asked).every((e) => ['i', 'V'].includes(e.expected))).toBe(true);
+  });
+});
+
+describe('Name it on Cochichando: each chord sounds, then you name it', () => {
+  const named = () => start(buildSequence(tune, { sections: 'ab', level: 6 }), { mode: 'name' });
+
+  it('plays the first chord and the chord asked before asking', () => {
+    const st = named();
+    expect(st.mode).toBe('name');
+    expect(st.play.map((i) => st.events[i].sym)).toEqual(['Dm', 'A7']);
+    expect(current(st)).toMatchObject({ bar: 2, sym: 'A7' });
+    expect(heardBefore(st).map((i) => st.events[i].sym)).toEqual(['Dm', 'A7']);
+    expect(chordBefore(st)).toBe(0);
+  });
+
+  it('after an answer, plays on to the next chord asked, that one included', () => {
+    let st = named();
+    st = answer(st, 'V', stats);
+    expect(st.results[1]).toMatchObject({ kind: 'right' });
+    // Bar 3 holds A7; bar 4's Dm is asked, so it sounds.
+    expect(st.play.map((i) => st.events[i].sym)).toEqual(['%', 'Dm']);
+    expect(st.last.heard).toBe(true);
+  });
+
+  it('marks what was heard: the same job is another way, the chord after is not', () => {
+    let st = named();
+    while (!(current(st).bar === 7 && current(st).sym === 'E7')) st = answer(st, current(st).expected, stats);
+    const atE7 = st;
+    expect(answer(atE7, '#IV°', stats).results[atE7.idx]).toMatchObject({ kind: 'another', reason: 'job' });
+    // Naming A7, the chord after, is not "straight to the chord after" here: E7 was heard.
+    expect(answer(atE7, 'V', stats).results[atE7.idx]).toMatchObject({ kind: 'miss' });
+  });
+
+  it('asks whether home has moved, then plays the first chord asked in the new key', () => {
+    let st = named();
+    while (st.pendingMove === null) st = answer(st, current(st).expected, stats);
+    st = resolveMove(st, true);
+    expect(current(st)).toMatchObject({ section: 1, sym: 'D7' });
+    expect(st.play.map((i) => st.events[i].sym)).toEqual(['D7']);
   });
 });

@@ -177,11 +177,18 @@ Mockups: `Choose.dc.html`, `Practice.dc.html` (and `?scene=move`),
   the sections (A only; A then B, which brings a change of key; the whole
   tune), the key (as written, or any key, so you learn moves rather than names)
   and the mode:
+  - **Name it**: each chord sounds, then waits for you to find it on the
+    board. No clock. The way in, and how drills always run: the skill a
+    player needs to follow a tune with no chart is to hear a chord and know
+    its function from home, and here the answer is in the sound.
   - **Predict**: playback stops before each chord change; you choose what comes
-    next; then it plays. No clock. The way in.
+    next; then it plays. No clock. Without the melody, the next chord is often
+    one of several good ones (after I in major the corpus goes to V 22% of the
+    time, to the V of ii 13%, to the V of vi 8%), so Predict is an option, not
+    the way in: it is fair at arrivals and cadences, a guess mid-phrase.
   - **Follow**: it keeps playing and you tap along. Not designed yet: it needs a
     playback engine with a choro rhythm before it can be judged.
-- **Each answer is marked** (§7) and the real chord plays. A strip shows the
+- **Each answer is marked** (§7); in Predict the real chord then plays. A strip shows the
   bars so far; *Hear it again* replays the last four chords; *Show me* reveals
   and counts a miss; hints (the usual next moves) can be turned off.
 - **Has home moved?** At a change of key the app asks before going on, and
@@ -234,6 +241,10 @@ Elsewhere, an answer is:
 - **× missed** — anything else: it lands somewhere else, or it is a move choro
   does not make.
 
+In *Name it* the chord was heard, so only **right**, **the same job** and
+**missed** apply: going straight to the chord after, another path and
+another version are ways of predicting, not of hearing.
+
 Limits: *another path* looks one chord ahead (a longer detour counts only as a
 stored version); *a passing chord added* cannot arise in Predict, which asks
 one chord at a time, and belongs to Follow.
@@ -256,7 +267,9 @@ how many of the 295 have at least 80% of their changes on the board.
 
 - **Below level 4 whole tunes are mostly played for you**, so levels 1–3
   practise on drills: short progressions that walk the corpus's usual moves,
-  using only your chords, in any key. Whole tunes come from level 4.
+  using only your chords, in any key, each chord heard and then named
+  (*Name it*). A walk is made up, so predicting its next chord would be a
+  guess; naming what you hear is not. Whole tunes come from level 4.
 - **The whole board is always shown**, in practice and drills as on the map:
   a board of only your level's chords gives the answer away (at level 1, two
   buttons). Your level decides which chords are *asked*; any button can be

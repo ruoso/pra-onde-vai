@@ -32,7 +32,7 @@ test('works offline once loaded, tunes and all', async ({ page, context }) => {
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Cochichando' })).toBeVisible();
   await page.getByRole('button', { name: /Start/ }).click();
-  await expect(page.getByText('Bar 2: after Dm, what comes next?')).toBeVisible();
+  await expect(page.getByText('Bar 2: after Dm, which chord is this?')).toBeVisible();
   await context.setOffline(false);
 });
 

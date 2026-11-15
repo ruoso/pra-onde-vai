@@ -185,6 +185,11 @@ Each step ends with tests that go the whole way through what the user does
 7. **Offline and credits**: installable PWA, works with no network, an About
    screen crediting DCML and the Choro Songbook, with the licence.
 
+Step 4 grew a second mode after use: *Name it* (each chord sounds, then you
+name it), now the way tunes start and the only way drills run, since bare
+harmony seldom decides what comes next (design §6). Predict stays as an
+option for tunes.
+
 Every step is built, each with its tests: the data build's against the real
 corpus (`scripts/corpus/*.test.js`), the core's (`src/core/**`), the screens'
 driven as the user drives them (`src/ui/App.test.jsx`), and the build in

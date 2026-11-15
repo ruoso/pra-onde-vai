@@ -18,7 +18,7 @@ export default function ChooseScreen() {
   const { data, level, route, navigate, setRun } = useApp();
   const [filter, setFilter] = useState('all');
   const [query, setQuery] = useState('');
-  const [options, setOptions] = useState({ sections: 'ab', key: 'original', play: 'predict' });
+  const [options, setOptions] = useState({ sections: 'ab', key: 'original', play: 'name' });
   const cover = (tune) => Math.round(100 * tune.coverage[level - 1]);
 
   const q = fold(query.trim());
@@ -113,8 +113,8 @@ export default function ChooseScreen() {
             <div className="setting">
               <Label className="setting-label">{t('choose.how')}</Label>
               <Segmented label={t('choose.how')} value={options.play} onChange={(v) => setOptions({ ...options, play: v })}
-                options={[{ value: 'predict', label: t('choose.predict') }, { value: 'follow', label: t('choose.follow'), disabled: true }]} />
-              <p className="setting-note">{t('choose.predictNote')} {t('choose.followLater')}</p>
+                options={[{ value: 'name', label: t('choose.name') }, { value: 'predict', label: t('choose.predict') }, { value: 'follow', label: t('choose.follow'), disabled: true }]} />
+              <p className="setting-note">{options.play === 'predict' ? t('choose.predictNote') : t('choose.nameNote')} {t('choose.followLater')}</p>
             </div>
             <Button className="button primary large start" onPress={begin}>{t('choose.start')} →</Button>
           </section>

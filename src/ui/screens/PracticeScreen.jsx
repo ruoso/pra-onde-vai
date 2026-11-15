@@ -8,7 +8,7 @@ import { Button, ToggleButton } from 'react-aria-components';
 import { t } from '../../i18n/index.js';
 import { useApp } from '../AppContext.jsx';
 import Board from '../components/Board.jsx';
-import { answer, showMe, resolveMove, current, isDone, counts, homeOf, heardBefore, lastHeard } from '../../core/practice/session.js';
+import { answer, showMe, resolveMove, current, isDone, counts, homeOf, heardBefore, lastHeard, chordBefore } from '../../core/practice/session.js';
 import { nextMoves } from '../../core/stats/tiers.js';
 import { TOP_LEVEL } from '../../core/levels/levels.js';
 import { playChords, stop } from '../../audio/synth.js';
@@ -120,13 +120,14 @@ export default function PracticeScreen() {
     setRun({ ...run, st: next });
   };
   const pick = (id) => { if (ev) update(answer(st, id, data.stats)); };
-  const prevIdx = heardBefore(st, 1)[0];
-  const ask = ev ? t('practice.ask', { bar: ev.bar, sym: prevIdx !== undefined ? st.events[prevIdx].sym : '' }) : '';
+  const prevIdx = chordBefore(st);
+  const naming = st.mode === 'name';
+  const ask = ev ? t(naming ? 'practice.askName' : 'practice.ask', { bar: ev.bar, sym: prevIdx >= 0 ? st.events[prevIdx].sym : '' }) : '';
   const moveEv = st.pendingMove !== null ? st.events[st.pendingMove] : null;
-  const beforeMove = moveEv ? heardBefore(st, 2).filter((i) => i !== st.pendingMove).pop() : undefined;
+  const beforeMove = moveEv && prevIdx >= 0 ? prevIdx : undefined;
   const title = tune ? tune.title : run.kind === 'misses' ? t('practice.missesTitle') : t('practice.drillTitle', { n: run.level });
   const sub = tune
-    ? [t(`practice.sections.${run.options.sections}`), run.transpose ? t('practice.inKey', { key: keyName(run.home) }) : t('practice.asWritten'), t('choose.predict')].join(' · ')
+    ? [t(`practice.sections.${run.options.sections}`), run.transpose ? t('practice.inKey', { key: keyName(run.home) }) : t('practice.asWritten'), t(naming ? 'choose.name' : 'choose.predict')].join(' · ')
     : t('practice.drillSub');
   // In a drill, a chord above the learner's level is asked too: its own
   // button or "Something else" answers it. A tune plays such chords for you.
@@ -194,7 +195,7 @@ export default function PracticeScreen() {
         {!moveEv && !done && (
           <div className={`panel ${fb ? `fb-${st.last.kind}` : ''}`}>
             <div className="panel-body">
-              <div className="panel-title">{fb ? fb.title : t('practice.whatNext')}</div>
+              <div className="panel-title">{fb ? fb.title : t(naming ? 'practice.whatHeard' : 'practice.whatNext')}</div>
               <div className="panel-text">{fb ? `${fb.text} ` : ''}{ask}</div>
             </div>
             <div className="panel-actions">
