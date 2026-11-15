@@ -3,7 +3,7 @@
 // help and the settings. Each screen is checked with axe too.
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, within, waitFor, act } from '@testing-library/react';
+import { render, screen, within, waitFor, act, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'vitest-axe';
 import { computeAccessibleName } from 'dom-accessibility-api';
@@ -76,6 +76,27 @@ describe('the guide', () => {
     expect(screen.getByRole('link', { name: 'Find home by ear →' })).toHaveAttribute('href', '#/listen');
     expect(screen.getByRole('link', { name: 'Choose a tune →' })).toHaveAttribute('href', '#/tunes');
     expect(screen.getByRole('link', { name: 'Credits and settings' })).toHaveAttribute('href', '#/about');
+  });
+
+  it('shows how to install: the browser’s prompt, the iPhone steps, or that it is installed', async () => {
+    const pwa = await import('../pwa/pwa.js');
+    pwa.resetPwa({ canInstall: true });
+    await open('#/guide');
+    expect(screen.getByRole('button', { name: 'Install the app' })).toBeInTheDocument();
+    cleanup();
+    pwa.resetPwa({ platform: 'ios' });
+    await open('#/guide');
+    expect(screen.getByText('Choose Add to Home Screen.')).toBeInTheDocument();
+    cleanup();
+    pwa.resetPwa({ installed: true });
+    await open('#/about');
+    expect(screen.getByText('Installed on this device. Everything works with no network.')).toBeInTheDocument();
+    cleanup();
+    pwa.resetPwa({ updateReady: true });
+    await open('#/map');
+    expect(screen.getByRole('status')).toHaveTextContent('A new version of the app is ready.');
+    expect(screen.getByRole('button', { name: 'Reload' })).toBeInTheDocument();
+    pwa.resetPwa();
   });
 
   it('has no accessibility violations', async () => {

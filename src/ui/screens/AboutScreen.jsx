@@ -7,6 +7,7 @@ import { Button, Dialog, DialogTrigger, Heading, Modal, ModalOverlay } from 'rea
 import { t, LOCALES } from '../../i18n/index.js';
 import { useApp } from '../AppContext.jsx';
 import Segmented from '../components/Segmented.jsx';
+import { InstallCard } from '../components/Install.jsx';
 
 export default function AboutScreen() {
   const { data, settings, setSetting, resetProgress, attempts, persistent } = useApp();
@@ -78,6 +79,7 @@ export default function AboutScreen() {
           </div>
         </section>
       </div>
+      <InstallCard />
     </div>
   );
 }

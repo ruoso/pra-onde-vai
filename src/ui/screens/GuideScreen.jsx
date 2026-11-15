@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { t } from '../../i18n/index.js';
 import { useApp } from '../AppContext.jsx';
 import { href } from '../router.js';
+import { InstallCard } from '../components/Install.jsx';
 
 function Part({ id, title, children, to, go }) {
   return (
@@ -72,6 +73,7 @@ export default function GuideScreen() {
           <p className="note">{t('guide.credits')} <a href={href('about')}>{t('guide.about')}</a></p>
         </section>
       </div>
+      <InstallCard />
     </div>
   );
 }

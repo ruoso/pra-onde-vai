@@ -1,12 +1,13 @@
 // Registers the service worker that precaches the app, so it works offline
-// after the first visit. An update waits until the app is opened again,
-// so nothing changes under someone in the middle of a tune.
+// after the first visit; src/pwa/pwa.js keeps what the screens show about it.
+// An update waits until the learner reloads from the notice, so nothing
+// changes under someone in the middle of a tune.
+
+import { initPwa } from './pwa.js';
 
 export function registerServiceWorker() {
-  if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return;
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`, { scope: import.meta.env.BASE_URL }).catch(() => {
-      // No service worker: the app still works online.
-    });
-  });
+  if (!('serviceWorker' in navigator) && !('onbeforeinstallprompt' in window)) return;
+  const start = () => initPwa({ base: import.meta.env.BASE_URL, register: import.meta.env.PROD });
+  if (document.readyState === 'complete') start();
+  else window.addEventListener('load', start);
 }

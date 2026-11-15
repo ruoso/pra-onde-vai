@@ -52,6 +52,13 @@ A **guide** opens the first time: the idea, each part with a way into it,
 how answers are marked, and where to start. After that the app opens on the
 map, and the guide stays in the navigation.
 
+It **installs as an app** and then works with no network: the guide and
+About offer the browser's install prompt where there is one, the steps
+(Share, Add to Home Screen) on iPhone and iPad, and say when it is
+installed. A notice says when the app is ready offline, and when a new
+version is waiting, with a button to reload into it, so an installed app
+does not keep an old version for weeks.
+
 The earlier experiment `explore-scales` (a mode explorer: pick a tonic and a
 mode, get the diatonic chords and canned progressions) was the starting point
 and the counter-example: a mode's chord palette cannot explain choro, whose

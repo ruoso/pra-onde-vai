@@ -19,6 +19,8 @@ test('installs: the manifest and icons live under the Pages path', async ({ page
 
 test('works offline once loaded, tunes and all', async ({ page, context }) => {
   await page.goto('./');
+  // The first visit fills the cache, and says so.
+  await expect(page.getByText('Ready to work offline: every tune is on this device.')).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Screens' })).toBeVisible();
   // Wait for the service worker to take control, its precache filled.
   await page.evaluate(async () => {

@@ -21,6 +21,7 @@ import LevelsScreen from './screens/LevelsScreen.jsx';
 import MeetScreen from './screens/MeetScreen.jsx';
 import AboutScreen from './screens/AboutScreen.jsx';
 import GuideScreen from './screens/GuideScreen.jsx';
+import { PwaNotices } from './components/Install.jsx';
 
 export const DEFAULT_SETTINGS = { language: null, hints: true, speed: 'normal', mapScope: 'all', cents: 0, unlockedLevel: null, guided: false };
 
@@ -114,6 +115,7 @@ export default function App({ store: givenStore = null, data: givenData = null }
       <AppContext.Provider value={value}>
         <div className="app">
           <Nav />
+          <PwaNotices />
           <main className="screen" id="main">
             {failed ? (
               <p className="status" role="alert">{t('app.failed')}</p>
