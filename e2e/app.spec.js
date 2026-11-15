@@ -72,3 +72,14 @@ for (const path of ['#/map', '#/tunes/cochichando', '#/levels', '#/listen', '#/a
     expect(results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(' ')}`)).toEqual([]);
   });
 }
+
+test('scrolls the 295 tunes inside their list, not the whole page', async ({ page }) => {
+  await page.goto('./#/tunes');
+  await expect(page.getByRole('option').first()).toBeVisible();
+  const { page: h, list } = await page.evaluate(() => ({
+    page: document.documentElement.scrollHeight,
+    list: document.querySelector('[role="listbox"]').scrollHeight,
+  }));
+  expect(list).toBeGreaterThan(5000);
+  expect(h).toBeLessThan(2500);
+});

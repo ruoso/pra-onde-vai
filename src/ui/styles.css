@@ -36,7 +36,10 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 button { font: inherit; }
 :focus-visible, [data-focus-visible] { outline: 3px solid var(--blue); outline-offset: 2px; }
 
-.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+/* Hidden text is placed against its row, so a long scrolling list does not
+   stretch the page. */
+.tune-row, .level-row, .crumb, .phrase, .chord, .tune-list, .level-list, .phrases ul { position: relative; }
 .skip { position: absolute; left: -9999px; }
 .skip:focus { left: 12px; top: 8px; z-index: 10; background: var(--surface); padding: 8px 12px; border-radius: 8px; }
 
