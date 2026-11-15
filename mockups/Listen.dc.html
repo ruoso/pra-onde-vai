@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>What am I hearing?</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Music&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; box-sizing: border-box; padding: 28px; display: flex; flex-direction: column; gap: 16px; background: #12161C; color: #EEF1F4; font-family: Inter, system-ui, sans-serif">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 56px">
+    <div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+      <h1 style="margin: 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 28px; line-height: 1">What am I hearing?</h1>
+      <div style="font-size: 14px; color: #9AA7B4">{{subtitle}}</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <div style="display: flex; align-items: center; gap: 12px; height: 56px; box-sizing: border-box; padding: 0 6px 0 16px; border-radius: 14px; border: 2px solid {{homeBd}}; background: {{homeBg}}">
+        <div style="display: flex; flex-direction: column; gap: 4px; padding-right: 10px">
+          <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: {{homeCap}}">Home</span>
+          <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 18px; line-height: 1; white-space: nowrap">{{homeLabel}}</span>
+        </div>
+        <sc-if value="{{homeKnown}}" hint-placeholder-val="{{false}}">
+          <button type="button" onClick="{{forget}}" style="height: 44px; padding: 0 14px; border-radius: 10px; border: 0; background: #12161C; color: #EEF1F4; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer">Change</button>
+        </sc-if>
+      </div>
+      <sc-if value="{{homeKnown}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; align-items: center; gap: 10px; height: 56px; box-sizing: border-box; padding: 0 6px 0 16px; border-radius: 14px; border: 1px solid #2C3744; background: #1B222B">
+          <span id="from-label" style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA7B4; white-space: nowrap">Coming from</span>
+          <div role="group" aria-labelledby="from-label" style="display: flex; gap: 4px">
+            <button type="button" onClick="{{fromStart}}" aria-pressed="{{isStart}}" style="height: 44px; padding: 0 14px; border-radius: 10px; border: 0; background: {{startBg}}; color: {{startFg}}; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer; white-space: nowrap">Nothing</button>
+            <button type="button" onClick="{{fromHome}}" aria-pressed="{{isFromHome}}" style="height: 44px; padding: 0 14px; border-radius: 10px; border: 0; background: {{prevBg}}; color: {{prevFg}}; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 16px; cursor: pointer">{{homeChord}}</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="position: relative; height: 196px; border-radius: 20px; background: #1B222B; border: 1px solid #2C3744; overflow: hidden">
+    <div style="position: absolute; left: 28px; right: 28px; top: 60px; height: 1px; background: #9AA7B4"></div>
+    <div style="position: absolute; left: 28px; right: 28px; top: 74px; height: 1px; background: #9AA7B4"></div>
+    <div style="position: absolute; left: 28px; right: 28px; top: 88px; height: 1px; background: #9AA7B4"></div>
+    <div style="position: absolute; left: 28px; right: 28px; top: 102px; height: 1px; background: #9AA7B4"></div>
+    <div style="position: absolute; left: 28px; right: 28px; top: 116px; height: 1px; background: #9AA7B4"></div>
+    <div aria-hidden="true" style="position: absolute; left: 40px; top: 34px; font-family: 'Noto Music', 'Segoe UI Symbol', serif; font-size: 96px; line-height: 1; color: #EEF1F4">&#119070;</div>
+
+    <sc-for list="{{sig}}" as="k" hint-placeholder-count="1">
+      <div aria-hidden="true" style="position: absolute; left: {{k.left}}; top: {{k.top}}; font-family: 'Noto Music', 'Segoe UI Symbol', sans-serif; font-size: 26px; line-height: 1; color: #EEF1F4">{{k.glyph}}</div>
+    </sc-for>
+
+    <sc-for list="{{staff}}" as="n" hint-placeholder-count="8">
+      <div>
+        <sc-if value="{{n.ledger}}" hint-placeholder-val="{{false}}">
+          <div style="position: absolute; left: {{n.ledgerLeft}}; top: 130px; width: 34px; height: 1px; background: #9AA7B4"></div>
+        </sc-if>
+        <sc-if value="{{n.hasAcc}}" hint-placeholder-val="{{false}}">
+          <div aria-hidden="true" style="position: absolute; left: {{n.accLeft}}; top: {{n.accTop}}; font-family: 'Noto Music', 'Segoe UI Symbol', sans-serif; font-size: 24px; line-height: 1; color: {{n.col}}">{{n.acc}}</div>
+        </sc-if>
+        <div style="position: absolute; left: {{n.left}}; top: {{n.top}}; width: 18px; height: 13px; border-radius: 50%; background: {{n.col}}; transform: rotate(-18deg)"></div>
+        <div style="position: absolute; left: {{n.labelLeft}}; top: 156px; width: 44px; text-align: center; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 500; font-size: 15px; color: {{n.col}}">{{n.name}}</div>
+      </div>
+    </sc-for>
+    <sc-if value="{{noNotes}}" hint-placeholder-val="{{false}}">
+      <div style="position: absolute; left: 190px; right: 28px; top: 150px; font-size: 14px; color: #C5CED8">{{emptyText}}</div>
+    </sc-if>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 12px">
+    <button type="button" onClick="{{hum}}" aria-label="Hum the notes" style="display: flex; align-items: center; gap: 10px; height: 60px; padding: 0 20px; border-radius: 16px; border: 2px solid #F2B544; background: #221E14; color: #F2B544; font-family: inherit; font-weight: 600; font-size: 16px; cursor: pointer; white-space: nowrap">
+      <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11.5a6.5 6.5 0 0013 0"></path><path d="M12 18v3"></path><path d="M8.5 21h7"></path></svg>
+      Hum
+    </button>
+    <div role="group" aria-label="Add a note; each one sounds" style="flex: 1 1 0; min-width: 0; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 6px">
+      <sc-for list="{{keys}}" as="k" hint-placeholder-count="12">
+        <button type="button" onClick="{{k.tap}}" style="height: 60px; border-radius: 12px; border: 1px solid #2C3744; background: #1B222B; color: #EEF1F4; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 18px; cursor: pointer; padding: 0">{{k.name}}</button>
+      </sc-for>
+    </div>
+    <button type="button" onClick="{{undo}}" style="height: 60px; padding: 0 18px; border-radius: 16px; border: 1px solid #2C3744; background: #1B222B; color: #EEF1F4; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer">Undo</button>
+    <button type="button" onClick="{{clear}}" style="height: 60px; padding: 0 18px; border-radius: 16px; border: 1px solid #2C3744; background: #1B222B; color: #EEF1F4; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer">Clear</button>
+  </div>
+
+  <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA7B4; margin-top: 6px">{{listLabel}}</div>
+
+  <sc-if value="{{noCards}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; align-items: center; justify-content: center; height: 208px; border-radius: 20px; border: 1px dashed #2C3744; font-size: 15px; color: #9AA7B4">Suggestions appear once there are notes on the staff.</div>
+  </sc-if>
+  <sc-if value="{{hasCards}}" hint-placeholder-val="{{true}}">
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px">
+      <sc-for list="{{cards}}" as="g" hint-placeholder-count="3">
+        <button type="button" onClick="{{g.tap}}" aria-pressed="{{g.on}}" style="height: 208px; box-sizing: border-box; padding: 20px; border-radius: 20px; border: 2px solid {{g.bd}}; background: {{g.bg}}; color: #EEF1F4; font-family: inherit; cursor: pointer; text-align: left; display: flex; flex-direction: column; gap: 10px">
+          <span style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px; width: 100%">
+            <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 36px; line-height: 1; white-space: nowrap">{{g.name}}</span>
+            <span style="font-size: 15px; font-weight: 600; color: #C5CED8; white-space: nowrap">{{g.tag}}</span>
+          </span>
+          <span style="display: flex; align-items: center; gap: 10px; width: 100%">
+            <span style="position: relative; flex: 1 1 0; height: 8px; border-radius: 4px; background: #2C3744; overflow: hidden">
+              <span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{g.barW}}; background: #F2B544"></span>
+            </span>
+            <span style="font-size: 14px; font-weight: 600; white-space: nowrap">{{g.fit}}</span>
+          </span>
+          <span style="font-size: 14px; line-height: 1.4; color: #EEF1F4">{{g.why}}</span>
+          <span style="font-size: 14px; line-height: 1.4; color: #C5CED8">{{g.rest}}</span>
+          <span style="margin-top: auto; font-size: 13px; color: #9AA7B4">{{g.foot}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 52px">
+    <div style="display: flex; align-items: center; gap: 14px; width: 520px">
+      <label for="pitch" style="font-size: 14px; color: #C5CED8; white-space: nowrap">Recording pitch</label>
+      <input id="pitch" type="range" min="-50" max="50" step="1" value="{{cents}}" onChange="{{setCents}}" style="flex: 1 1 0; min-width: 0; height: 44px; accent-color: #F2B544">
+      <div style="width: 130px; font-size: 14px; font-weight: 600">{{centsText}}</div>
+    </div>
+    <sc-if value="{{showMake}}" hint-placeholder-val="{{true}}">
+      <button type="button" onClick="{{makeHome}}" style="height: 52px; padding: 0 24px; border-radius: 14px; border: 0; background: #6FB1FF; color: #0B1622; font-family: inherit; font-weight: 600; font-size: 16px; cursor: pointer; white-space: nowrap">Make {{chosenName}} home</button>
+    </sc-if>
+    <sc-if value="{{homeKnown}}" hint-placeholder-val="{{false}}">
+      <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 24px; border-radius: 14px; background: #6FB1FF; color: #0B1622; font-weight: 600; font-size: 16px; text-decoration: none; white-space: nowrap">
+        Open the map
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11"></path><path d="M9 4l4 4-4 4"></path></svg>
+      </a>
+    </sc-if>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  letters() { return ['C', 'D', 'E', 'F', 'G', 'A', 'B']; }
+  naturals() { return [0, 2, 4, 5, 7, 9, 11]; }
+  scaleOf(mode) { return mode === 'maj' ? [0, 2, 4, 5, 7, 9, 11] : [0, 2, 3, 5, 7, 8, 10]; }
+  shapes() { return { '': [0, 4, 7], 'm': [0, 3, 7], '7': [0, 4, 7, 10], 'm6': [0, 3, 7, 9], 'm7(b5)': [0, 3, 6, 10], '°': [0, 3, 6, 9] }; }
+
+  // The example phrase "heard" by the simulated hum while home is unknown: F E G Bb A E C# D.
+  homePhrase() { return [5, 4, 7, 10, 9, 4, 1, 2]; }
+
+  s() {
+    return this.state && this.state.ready ? this.state
+      : { ready: true, home: null, notes: this.homePhrase(), sel: null, from: 'start', cents: -12 };
+  }
+  put(patch) { this.setState(Object.assign({}, this.s(), patch)); }
+
+  accOf(L, pc) { return ((pc - this.naturals()[L] + 18) % 12) - 6; }
+  accText(acc) { return acc > 0 ? '#'.repeat(acc) : 'b'.repeat(-acc); }
+
+  // How a pitch class is written: by the home key when there is one, else a neutral spelling.
+  spell(home, pc) {
+    if (!home) {
+      const t = [[0, 0], [0, 1], [1, 0], [2, -1], [2, 0], [3, 0], [3, 1], [4, 0], [4, 1], [5, 0], [6, -1], [6, 0]][pc];
+      return { L: t[0], acc: t[1] };
+    }
+    const o = (pc - home.pc + 12) % 12;
+    let deg = this.scaleOf(home.mode).indexOf(o);
+    if (deg < 0) deg = (home.mode === 'maj' ? { 1: 0, 3: 2, 6: 3, 8: 4, 10: 6 } : { 1: 1, 4: 2, 6: 3, 9: 5, 11: 6 })[o];
+    const L = (home.L + deg) % 7;
+    return { L: L, acc: this.accOf(L, pc) };
+  }
+  nameIn(home, pc) { const sp = this.spell(home, pc); return this.letters()[sp.L] + this.accText(sp.acc); }
+  keyName(key) { return this.nameIn(key, key.pc) + (key.mode === 'maj' ? ' major' : ' minor'); }
+
+  // A chord root spelled by scale step, as on the map.
+  rootIn(home, step, semis) {
+    const L = (home.L + step) % 7;
+    const pc = (home.pc + semis) % 12;
+    return { pc: pc, text: this.letters()[L] + this.accText(this.accOf(L, pc)) };
+  }
+
+  // The map's chords: [id, function, letter step, semitones, suffix].
+  board(mode) {
+    if (mode === 'maj') return [
+      ['I', 'I', 0, 0, ''], ['V', 'V', 4, 7, '7'], ['ii', 'ii', 1, 2, 'm'], ['vi', 'vi', 5, 9, 'm'], ['iii', 'iii', 2, 4, 'm'], ['IV', 'IV', 3, 5, ''],
+      ['V/ii', 'V of ii', 5, 9, '7'], ['V/V', 'V of V', 1, 2, '7'], ['V/vi', 'V of vi', 2, 4, '7'], ['V/iii', 'V of iii', 6, 11, '7'], ['V/IV', 'V of IV', 0, 0, '7'],
+      ['iv', 'iv', 3, 5, 'm6'], ['#I°', '#I°', 0, 1, '°'], ['#IV°', '#IV°', 3, 6, '°'], ['bII', 'bII', 1, 1, '']
+    ];
+    return [
+      ['i', 'i', 0, 0, 'm'], ['V', 'V', 4, 7, '7'], ['iv', 'iv', 3, 5, 'm'], ['iiø', 'iiø', 1, 2, 'm7(b5)'], ['III', 'III', 2, 3, ''], ['VI', 'VI', 5, 8, ''],
+      ['V/V', 'V of V', 1, 2, '7'], ['V/iv', 'V of iv', 0, 0, '7'], ['V/III', 'V of III', 6, 10, '7'], ['V/VI', 'V of VI', 2, 3, '7'],
+      ['bII', 'bII', 1, 1, ''], ['bVI7', 'bVI7', 5, 8, '7'], ['#IV°', '#IV°', 3, 6, '°']
+    ];
+  }
+  // Measured in the DCML Choro Songbooks Corpus (295 pieces, CC BY-NC-SA 4.0).
+  // follows: percent of moves out of the home chord. opens: sections that begin on the chord.
+  follows(mode) { return mode === 'maj' ? { 'V': 22, 'V/ii': 13, 'V/vi': 8, 'V/IV': 7, 'vi': 7, 'V/V': 7 } : { 'V': 29, 'iv': 15, 'V/V': 13, 'V/iv': 8, 'V/III': 5, 'bVI7': 5 }; }
+  opens(mode) {
+    return mode === 'maj'
+      ? { counts: { 'I': 333, 'V': 85, 'ii': 26, 'V/V': 11, 'IV': 9, 'V/vi': 7, 'V/IV': 7, 'vi': 6, '#IV°': 3, 'iii': 3, 'V/ii': 2, '#I°': 1, 'iv': 1 }, total: 514 }
+      : { counts: { 'i': 174, 'V': 43, 'iv': 20, 'iiø': 7, 'V/V': 6, 'V/III': 6, 'III': 2, 'bVI7': 2, 'V/iv': 1, 'VI': 1, 'bII': 1 }, total: 272 };
+  }
+
+  // Home unknown: rank the 24 keys by the notes alone.
+  rankHomes(notes) {
+    if (!notes.length) return [];
+    const tables = { min: [0, 0, 1, 2, 2, 3, 3, 4, 4, 5, 6, 6], maj: [0, 1, 1, 2, 2, 3, 3, 4, 5, 5, 6, 6] };
+    const out = [];
+    ['min', 'maj'].forEach((mode) => {
+      for (let pc = 0; pc < 12; pc++) {
+        const key = { L: tables[mode][pc], pc: pc, mode: mode };
+        const set = this.scaleOf(mode).slice();
+        if (mode === 'min') set.push(11); // the raised 7th belongs to a minor key in practice
+        let fit = 0;
+        const missed = [];
+        let hasThird = false;
+        notes.forEach((p) => {
+          const o = (p - pc + 12) % 12;
+          if (o === 3 || o === 4) hasThird = true;
+          if (set.indexOf(o) >= 0) fit += 1;
+          else { const nm = this.nameIn(key, p); if (missed.indexOf(nm) < 0) missed.push(nm); }
+        });
+        const last = notes[notes.length - 1];
+        const lastO = (last - pc + 12) % 12;
+        const lastName = this.nameIn(key, last);
+        let bonus = 0;
+        let why = 'Your notes end on ' + lastName + ', which is not a resting note in this key.';
+        if (lastO === 0) { bonus = 1; why = 'Your notes come to rest on ' + lastName + ', its tonic.'; }
+        else if (lastO === (mode === 'maj' ? 4 : 3)) { bonus = 0.4; why = 'Your notes come to rest on ' + lastName + ', its 3rd.'; }
+        else if (lastO === 7) { bonus = 0.3; why = 'Your notes come to rest on ' + lastName + ', its 5th.'; }
+        const rest = missed.length ? 'Leaves out ' + missed.join(', ') + '.'
+          : (hasThird ? 'Every note is in the key.' : 'No 3rd heard yet: major and minor both fit.');
+        const share = fit / notes.length;
+        out.push({ key: key, name: this.keyName(key), fit: fit, share: share, score: share + bonus, why: why, rest: rest, order: out.length });
+      }
+    });
+    out.sort((a, b) => (b.score - a.score) || (a.order - b.order));
+    return out.filter((r) => r.fit > 0).slice(0, 3);
+  }
+
+  weight(iv, suffix, interval) {
+    if (iv.indexOf(interval) >= 0) return 1;
+    if (suffix === '7' && interval === 1) return 0.5; // the flat 9th over a dominant
+    return 0;
+  }
+  role(suffix, interval) {
+    if (interval === 9) return suffix === 'm6' ? '6th' : '7th';
+    const r = { 0: 'root', 1: 'flat 9th', 3: '3rd', 4: '3rd', 6: '5th', 7: '5th', 10: '7th' };
+    return r[interval] || 'tone';
+  }
+
+  // Home known: rank the map's chords by the notes, nudged by what usually opens a section or follows the home chord.
+  rankChords(notes, home, from) {
+    if (!notes.length) return [];
+    const scale = this.scaleOf(home.mode);
+    const follows = this.follows(home.mode);
+    const opens = this.opens(home.mode);
+    const homeName = this.keyName(home);
+    const modeWord = home.mode === 'maj' ? 'major' : 'minor';
+    const homeChord = this.nameIn(home, home.pc) + (home.mode === 'min' ? 'm' : '');
+    const out = this.board(home.mode).map((d, order) => {
+      const root = this.rootIn(home, d[2], d[3]);
+      const iv = this.shapes()[d[4]];
+      const opened = opens.counts[d[0]] || 0;
+      const p = from === 'start' ? 100 * opened / opens.total : (follows[d[0]] || 0);
+      let sum = 0, total = 0, fit = 0, clue = '';
+      const missed = [];
+      const strays = [];
+      notes.forEach((pc, i) => {
+        const interval = (pc - root.pc + 12) % 12;
+        const w = this.weight(iv, d[4], interval);
+        const k = i === notes.length - 1 ? 2 : 1; // the note a phrase lands on counts double
+        const outside = scale.indexOf((pc - home.pc + 12) % 12) < 0;
+        const nm = this.nameIn(home, pc);
+        sum += w * k;
+        total += k;
+        if (w > 0) fit += 1;
+        else if (missed.indexOf(nm) < 0) missed.push(nm);
+        if (w > 0 && outside && !clue) clue = nm + ' is outside ' + homeName + ': here it is the ' + this.role(d[4], interval) + '.';
+        if (w === 0 && outside && strays.indexOf(nm) < 0) strays.push(nm);
+      });
+      const share = sum / total;
+      // A note outside the key is the strongest clue, so a chord that cannot explain it loses ground.
+      const score = share * (1 + p / 400) - 0.15 * strays.length;
+      let foot;
+      // The counts are too thin for percentages: say usual, sometimes or rare.
+      if (from === 'start') {
+        foot = p >= 35 ? 'The usual way a ' + modeWord + ' section opens in 295 choros.'
+          : p >= 10 ? 'Sometimes opens a ' + modeWord + ' section in 295 choros.'
+          : p > 0 ? 'Rarely opens a ' + modeWord + ' section in 295 choros.'
+          : 'Does not open a ' + modeWord + ' section in 295 choros.';
+      } else {
+        foot = p >= 35 ? 'Usually follows ' + homeChord + ' in 295 choros.'
+          : p >= 10 ? 'Sometimes follows ' + homeChord + ' in 295 choros.'
+          : 'Rarely follows ' + homeChord + ' directly in 295 choros.';
+      }
+      return {
+        name: root.text + d[4], fn: d[1], rootPc: root.pc, iv: iv, suffix: d[4], fit: fit, share: share, score: score, order: order,
+        why: clue || 'Every note it explains is in the key.',
+        rest: missed.length ? 'Leaves out ' + missed.join(', ') + '.' : 'Explains every note.',
+        foot: foot
+      };
+    });
+    out.sort((a, b) => (b.score - a.score) || (a.order - b.order));
+    return out.filter((r) => r.fit > 0).slice(0, 3);
+  }
+
+  // events: [midi, start offset in seconds, peak, length]
+  voice(events) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!this.ac) this.ac = new AC();
+      const ac = this.ac;
+      if (ac.state === 'suspended') ac.resume();
+      const cents = this.s().cents;
+      const out = ac.createGain();
+      out.gain.value = 0.5;
+      const lp = ac.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 2600;
+      out.connect(lp);
+      lp.connect(ac.destination);
+      const t0 = ac.currentTime + 0.02;
+      events.forEach((e) => {
+        const osc = ac.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.value = 440 * Math.pow(2, (e[0] - 69) / 12);
+        osc.detune.value = cents;
+        const g = ac.createGain();
+        const at = t0 + e[1];
+        g.gain.setValueAtTime(0.0001, at);
+        g.gain.exponentialRampToValueAtTime(e[2], at + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.0001, at + e[3]);
+        osc.connect(g);
+        g.connect(out);
+        osc.start(at);
+        osc.stop(at + e[3] + 0.1);
+      });
+    } catch (err) { /* no sound available: the screen still works */ }
+  }
+  chordEvents(rootPc, iv, at, len) {
+    const bass = 40 + ((rootPc + 8) % 12);
+    const ev = [[bass, at, 0.45, len]];
+    iv.slice(1).forEach((x, i) => {
+      let m = bass + 12 + x;
+      if (m > 62) m -= 12;
+      ev.push([m, at + 0.02 * (i + 1), 0.2, len]);
+    });
+    return ev;
+  }
+
+  renderVals() {
+    const st = this.s();
+    const home = st.home;
+    const known = !!home;
+    const atStart = st.from === 'start';
+    const glyphs = { '-2': '𝄫', '-1': '♭', '0': '♮', '1': '♯', '2': '𝄪' };
+
+    const homes = known ? [] : this.rankHomes(st.notes);
+    const chords = known ? this.rankChords(st.notes, home, st.from) : [];
+    const ranked = known ? chords : homes;
+    const chosen = ranked.find((r) => r.name === st.sel) || ranked[0] || null;
+
+    // Key signature: the accidental each letter carries in the home key.
+    const ks = [0, 0, 0, 0, 0, 0, 0];
+    if (known) {
+      this.scaleOf(home.mode).forEach((o, d) => {
+        const L = (home.L + d) % 7;
+        ks[L] = this.accOf(L, (home.pc + o) % 12);
+      });
+    }
+    const sig = [];
+    const sharpOrder = [[3, 10], [0, 7], [4, 11], [1, 8], [5, 5], [2, 9], [6, 6]];
+    const flatOrder = [[6, 6], [2, 9], [5, 5], [1, 8], [4, 4], [0, 7], [3, 3]];
+    sharpOrder.forEach((x) => { if (ks[x[0]] === 1) sig.push({ glyph: glyphs['1'], step: x[1], lift: 15 }); });
+    flatOrder.forEach((x) => { if (ks[x[0]] === -1) sig.push({ glyph: glyphs['-1'], step: x[1], lift: 20 }); });
+    sig.forEach((k, i) => { k.left = (112 + i * 16) + 'px'; k.top = (130 - k.step * 7 - k.lift) + 'px'; });
+    const x0 = Math.max(190, 112 + sig.length * 16 + 46);
+
+    const explains = (pc) => {
+      if (!chosen) return false;
+      if (known) return this.weight(chosen.iv, chosen.suffix, (pc - chosen.rootPc + 12) % 12) > 0;
+      const set = this.scaleOf(chosen.key.mode).slice();
+      if (chosen.key.mode === 'min') set.push(11);
+      return set.indexOf((pc - chosen.key.pc + 12) % 12) >= 0;
+    };
+
+    const staff = st.notes.map((pc, i) => {
+      const sp = this.spell(home, pc);
+      const x = x0 + i * 88;
+      const y = 130 - sp.L * 7;
+      const drawn = sp.acc !== ks[sp.L];
+      return {
+        name: this.letters()[sp.L] + this.accText(sp.acc),
+        col: chosen ? (explains(pc) ? '#F2B544' : '#9AA7B4') : '#EEF1F4',
+        left: (x - 9) + 'px', top: (y - 6.5) + 'px', labelLeft: (x - 22) + 'px',
+        ledger: sp.L === 0, ledgerLeft: (x - 17) + 'px',
+        hasAcc: drawn, acc: drawn ? glyphs[String(sp.acc)] : '',
+        accLeft: (x - 28) + 'px', accTop: (y - 14) + 'px'
+      };
+    });
+
+    const cards = ranked.map((r) => {
+      const on = chosen && chosen.name === r.name;
+      let foot = r.foot;
+      if (!known) {
+        const dom = this.nameIn(r.key, (r.key.pc + 7) % 12) + '7';
+        const tonic = this.nameIn(r.key, r.key.pc) + (r.key.mode === 'min' ? 'm' : '');
+        foot = 'Tap to test it: plays ' + dom + ' → ' + tonic + '.';
+      }
+      return {
+        name: r.name, tag: known ? r.fn : '', on: !!on,
+        bd: on ? '#F2B544' : '#2C3744', bg: on ? '#221E14' : '#1B222B',
+        fit: r.fit + ' of ' + st.notes.length + ' notes', barW: Math.round(r.share * 100) + '%',
+        why: r.why, rest: r.rest, foot: foot,
+        tap: () => {
+          const cur = this.s();
+          if (known) {
+            const len = Math.max(1.6, cur.notes.length * 0.26 + 0.8);
+            const ev = this.chordEvents(r.rootPc, r.iv, 0, len);
+            cur.notes.forEach((pc, i) => ev.push([60 + pc, i * 0.26, 0.4, 0.5]));
+            this.voice(ev);
+          } else {
+            const triad = r.key.mode === 'maj' ? [0, 4, 7] : [0, 3, 7];
+            this.voice(this.chordEvents((r.key.pc + 7) % 12, [0, 4, 7, 10], 0, 1.6).concat(this.chordEvents(r.key.pc, triad, 0.9, 1.8)));
+          }
+          this.put({ sel: r.name });
+        }
+      };
+    });
+
+    const abs = Math.abs(st.cents);
+    const homeChord = known ? this.nameIn(home, home.pc) + (home.mode === 'min' ? 'm' : '') : '';
+    const homeName = known ? this.keyName(home) : '';
+
+    return {
+      subtitle: known ? 'Step 2: name the chord. Enter the notes you hear, melody or bass.'
+        : 'Step 1: find home. Listen for where a phrase comes to rest, not for the first chord.',
+      homeKnown: known,
+      homeLabel: known ? homeName : 'Not known yet',
+      homeBd: known ? '#6FB1FF' : '#2C3744', homeBg: known ? '#16293D' : '#1B222B', homeCap: known ? '#8FC3FF' : '#9AA7B4',
+      forget: () => this.put({ home: null, notes: [], sel: null, from: 'start' }),
+      homeChord: homeChord,
+      isStart: atStart, isFromHome: !atStart,
+      fromStart: () => this.put({ from: 'start', sel: null }),
+      fromHome: () => this.put({ from: 'home', sel: null }),
+      startBg: atStart ? '#2C3744' : 'transparent', startFg: atStart ? '#EEF1F4' : '#9AA7B4',
+      prevBg: atStart ? 'transparent' : '#2C3744', prevFg: atStart ? '#9AA7B4' : '#EEF1F4',
+      sig: sig,
+      staff: staff,
+      noNotes: st.notes.length === 0,
+      emptyText: known ? 'Home is ' + homeName + '. Hum or tap the notes of the chord you are stuck on.'
+        : 'Hum the note a phrase comes to rest on, or the whole phrase. The end of a section is the safest place to listen.',
+      keys: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((pc) => ({
+        name: this.nameIn(home, pc),
+        tap: () => {
+          const cur = this.s();
+          this.voice([[60 + pc, 0, 0.4, 0.9]]);
+          if (cur.notes.length < 10) this.put({ notes: cur.notes.concat([pc]), sel: null });
+        }
+      })),
+      // The mockup has no microphone. "Hum" enters an example: a cadence phrase while home is unknown,
+      // then a phrase that outlines one chord of the home key.
+      hum: () => {
+        const cur = this.s();
+        if (!cur.home) { this.put({ notes: this.homePhrase(), sel: null, cents: -12 }); return; }
+        const shape = cur.home.mode === 'min' ? [2, 5, 8, 7, 5, 2, 11] : [9, 7, 4, 1, 4, 7];
+        this.put({ notes: shape.map((o) => (cur.home.pc + o) % 12), sel: null });
+      },
+      undo: () => { const cur = this.s(); this.put({ notes: cur.notes.slice(0, -1), sel: null }); },
+      clear: () => this.put({ notes: [], sel: null }),
+      listLabel: known ? 'Likely chords · tap one to hear it under your notes' : 'Likely home keys · tap one to hear the cadence into it',
+      cards: cards, hasCards: cards.length > 0, noCards: cards.length === 0,
+      cents: st.cents,
+      centsText: st.cents === 0 ? 'concert pitch' : abs + ' cents ' + (st.cents < 0 ? 'flat' : 'sharp'),
+      setCents: (e) => this.put({ cents: Number(e.target.value) }),
+      showMake: !known && !!chosen,
+      chosenName: chosen ? chosen.name : '',
+      makeHome: () => {
+        if (!chosen || known) return;
+        this.put({ home: chosen.key, notes: [], sel: null, from: 'start' });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

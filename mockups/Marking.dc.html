@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Same move, another way</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; box-sizing: border-box; padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; background: #12161C; color: #EEF1F4; font-family: Inter, system-ui, sans-serif">
+
+  <div style="display: flex; flex-direction: column; gap: 6px; height: 56px; justify-content: center">
+    <h1 style="margin: 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 28px; line-height: 1">Same move, another way</h1>
+    <div style="font-size: 14px; color: #9AA7B4">The songbook is one good version of a tune, not the only one. Arrivals are marked strictly; the way between them, by the job each chord does.</div>
+  </div>
+
+  <div style="display: flex; gap: 18px; flex: 1 1 0; min-height: 0">
+
+    <div style="width: 470px; display: flex; flex-direction: column; gap: 12px">
+      <sc-for list="{{marks}}" as="m" hint-placeholder-count="3">
+        <div style="box-sizing: border-box; padding: 16px; border-radius: 16px; background: #1B222B; border: 1px solid #2C3744; border-top: 4px solid {{m.col}}; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <span style="font-size: 20px; font-weight: 700; color: {{m.col}}">{{m.glyph}}</span>
+            <span style="font-size: 17px; font-weight: 600">{{m.name}}</span>
+          </div>
+          <sc-for list="{{m.lines}}" as="t" hint-placeholder-count="2">
+            <div style="font-size: 14px; color: #C5CED8; line-height: 1.4">{{t}}</div>
+          </sc-for>
+        </div>
+      </sc-for>
+      <div style="box-sizing: border-box; padding: 14px 16px; border-radius: 16px; background: #16293D; border: 1px solid #6FB1FF; font-size: 14px; line-height: 1.4">
+        <span style="font-weight: 600">Arrivals are strict:</span> the chord a phrase lands on (bars 4, 8, 12 and 16 of a section), the first chord of a section, and every change of home.
+      </div>
+    </div>
+
+    <div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+      <div style="box-sizing: border-box; padding: 18px; border-radius: 18px; background: #1B222B; border: 1px solid #2C3744; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA7B4">Cochichando, A, bars 13–16</div>
+          <div style="font-size: 13px; color: #9AA7B4">two versions</div>
+        </div>
+        <sc-for list="{{versions}}" as="v" hint-placeholder-count="2">
+          <div style="display: grid; grid-template-columns: 112px repeat(4, minmax(0, 1fr)) 64px; gap: 8px; align-items: center">
+            <span style="font-size: 13px; font-weight: 600; color: #C5CED8">{{v.who}}</span>
+            <sc-for list="{{v.bars}}" as="b" hint-placeholder-count="4">
+              <span style="display: flex; flex-direction: column; gap: 3px; height: 54px; box-sizing: border-box; padding: 6px 8px; border-radius: 10px; border: 1px solid {{b.bd}}; background: {{b.bg}}">
+                <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 15px; white-space: nowrap">{{b.chords}}</span>
+                <span style="font-size: 11px; color: #9AA7B4; white-space: nowrap">{{b.fns}}</span>
+              </span>
+            </sc-for>
+            <button type="button" onClick="{{v.play}}" aria-label="{{v.aria}}" style="height: 44px; border-radius: 12px; border: 1px solid #2C3744; background: #12161C; color: #EEF1F4; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer">Hear</button>
+          </div>
+        </sc-for>
+        <div style="display: grid; grid-template-columns: 112px repeat(4, minmax(0, 1fr)) 64px; gap: 8px; font-size: 12px; color: #9AA7B4">
+          <span></span>
+          <span style="grid-column: span 2; padding-left: 4px">the way: different</span>
+          <span style="grid-column: span 2; color: #8FC3FF; padding-left: 4px">the arrival: the same, E7 A7 → Dm</span>
+          <span></span>
+        </div>
+        <div style="font-size: 14px; color: #C5CED8; line-height: 1.45">Your chart visits the relative major on the way (C7 → F); the songbook walks the bass down under Dm. Both reach the same cadence, so following yours while the app plays the songbook’s is marked <span style="color: #F2B544; font-weight: 600">≈ another way</span>, never missed.</div>
+        <div style="display: flex; gap: 10px">
+          <button type="button" onClick="{{keep}}" aria-pressed="{{kept}}" style="height: 48px; padding: 0 16px; border-radius: 12px; border: 1px solid {{keepBd}}; background: {{keepBg}}; color: #EEF1F4; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer">{{keepLabel}}</button>
+          <div style="display: flex; align-items: center; font-size: 13px; color: #9AA7B4; line-height: 1.35">A tune in your own book and in the corpus accepts both versions.</div>
+        </div>
+      </div>
+
+      <div style="box-sizing: border-box; padding: 18px; border-radius: 18px; background: #1B222B; border: 1px solid #2C3744; display: flex; flex-direction: column; gap: 10px">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA7B4">Where two good versions differ · 202 places, your 9 charts against the songbook</div>
+        <sc-for list="{{evidence}}" as="e" hint-placeholder-count="5">
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) 150px 40px 86px; gap: 10px; align-items: center">
+            <span style="font-size: 13px; color: #C5CED8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{e.what}}</span>
+            <span style="position: relative; height: 8px; border-radius: 4px; background: #2C3744; overflow: hidden">
+              <span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{e.w}}; background: {{e.col}}"></span>
+            </span>
+            <span style="font-size: 13px; font-weight: 600; text-align: right">{{e.pct}}</span>
+            <span style="font-size: 13px; font-weight: 600; color: {{e.col}}; white-space: nowrap">{{e.mark}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  s() { return this.state && this.state.ready ? this.state : { ready: true, kept: false }; }
+
+  play(syms) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!this.ac) this.ac = new AC();
+      const ac = this.ac;
+      if (ac.state === 'suspended') ac.resume();
+      const L = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+      const shapes = { '': [4, 7, 12], 'm': [3, 7, 12], '7': [4, 7, 10], 'm7(b5)': [3, 6, 10] };
+      const out = ac.createGain();
+      out.gain.value = 0.5;
+      out.connect(ac.destination);
+      syms.forEach((sym, k) => {
+        const m = /^([A-G])([#b]?)([^/]*)(?:\/([A-G][#b]?))?$/.exec(sym);
+        if (!m) return;
+        const pc = (L[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? 11 : 0)) % 12;
+        const b = m[3];
+        const suf = b.indexOf('m7(b5)') === 0 ? 'm7(b5)' : b.indexOf('m') === 0 ? 'm' : b.indexOf('7') >= 0 ? '7' : '';
+        const bassPc = m[4] ? (L[m[4][0]] + (m[4][1] === '#' ? 1 : m[4][1] === 'b' ? 11 : 0)) % 12 : pc;
+        const bass = 40 + ((bassPc + 8) % 12);
+        const top = 52 + ((pc + 8) % 12);
+        const notes = [bass].concat(shapes[suf].map((iv) => { const n = top + iv; return n > 74 ? n - 12 : n; }));
+        const t0 = ac.currentTime + 0.02 + k * 0.45;
+        notes.forEach((n, i) => {
+          const osc = ac.createOscillator();
+          osc.type = 'triangle';
+          osc.frequency.value = 440 * Math.pow(2, (n - 69) / 12);
+          const g = ac.createGain();
+          const at = t0 + i * 0.02;
+          g.gain.setValueAtTime(0.0001, at);
+          g.gain.exponentialRampToValueAtTime(i === 0 ? 0.5 : 0.25, at + 0.008);
+          g.gain.exponentialRampToValueAtTime(0.0001, at + 0.9);
+          osc.connect(g);
+          g.connect(out);
+          osc.start(at);
+          osc.stop(at + 1.0);
+        });
+      });
+    } catch (e) { /* no sound */ }
+  }
+
+  renderVals() {
+    const st = this.s();
+    const path = (bars, arrival) => bars.map((b, i) => ({
+      chords: b[0], fns: b[1],
+      bd: i >= arrival ? '#6FB1FF' : '#8C6D2B',
+      bg: i >= arrival ? '#16293D' : '#221E14'
+    }));
+    const corpus = [['Gm Em7(b5)', 'iv iiø'], ['Dm Dm/C', 'i i (bass walks)'], ['E7/B A7', 'V/V V'], ['Dm', 'i']];
+    const mine = [['Gm C7', 'iv V/III'], ['F Dm', 'III i'], ['E7 A7', 'V/V V'], ['Dm', 'i']];
+    const flat = (bars) => bars.map((b) => b[0]).join(' ').split(' ');
+    return {
+      marks: [
+        { glyph: '✓', name: 'Right', col: '#6FB1FF', lines: [
+          'The function the songbook has. A bass note or an extension never matters: the board asks functions, so Dm/F, Dm and Dm7 are all the i.'
+        ] },
+        { glyph: '≈', name: 'Another way of the same move', col: '#F2B544', lines: [
+          'The same job: a dominant, its diminished or its tritone substitute (E7, G#°, Bb7 into A7); ii or IV, iiø or iv, before the dominant.',
+          'A passing chord left out, or one added: you went straight to where it goes.',
+          'Another path between the same two arrivals, made of moves the corpus calls usual or sometimes.'
+        ] },
+        { glyph: '×', name: 'Missed', col: '#FF8A5B', lines: [
+          'It lands somewhere else, or it is a move choro doesn’t make.'
+        ] }
+      ],
+      versions: [
+        { who: 'The songbook', bars: path(corpus, 2), aria: 'Hear the songbook’s bars 13 to 16', play: () => this.play(flat(corpus)) },
+        { who: 'Your chart', bars: path(mine, 2), aria: 'Hear your chart’s bars 13 to 16', play: () => this.play(flat(mine)) }
+      ],
+      kept: !!st.kept,
+      keep: () => this.setState({ ready: true, kept: !this.s().kept }),
+      keepLabel: st.kept ? '✓ Your way is accepted for this tune' : 'Accept my way for this tune',
+      keepBd: st.kept ? '#6FB1FF' : '#2C3744',
+      keepBg: st.kept ? '#16293D' : '#12161C',
+      evidence: [
+        { what: 'Same chord, another bass or extension', pct: '47%', w: '47%', mark: '✓ right', col: '#6FB1FF' },
+        { what: 'A passing chord added or left out', pct: '29%', w: '29%', mark: '≈ another way', col: '#F2B544' },
+        { what: 'A related chord sharing two notes', pct: '12%', w: '12%', mark: '≈ another way', col: '#F2B544' },
+        { what: 'The same root made a secondary dominant', pct: '5%', w: '5%', mark: '≈ if it arrives', col: '#F2B544' },
+        { what: 'Different harmony, or the bar rewritten', pct: '5%', w: '5%', mark: 'by the arrival', col: '#9AA7B4' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

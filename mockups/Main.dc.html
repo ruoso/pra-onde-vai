@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Choro harmony map</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; box-sizing: border-box; padding: 28px; display: flex; flex-direction: column; gap: 18px; background: #12161C; color: #EEF1F4; font-family: Inter, system-ui, sans-serif">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 56px">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <sc-for list="{{crumbs}}" as="c" hint-placeholder-count="1">
+        <div style="display: flex; align-items: center; gap: 10px">
+          <sc-if value="{{c.sep}}" hint-placeholder-val="{{false}}">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#9AA7B4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3l5 5-5 5"></path></svg>
+          </sc-if>
+          <button type="button" onClick="{{c.tap}}" aria-label="{{c.aria}}" style="display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 18px; border-radius: 14px; border: 2px solid {{c.bd}}; background: {{c.bg}}; color: {{c.fg}}; font-family: inherit; cursor: pointer; text-align: left">
+            <sc-if value="{{c.isHome}}" hint-placeholder-val="{{true}}">
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L10 3l7 6.5"></path><path d="M5 8.5V17h10V8.5"></path></svg>
+            </sc-if>
+            <span style="display: flex; flex-direction: column; gap: 2px">
+              <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 20px; line-height: 1">{{c.label}}</span>
+              <span style="font-size: 12px; line-height: 1; color: {{c.subFg}}">{{c.sub}}</span>
+            </span>
+          </button>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 14px">
+      <div role="group" aria-label="Mode on the same tonic" style="display: flex; padding: 4px; gap: 4px; border-radius: 14px; background: #1B222B; border: 1px solid #2C3744">
+        <button type="button" onClick="{{setMinor}}" aria-pressed="{{isMinor}}" style="height: 44px; padding: 0 18px; border-radius: 10px; border: 0; background: {{minorBg}}; color: {{minorFg}}; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer">minor</button>
+        <button type="button" onClick="{{setMajor}}" aria-pressed="{{isMajor}}" style="height: 44px; padding: 0 18px; border-radius: 10px; border: 0; background: {{majorBg}}; color: {{majorFg}}; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer">major</button>
+      </div>
+      <a href="Listen.dc.html" style="display: flex; align-items: center; height: 52px; box-sizing: border-box; padding: 0 16px; border-radius: 14px; border: 1px solid #F2B544; background: #221E14; color: #F2B544; font-size: 15px; font-weight: 600; text-decoration: none; white-space: nowrap">Stuck? Enter notes</a>
+      <div role="group" aria-label="Practice mode" style="display: flex; padding: 4px; gap: 4px; border-radius: 14px; background: #1B222B; border: 1px solid #2C3744">
+        <button type="button" aria-pressed="true" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 0; background: #2C3744; color: #EEF1F4; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer">Free</button>
+        <button type="button" aria-pressed="false" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 0; background: transparent; color: #9AA7B4; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer">Checked</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 68px; box-sizing: border-box; padding: 0 20px; border-radius: 16px; background: {{bannerBg}}; border: 1px solid {{bannerBd}}">
+    <sc-if value="{{showHint}}" hint-placeholder-val="{{true}}">
+      <div style="font-size: 16px; color: #C5CED8">Tap each chord as you hear it. Amber outlines are the usual next moves from where you are.</div>
+    </sc-if>
+    <sc-if value="{{showMoved}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <div style="font-size: 17px; font-weight: 600">Home is now {{centreName}}. Same positions, new chord names.</div>
+        <div style="font-size: 14px; color: #C5CED8">{{movedSub}}</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{showStay}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <div style="font-size: 17px; font-weight: 600">You are on {{stayChord}}, the {{stayFn}} of {{centreName}}.</div>
+        <div style="font-size: 14px; color: #C5CED8">Visiting, or moving in?</div>
+      </div>
+      <button type="button" onClick="{{stay}}" style="height: 48px; padding: 0 22px; border-radius: 12px; border: 0; background: #6FB1FF; color: #0B1622; font-family: inherit; font-weight: 600; font-size: 16px; cursor: pointer; white-space: nowrap">Make {{stayHome}} home</button>
+    </sc-if>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; padding-left: 104px; height: 20px; color: #9AA7B4; font-size: 13px">
+    <span>Each dominant falls one column to the right, towards home</span>
+    <svg aria-hidden="true" width="64" height="12" viewBox="0 0 64 12" fill="none" stroke="#9AA7B4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6h60"></path><path d="M56 1l6 5-6 5"></path></svg>
+  </div>
+
+  <div style="display: flex; gap: 12px">
+    <div style="width: 92px; display: flex; flex-direction: column; gap: 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA7B4">
+      <div style="height: 120px; display: flex; align-items: center">Leads in</div>
+      <div style="height: 176px; display: flex; align-items: center">Destination</div>
+      <div style="height: 104px; display: flex; align-items: center">Colour</div>
+    </div>
+
+    <sc-for list="{{cols}}" as="col" hint-placeholder-count="6">
+      <div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+
+        <sc-if value="{{col.hasA}}" hint-placeholder-val="{{true}}">
+          <button type="button" onClick="{{col.a.tap}}" aria-label="{{col.a.aria}}" style="position: relative; height: 120px; border-radius: 16px; border: 2px solid {{col.a.bd}}; background: {{col.a.bg}}; color: {{col.a.fg}}; font-family: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0">
+            <span style="font-size: 13px; font-weight: 500; color: {{col.a.subFg}}">{{col.a.fn}}</span>
+            <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 30px; line-height: 1">{{col.a.name}}</span>
+            <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1v11"></path><path d="M2.5 8L7 12.5 11.5 8"></path></svg>
+            <sc-if value="{{col.a.hasPct}}" hint-placeholder-val="{{false}}">
+              <span style="position: absolute; top: 8px; right: 8px; padding: 2px 7px; border-radius: 8px; border: 1px solid {{col.a.badgeBd}}; background: {{col.a.badgeBg}}; color: {{col.a.badgeFg}}; font-size: 12px; font-weight: 600">{{col.a.pct}}</span>
+            </sc-if>
+          </button>
+        </sc-if>
+        <sc-if value="{{col.noA}}" hint-placeholder-val="{{false}}">
+          <div style="height: 120px; box-sizing: border-box; border-radius: 16px; border: 1px dashed #2C3744; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 10px; font-size: 12px; color: #9AA7B4">{{col.slotNote}}</div>
+        </sc-if>
+
+        <button type="button" onClick="{{col.t.tap}}" aria-label="{{col.t.aria}}" style="position: relative; height: 176px; border-radius: 20px; border: 2px solid {{col.t.bd}}; background: {{col.t.bg}}; color: {{col.t.fg}}; font-family: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 0">
+          <span style="font-size: 15px; font-weight: 600; color: {{col.t.subFg}}">{{col.t.fn}}</span>
+          <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 44px; line-height: 1">{{col.t.name}}</span>
+          <sc-if value="{{col.isHome}}" hint-placeholder-val="{{false}}">
+            <span style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: {{col.t.subFg}}">
+              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L10 3l7 6.5"></path><path d="M5 8.5V17h10V8.5"></path></svg>
+              Home
+            </span>
+          </sc-if>
+          <sc-if value="{{col.t.hasPct}}" hint-placeholder-val="{{false}}">
+            <span style="position: absolute; top: 10px; right: 10px; padding: 2px 8px; border-radius: 8px; border: 1px solid {{col.t.badgeBd}}; background: {{col.t.badgeBg}}; color: {{col.t.badgeFg}}; font-size: 13px; font-weight: 600">{{col.t.pct}}</span>
+          </sc-if>
+        </button>
+
+        <sc-if value="{{col.hasC}}" hint-placeholder-val="{{true}}">
+          <button type="button" onClick="{{col.c.tap}}" aria-label="{{col.c.aria}}" style="position: relative; height: 104px; border-radius: 16px; border: 2px solid {{col.c.bd}}; background: {{col.c.bg}}; color: {{col.c.fg}}; font-family: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 0">
+            <span style="font-size: 13px; font-weight: 500; color: {{col.c.subFg}}">{{col.c.fn}}</span>
+            <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 26px; line-height: 1">{{col.c.name}}</span>
+            <sc-if value="{{col.c.hasPct}}" hint-placeholder-val="{{false}}">
+              <span style="position: absolute; top: 8px; right: 8px; padding: 2px 7px; border-radius: 8px; border: 1px solid {{col.c.badgeBd}}; background: {{col.c.badgeBg}}; color: {{col.c.badgeFg}}; font-size: 12px; font-weight: 600">{{col.c.pct}}</span>
+            </sc-if>
+          </button>
+        </sc-if>
+        <sc-if value="{{col.noC}}" hint-placeholder-val="{{false}}">
+          <div style="height: 104px"></div>
+        </sc-if>
+
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 64px; box-sizing: border-box; padding: 0 20px; border-radius: 16px; background: #1B222B; border: 1px solid #2C3744">
+    <div style="display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden">
+      <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA7B4; margin-right: 6px">Played</span>
+      <sc-for list="{{trail}}" as="t" hint-placeholder-count="3">
+        <span style="padding: 7px 12px; border-radius: 10px; border: 1px solid {{t.bd}}; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 500; font-size: 16px; white-space: nowrap">{{t.t}}</span>
+      </sc-for>
+    </div>
+    <div style="font-size: 13px; color: #9AA7B4; white-space: nowrap">Usual, sometimes, rare: how often that move follows in 295 choros (Choro Songbook corpus)</div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"scene":{"editor":"enum","options":["home","arrived","moved"],"default":"home"},"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  letters() { return ['C', 'D', 'E', 'F', 'G', 'A', 'B']; }
+  naturals() { return [0, 2, 4, 5, 7, 9, 11]; }
+
+  // Column order: 3rd, 6th, 2nd, 5th, home, 4th. Each entry: [id, function, letter step, semitones, suffix].
+  board(mode) {
+    if (mode === 'maj') return [
+      { t: ['iii', 'iii', 2, 4, 'm'], a: ['V/iii', 'V of iii', 6, 11, '7'], c: null },
+      { t: ['vi', 'vi', 5, 9, 'm'], a: ['V/vi', 'V of vi', 2, 4, '7'], c: null },
+      { t: ['ii', 'ii', 1, 2, 'm'], a: ['V/ii', 'V of ii', 5, 9, '7'], c: ['#I°', '#I°', 0, 1, '°'] },
+      { t: ['V', 'V', 4, 7, '7'], a: ['V/V', 'V of V', 1, 2, '7'], c: ['#IV°', '#IV°', 3, 6, '°'] },
+      { t: ['I', 'I', 0, 0, ''], a: null, home: true, note: 'V, to the left, leads in here', c: ['bII', 'bII', 1, 1, ''] },
+      { t: ['IV', 'IV', 3, 5, ''], a: ['V/IV', 'V of IV', 0, 0, '7'], c: ['iv', 'iv', 3, 5, 'm6'] }
+    ];
+    return [
+      { t: ['III', 'III', 2, 3, ''], a: ['V/III', 'V of III', 6, 10, '7'], c: null },
+      { t: ['VI', 'VI', 5, 8, ''], a: ['V/VI', 'V of VI', 2, 3, '7'], c: ['bVI7', 'bVI7', 5, 8, '7'] },
+      { t: ['iiø', 'iiø', 1, 2, 'm7(b5)'], a: null, note: 'VI, to the left, leads in here', c: ['bII', 'bII', 1, 1, ''] },
+      { t: ['V', 'V', 4, 7, '7'], a: ['V/V', 'V of V', 1, 2, '7'], c: ['#IV°', '#IV°', 3, 6, '°'] },
+      { t: ['i', 'i', 0, 0, 'm'], a: null, home: true, note: 'V, to the left, leads in here', c: null },
+      { t: ['iv', 'iv', 3, 5, 'm'], a: ['V/iv', 'V of iv', 0, 0, '7'], c: null }
+    ];
+  }
+
+  // Measured in the DCML Choro Songbooks Corpus (295 pieces from the Choro Songbook,
+  // CC BY-NC-SA 4.0), by its own key and Roman-numeral annotations: [next, percent of
+  // moves out of the chord]. Only moves of 3% or more to a chord on this board.
+  exits(mode) {
+    if (mode === 'maj') return {
+      'I': [['V', 22], ['V/ii', 13], ['V/vi', 8], ['V/IV', 7], ['vi', 7], ['V/V', 7]],
+      'V': [['I', 75], ['V/vi', 3]],
+      'ii': [['V', 56], ['iv', 8], ['V/vi', 5], ['V/ii', 5], ['IV', 3], ['I', 3]],
+      'vi': [['V/V', 27], ['ii', 18], ['V/iii', 6], ['V/vi', 6], ['V', 5], ['IV', 5]],
+      'iii': [['V/ii', 22], ['V/iii', 15], ['V', 14], ['ii', 12], ['vi', 10]],
+      'IV': [['iv', 27], ['#IV°', 18], ['I', 12], ['V', 8], ['V/ii', 6], ['V/vi', 3]],
+      'V/ii': [['ii', 62], ['V/V', 26], ['IV', 3]],
+      'V/V': [['V', 82], ['iv', 5], ['ii', 4]],
+      'V/vi': [['vi', 63], ['V/ii', 15], ['IV', 5]],
+      'V/iii': [['iii', 47], ['V/vi', 11], ['I', 5]],
+      'V/IV': [['IV', 59], ['iv', 11], ['V/iii', 5]],
+      'iv': [['I', 52], ['V', 19], ['iii', 6], ['ii', 3], ['V/IV', 3]],
+      '#I°': [['V', 47], ['ii', 40], ['V/ii', 11]],
+      '#IV°': [['I', 78], ['V', 5], ['iv', 3]],
+      'bII': [['I', 33], ['V', 28], ['IV', 9], ['iv', 7], ['ii', 4]]
+    };
+    return {
+      'i': [['V', 29], ['iv', 15], ['V/V', 13], ['V/iv', 8], ['V/III', 5], ['bVI7', 5]],
+      'V': [['i', 71], ['V/iv', 8]],
+      'iv': [['V', 32], ['iiø', 18], ['i', 17], ['V/III', 10], ['V/iv', 5], ['V/V', 4]],
+      'iiø': [['i', 46], ['V', 43], ['iv', 3]],
+      'III': [['V', 24], ['V/iv', 9], ['V/III', 7], ['bVI7', 6], ['i', 5], ['V/V', 4]],
+      'VI': [['V', 29], ['V/V', 7], ['iiø', 6], ['V/VI', 5], ['V/iv', 4], ['bII', 4]],
+      'V/V': [['V', 68], ['iv', 12], ['iiø', 4], ['bVI7', 3]],
+      'V/iv': [['iv', 78]],
+      'V/III': [['III', 72], ['V/VI', 7], ['bVI7', 4]],
+      'V/VI': [['VI', 46], ['bVI7', 34], ['V/V', 12]],
+      'bII': [['V', 42], ['i', 23], ['iiø', 6], ['iv', 5], ['V/V', 3]],
+      'bVI7': [['V', 63], ['bII', 12], ['i', 5], ['V/V', 3]],
+      '#IV°': [['V', 42], ['i', 21], ['III', 16], ['iv', 5]]
+    };
+  }
+
+  spell(centre, step, semis) {
+    const L = (centre.L + step) % 7;
+    const target = (centre.pc + semis) % 12;
+    const diff = ((target - this.naturals()[L] + 18) % 12) - 6;
+    const acc = diff > 0 ? '#'.repeat(diff) : 'b'.repeat(-diff);
+    return { text: this.letters()[L] + acc, L: L, pc: target };
+  }
+
+  centreName(c) {
+    const n = this.spell(c, 0, 0).text;
+    return n + (c.mode === 'maj' ? ' major' : ' minor');
+  }
+
+  initial() {
+    const dm = { L: 1, pc: 2, mode: 'min', rel: 'home' };
+    const f = { L: 3, pc: 5, mode: 'maj', rel: 'relative major' };
+    const scene = this.props.scene ?? 'home';
+    if (scene === 'arrived') {
+      return { centres: [dm], current: 'III', moved: false, trail: [{ t: 'Dm' }, { t: 'A7' }, { t: 'Dm' }, { t: 'C7' }, { t: 'F' }] };
+    }
+    if (scene === 'moved') {
+      return { centres: [dm, f], current: 'I', moved: true, trail: [{ t: 'Dm' }, { t: 'A7' }, { t: 'Dm' }, { t: 'C7' }, { t: 'F' }, { t: 'home: F major', mark: true }] };
+    }
+    return { centres: [dm], current: 'i', moved: false, trail: [{ t: 'Dm' }, { t: 'A7' }, { t: 'Dm' }] };
+  }
+
+  s() {
+    return this.state && this.state.centres ? this.state : this.initial();
+  }
+
+  pluck(pc, suffix) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!this.ac) this.ac = new AC();
+      const ac = this.ac;
+      if (ac.state === 'suspended') ac.resume();
+      const shapes = { '': [4, 7, 12], 'm': [3, 7, 12], '7': [4, 7, 10], 'm6': [3, 7, 9], 'm7(b5)': [3, 6, 10], '°': [3, 6, 9] };
+      const iv = shapes[suffix] || shapes[''];
+      const bass = 40 + ((pc + 8) % 12);
+      const notes = [bass];
+      for (let i = 0; i < iv.length; i++) {
+        let n = bass + 12 + iv[i];
+        if (n > 74) n -= 12;
+        notes.push(n);
+      }
+      const out = ac.createGain();
+      out.gain.value = 0.5;
+      const lp = ac.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 2400;
+      out.connect(lp);
+      lp.connect(ac.destination);
+      const t0 = ac.currentTime + 0.01;
+      for (let i = 0; i < notes.length; i++) {
+        const osc = ac.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.value = 440 * Math.pow(2, (notes[i] - 69) / 12);
+        const g = ac.createGain();
+        const at = t0 + i * 0.02;
+        g.gain.setValueAtTime(0.0001, at);
+        g.gain.exponentialRampToValueAtTime(i === 0 ? 0.5 : 0.28, at + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.0001, at + 1.6);
+        osc.connect(g);
+        g.connect(out);
+        osc.start(at);
+        osc.stop(at + 1.7);
+      }
+    } catch (e) { /* no sound available: the board still works */ }
+  }
+
+  push(trail, item) {
+    return trail.concat([item]).slice(-9);
+  }
+
+  renderVals() {
+    const st = this.s();
+    const centre = st.centres[st.centres.length - 1];
+    const mode = centre.mode;
+    const defs = this.board(mode);
+    const exits = this.exits(mode);
+    const homeId = mode === 'maj' ? 'I' : 'i';
+    const lit = {};
+    const from = st.current ? (exits[st.current] || []) : [[homeId, 0], ['V', 0]];
+    from.forEach((e) => { lit[e[0]] = e[1]; });
+
+    const make = (d, isHome) => {
+      if (!d) return null;
+      const id = d[0];
+      const sp = this.spell(centre, d[2], d[3]);
+      const name = sp.text + d[4];
+      const isCurrent = st.current === id;
+      const isLit = !isCurrent && Object.prototype.hasOwnProperty.call(lit, id);
+      let bg = '#1B222B', bd = '#2C3744', fg = '#EEF1F4', subFg = '#9AA7B4';
+      if (isHome) { bd = '#6FB1FF'; subFg = '#8FC3FF'; }
+      // The counts are too thin for percentages: three tiers. No count (0) lights the button with no badge.
+      const share = isLit ? lit[id] : 0;
+      const pct = share >= 35 ? 'usual' : share >= 10 ? 'sometimes' : share > 0 ? 'rare' : '';
+      let badgeBg = '#F2B544', badgeBd = '#F2B544', badgeFg = '#12161C';
+      if (pct === 'sometimes') { badgeBg = '#12161C'; badgeFg = '#F2B544'; }
+      if (pct === 'rare') { badgeBg = '#12161C'; badgeBd = '#8C6D2B'; badgeFg = '#C5CED8'; }
+      if (isLit) { bd = pct === 'rare' ? '#8C6D2B' : '#F2B544'; bg = '#221E14'; }
+      if (isCurrent) { bg = '#F2B544'; bd = '#F2B544'; fg = '#12161C'; subFg = '#3A2C08'; }
+      return {
+        id: id, fn: d[1], name: name, bg: bg, bd: bd, fg: fg, subFg: subFg,
+        pct: pct, hasPct: pct !== '', badgeBg: badgeBg, badgeBd: badgeBd, badgeFg: badgeFg,
+        aria: name + ', ' + d[1] + (pct ? ', a ' + pct + ' next move' : ''),
+        tap: () => {
+          this.pluck(sp.pc, d[4]);
+          const cur = this.s();
+          this.setState({ centres: cur.centres, current: id, moved: false, trail: this.push(cur.trail, { t: name }) });
+        }
+      };
+    };
+
+    const cols = defs.map((d) => {
+      const a = make(d.a, false);
+      const c = make(d.c, false);
+      return {
+        t: make(d.t, !!d.home), a: a, c: c, isHome: !!d.home,
+        hasA: !!a, noA: !a, hasC: !!c, noC: !c, slotNote: d.note || ''
+      };
+    });
+
+    // "Make this home": offered on any destination other than home that can be a key.
+    let stayDef = null;
+    defs.forEach((d) => {
+      if (d.t[0] === st.current && !d.home && d.t[4] !== 'm7(b5)') stayDef = d.t;
+    });
+    const showStay = !!stayDef;
+    let stayChord = '', stayFn = '', stayHome = '', stay = () => {};
+    if (stayDef) {
+      const sp = this.spell(centre, stayDef[2], stayDef[3]);
+      const newMode = stayDef[4] === 'm' ? 'min' : 'maj';
+      const rels = { 'maj:vi': 'relative minor', 'min:III': 'relative major', 'maj:IV': 'subdominant', 'min:iv': 'subdominant', 'maj:V': 'dominant', 'min:V': 'dominant' };
+      const next = { L: sp.L, pc: sp.pc, mode: newMode, rel: rels[mode + ':' + stayDef[0]] || 'new centre' };
+      stayChord = sp.text + stayDef[4];
+      stayFn = stayDef[1];
+      stayHome = this.centreName(next);
+      stay = () => {
+        const cur = this.s();
+        this.setState({
+          centres: cur.centres.concat([next]), current: newMode === 'maj' ? 'I' : 'i', moved: true,
+          trail: this.push(cur.trail, { t: 'home: ' + stayHome, mark: true })
+        });
+      };
+    }
+
+    const flip = (to) => () => {
+      const cur = this.s();
+      const top = cur.centres[cur.centres.length - 1];
+      if (top.mode === to) return;
+      let centres;
+      const below = cur.centres[cur.centres.length - 2];
+      if (below && below.pc === top.pc && below.mode === to) {
+        centres = cur.centres.slice(0, -1);
+      } else {
+        centres = cur.centres.concat([{ L: top.L, pc: top.pc, mode: to, rel: to === 'maj' ? 'parallel major' : 'parallel minor' }]);
+      }
+      const name = this.centreName(centres[centres.length - 1]);
+      this.setState({ centres: centres, current: to === 'maj' ? 'I' : 'i', moved: true, trail: this.push(cur.trail, { t: 'home: ' + name, mark: true }) });
+    };
+
+    const last = st.centres.length - 1;
+    const crumbs = st.centres.map((c, i) => {
+      const active = i === last;
+      const name = this.centreName(c);
+      return {
+        label: name, sub: c.rel, sep: i > 0, isHome: i === 0,
+        bg: active ? '#16293D' : '#1B222B', bd: active ? '#6FB1FF' : '#2C3744',
+        fg: '#EEF1F4', subFg: active ? '#8FC3FF' : '#9AA7B4',
+        aria: active ? 'Current home, ' + name : 'Go back to ' + name,
+        tap: () => {
+          const cur = this.s();
+          if (i === cur.centres.length - 1) return;
+          this.setState({ centres: cur.centres.slice(0, i + 1), current: null, moved: false, trail: this.push(cur.trail, { t: 'home: ' + name, mark: true }) });
+        }
+      };
+    });
+
+    const showMoved = !showStay && !!st.moved;
+    const first = this.centreName(st.centres[0]);
+    return {
+      crumbs: crumbs,
+      cols: cols,
+      centreName: this.centreName(centre),
+      isMinor: mode === 'min', isMajor: mode === 'maj',
+      setMinor: flip('min'), setMajor: flip('maj'),
+      minorBg: mode === 'min' ? '#6FB1FF' : 'transparent', minorFg: mode === 'min' ? '#0B1622' : '#9AA7B4',
+      majorBg: mode === 'maj' ? '#6FB1FF' : 'transparent', majorFg: mode === 'maj' ? '#0B1622' : '#9AA7B4',
+      showStay: showStay, showMoved: showMoved, showHint: !showStay && !showMoved,
+      bannerBg: showStay ? '#16293D' : '#1B222B', bannerBd: showStay ? '#6FB1FF' : '#2C3744',
+      stayChord: stayChord, stayFn: stayFn, stayHome: stayHome, stay: stay,
+      movedSub: st.centres.length > 1 ? 'Tap ' + first + ' at the top left to go back.' : 'The dominant did not move: it is the same chord in both modes.',
+      trail: st.trail.map((t) => ({
+        t: t.t,
+        bg: t.mark ? '#16293D' : '#252E3A', bd: t.mark ? '#6FB1FF' : '#252E3A', fg: t.mark ? '#8FC3FF' : '#EEF1F4'
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

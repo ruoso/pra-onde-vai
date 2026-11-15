@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How it went</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; box-sizing: border-box; padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; background: #12161C; color: #EEF1F4; font-family: Inter, system-ui, sans-serif">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 60px">
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <h1 style="margin: 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 26px; line-height: 1">How it went</h1>
+      <div style="font-size: 14px; color: #9AA7B4">Cochichando · A, then B · as written · Predict</div>
+    </div>
+    <div style="display: flex; gap: 10px">
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 108px; height: 60px; border-radius: 14px; background: #1B222B; border: 1px solid #2C3744">
+        <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 24px; color: #6FB1FF; line-height: 1">21</span>
+        <span style="font-size: 12px; color: #C5CED8">✓ right</span>
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 108px; height: 60px; border-radius: 14px; background: #1B222B; border: 1px solid #2C3744">
+        <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 24px; color: #F2B544; line-height: 1">2</span>
+        <span style="font-size: 12px; color: #C5CED8">≈ another way</span>
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 108px; height: 60px; border-radius: 14px; background: #1B222B; border: 1px solid #2C3744">
+        <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 24px; color: #FF8A5B; line-height: 1">2</span>
+        <span style="font-size: 12px; color: #C5CED8">× missed</span>
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 150px; height: 60px; border-radius: 14px; background: #16293D; border: 1px solid #6FB1FF">
+        <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 18px; line-height: 1">Found</span>
+        <span style="font-size: 12px; color: #C5CED8">home moving to F</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 18px; flex: 1 1 0; min-height: 0">
+
+    <div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA7B4">Phrase by phrase · tap one to hear it</div>
+      <sc-for list="{{phrases}}" as="p" hint-placeholder-count="6">
+        <button type="button" onClick="{{p.tap}}" aria-label="{{p.aria}}" style="display: flex; flex-direction: column; gap: 6px; box-sizing: border-box; padding: 10px 14px; border-radius: 14px; border: 1px solid {{p.bd}}; background: #1B222B; color: #EEF1F4; font-family: inherit; text-align: left; cursor: pointer">
+          <span style="display: flex; align-items: center; gap: 10px; width: 100%">
+            <span style="width: 64px; font-size: 13px; font-weight: 600; color: #9AA7B4">{{p.label}}</span>
+            <sc-for list="{{p.bars}}" as="b" hint-placeholder-count="4">
+              <span style="flex: 1 1 0; min-width: 0; display: flex; gap: 8px; padding: 6px 8px; border-radius: 8px; background: #12161C">
+                <sc-for list="{{b}}" as="c" hint-placeholder-count="1">
+                  <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: {{c.weight}}; font-size: 15px; color: {{c.col}}; white-space: nowrap">{{c.text}}<span style="font-family: Inter, sans-serif; font-size: 12px">{{c.glyph}}</span></span>
+                </sc-for>
+              </span>
+            </sc-for>
+          </span>
+          <span style="padding-left: 74px; font-size: 13px; color: {{p.noteCol}}">{{p.note}}</span>
+        </button>
+      </sc-for>
+    </div>
+
+    <div style="width: 380px; display: flex; flex-direction: column; gap: 14px">
+      <div style="box-sizing: border-box; padding: 18px; border-radius: 18px; background: #221E14; border: 1px solid #F2B544; display: flex; flex-direction: column; gap: 8px">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #F2B544">The pattern</div>
+        <div style="font-size: 16px; font-weight: 600; line-height: 1.35">Both misses were a dominant that leads away from home, heard as the plain V.</div>
+        <div style="font-size: 14px; color: #C5CED8; line-height: 1.4">D7 in bar 12 is the V of iv, and A7 in bar 21 the V of vi. Each sounds like a V, but it lands on a chord that is not home: listen to where it goes, not to the chord itself.</div>
+      </div>
+
+      <div style="box-sizing: border-box; padding: 18px; border-radius: 18px; background: #1B222B; border: 1px solid #2C3744; display: flex; flex-direction: column; gap: 12px">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA7B4">Practise next</div>
+        <sc-for list="{{drills}}" as="d" hint-placeholder-count="2">
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 15px; font-weight: 600">{{d.title}}</span>
+            <span style="font-size: 13px; color: #C5CED8; line-height: 1.35">{{d.text}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px">
+        <a href="Practice.dc.html" style="display: flex; align-items: center; justify-content: center; height: 52px; border-radius: 14px; background: #6FB1FF; color: #0B1622; font-weight: 600; font-size: 16px; text-decoration: none">Practise the two misses</a>
+        <div style="display: flex; gap: 10px">
+          <a href="Practice.dc.html" style="flex: 1 1 0; display: flex; align-items: center; justify-content: center; height: 48px; border-radius: 14px; border: 1px solid #2C3744; background: #1B222B; color: #EEF1F4; font-weight: 600; font-size: 15px; text-decoration: none">Again, in any key</a>
+          <a href="Choose.dc.html" style="flex: 1 1 0; display: flex; align-items: center; justify-content: center; height: 48px; border-radius: 14px; border: 1px solid #2C3744; background: #1B222B; color: #EEF1F4; font-weight: 600; font-size: 15px; text-decoration: none">Another tune</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  // One run of Cochichando, A then the start of B: each chord with how it went.
+  // r = right, s = same job, m = missed, p = played for you (not on the board yet), g = given.
+  run() {
+    return [
+      { label: 'A 1–4', bars: [[['Dm', 'g']], [['A7', 'r']], [['%', 'p']], [['Dm', 'r'], ['A7', 'r']]], note: 'All right.' },
+      { label: 'A 5–8', bars: [[['Dm', 'r'], ['Bm7(b5)', 'p']], [['Am', 'p']], [['E7', 's']], [['A7', 'r']]], note: 'E7: you chose G#°, another way — the same job, both lead to A7. Bm7(b5) and Am were played for you.' },
+      { label: 'A 9–12', bars: [[['Dm', 'r']], [['A7', 'r']], [['%', 'p']], [['D7', 'm']]], note: 'Lost at bar 12: D7 is the V of iv; you chose A7, the V.', miss: true },
+      { label: 'A 13–16', bars: [[['Gm', 'r'], ['Em7(b5)', 's']], [['Dm', 'r'], ['Dm/C', 'p']], [['E7/B', 'r'], ['A7', 'r']], [['Dm', 'r'], ['C7', 'r']]], note: 'Em7(b5): you chose Gm, another way — the same job, both prepare the dominant.' },
+      { label: 'B 17–20', bars: [[['F', 'r'], ['D7', 'r']], [['Gm', 'r']], [['C7', 'r']], [['F', 'r']]], note: 'All right, and you moved home to F major as B began.' },
+      { label: 'B 21–24', bars: [[['A7', 'm']], [['Dm', 'r']], [['G7', 'r']], [['C7', 'r']]], note: 'Lost at bar 21: A7 is the V of vi; you chose C7, the V.', miss: true }
+    ];
+  }
+
+  play(syms) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!this.ac) this.ac = new AC();
+      const ac = this.ac;
+      if (ac.state === 'suspended') ac.resume();
+      const L = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+      const shapes = { '': [4, 7, 12], 'm': [3, 7, 12], '7': [4, 7, 10], 'm7(b5)': [3, 6, 10], '°': [3, 6, 9] };
+      const out = ac.createGain();
+      out.gain.value = 0.5;
+      out.connect(ac.destination);
+      let k = 0;
+      let prev = null;
+      syms.forEach((raw) => {
+        const sym = raw === '%' ? prev : raw;
+        prev = sym;
+        const m = /^([A-G])([#b]?)(.*?)(\/.*)?$/.exec(sym || '');
+        if (!m) return;
+        const pc = (L[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? 11 : 0)) % 12;
+        const b = m[3];
+        const suf = b.indexOf('m7(b5)') === 0 ? 'm7(b5)' : b.indexOf('m') === 0 ? 'm' : b.indexOf('°') === 0 ? '°' : b.indexOf('7') >= 0 ? '7' : '';
+        const bass = 40 + ((pc + 8) % 12);
+        const notes = [bass].concat(shapes[suf].map((iv) => { const n = bass + 12 + iv; return n > 74 ? n - 12 : n; }));
+        const t0 = ac.currentTime + 0.02 + k * 0.5;
+        k += 1;
+        notes.forEach((n, i) => {
+          const osc = ac.createOscillator();
+          osc.type = 'triangle';
+          osc.frequency.value = 440 * Math.pow(2, (n - 69) / 12);
+          const g = ac.createGain();
+          const at = t0 + i * 0.02;
+          g.gain.setValueAtTime(0.0001, at);
+          g.gain.exponentialRampToValueAtTime(i === 0 ? 0.5 : 0.25, at + 0.008);
+          g.gain.exponentialRampToValueAtTime(0.0001, at + 1.0);
+          osc.connect(g);
+          g.connect(out);
+          osc.start(at);
+          osc.stop(at + 1.1);
+        });
+      });
+    } catch (e) { /* no sound */ }
+  }
+
+  renderVals() {
+    const look = {
+      r: ['#6FB1FF', '✓', 700], s: ['#F2B544', '≈', 700], m: ['#FF8A5B', '×', 700],
+      p: ['#9AA7B4', '', 500], g: ['#9AA7B4', '', 500]
+    };
+    return {
+      phrases: this.run().map((p) => {
+        const syms = [];
+        const bars = p.bars.map((bar) => bar.map((c) => {
+          syms.push(c[0]);
+          const l = look[c[1]];
+          return { text: c[0], col: l[0], glyph: l[1], weight: l[2] };
+        }));
+        return {
+          label: p.label, bars: bars, note: p.note,
+          noteCol: p.miss ? '#FF8A5B' : '#C5CED8', bd: p.miss ? '#7A3F2B' : '#2C3744',
+          aria: p.label + ': ' + p.note + ' Play this phrase.',
+          tap: () => this.play(syms)
+        };
+      }),
+      drills: [
+        { title: 'Applied dominants, away from home', text: 'Short loops of I → V of iv → iv and I → V of vi → vi, against plain I → V → I, in random keys: 12 questions.' },
+        { title: 'Keep: the move into B', text: 'You heard C7 → F as a new home. Of the 109 minor-key choros in the corpus with a B section, 49 put B in the relative major like this.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

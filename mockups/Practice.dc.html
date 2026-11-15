@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Predict the next chord</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; box-sizing: border-box; padding: 24px 28px; display: flex; flex-direction: column; gap: 14px; background: #12161C; color: #EEF1F4; font-family: Inter, system-ui, sans-serif">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 52px">
+    <div style="display: flex; align-items: center; gap: 14px; min-width: 0">
+      <a href="Choose.dc.html" aria-label="Back to the tunes" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 14px; border: 1px solid #2C3744; background: #1B222B; color: #EEF1F4; text-decoration: none">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 8H3"></path><path d="M7 4L3 8l4 4"></path></svg>
+      </a>
+      <div style="display: flex; flex-direction: column; gap: 5px; min-width: 0">
+        <h1 style="margin: 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 24px; line-height: 1">Cochichando</h1>
+        <div style="font-size: 13px; color: #9AA7B4">A, then B · as written · Predict</div>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 10px">
+      <div style="display: flex; flex-direction: column; justify-content: center; gap: 4px; height: 52px; box-sizing: border-box; padding: 0 16px; border-radius: 14px; border: 2px solid #6FB1FF; background: #16293D">
+        <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8FC3FF">Home</span>
+        <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 17px; line-height: 1; white-space: nowrap">{{homeName}}</span>
+      </div>
+      <div role="img" aria-label="{{scoreAria}}" style="display: flex; align-items: center; gap: 14px; height: 52px; box-sizing: border-box; padding: 0 16px; border-radius: 14px; border: 1px solid #2C3744; background: #1B222B; font-size: 14px; font-weight: 600">
+        <span style="color: #6FB1FF">✓ {{nRight}}</span>
+        <span style="color: #F2B544">≈ {{nAnother}}</span>
+        <span style="color: #FF8A5B">× {{nMiss}}</span>
+      </div>
+      <button type="button" onClick="{{toggleHints}}" aria-pressed="{{hints}}" style="height: 52px; padding: 0 16px; border-radius: 14px; border: 1px solid {{hintsBd}}; background: {{hintsBg}}; color: {{hintsFg}}; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer; white-space: nowrap">Hints {{hintsWord}}</button>
+    </div>
+  </div>
+
+  <div role="list" aria-label="The tune so far" style="display: flex; flex-direction: column; gap: 6px">
+    <sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+      <div role="listitem" style="display: flex; gap: 6px; align-items: stretch">
+        <div style="width: 26px; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 15px; color: #9AA7B4">{{r.label}}</div>
+        <sc-for list="{{r.bars}}" as="b" hint-placeholder-count="8">
+          <div style="flex: 1 1 0; min-width: 0; height: 46px; box-sizing: border-box; padding: 0 8px; border-radius: 10px; border: 1px solid {{b.bd}}; background: {{b.bg}}; display: flex; align-items: center; gap: 8px; overflow: hidden">
+            <span aria-label="{{b.nAria}}" style="font-size: 10px; font-weight: {{b.nWeight}}; color: {{b.nCol}}; width: 14px; flex: 0 0 auto">{{b.n}}</span>
+            <sc-for list="{{b.items}}" as="it" hint-placeholder-count="1">
+              <span aria-label="{{it.aria}}" style="display: flex; align-items: center; gap: 3px; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: {{it.weight}}; font-size: 15px; color: {{it.col}}; white-space: nowrap">{{it.text}}<span style="font-family: Inter, sans-serif; font-size: 12px">{{it.glyph}}</span></span>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{showMove}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 76px; box-sizing: border-box; padding: 12px 18px; border-radius: 16px; background: #16293D; border: 2px solid #6FB1FF">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <div style="font-size: 17px; font-weight: 600">A new section, and it lands on F. Has home moved?</div>
+        <div style="font-size: 14px; color: #C5CED8">You heard C7, the V of III, then F. Is F a visit, or the new home?</div>
+      </div>
+      <div style="display: flex; gap: 10px">
+        <button type="button" onClick="{{moveNo}}" style="height: 52px; padding: 0 18px; border-radius: 12px; border: 1px solid #6FB1FF; background: transparent; color: #EEF1F4; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer; white-space: nowrap">Just visiting F</button>
+        <button type="button" onClick="{{moveYes}}" style="height: 52px; padding: 0 18px; border-radius: 12px; border: 0; background: #6FB1FF; color: #0B1622; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer; white-space: nowrap">Make F major home</button>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{showPrompt}}" hint-placeholder-val="{{true}}">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 76px; box-sizing: border-box; padding: 12px 18px; border-radius: 16px; background: #1B222B; border: 1px solid {{fbBd}}">
+      <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+        <div style="font-size: 17px; font-weight: 600; color: {{fbCol}}">{{fbTitle}}</div>
+        <div style="font-size: 14px; color: #C5CED8">{{fbText}}</div>
+      </div>
+      <div style="display: flex; gap: 10px">
+        <button type="button" onClick="{{again}}" style="height: 52px; padding: 0 16px; border-radius: 12px; border: 1px solid #2C3744; background: #12161C; color: #EEF1F4; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer; white-space: nowrap">Hear it again</button>
+        <button type="button" onClick="{{showMe}}" style="height: 52px; padding: 0 16px; border-radius: 12px; border: 1px solid #2C3744; background: #12161C; color: #EEF1F4; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer; white-space: nowrap">Show me</button>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{showDone}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 76px; box-sizing: border-box; padding: 12px 18px; border-radius: 16px; background: #16293D; border: 2px solid #6FB1FF">
+      <div style="font-size: 17px; font-weight: 600">That is the first half of B. {{nRight}} right, {{nAnother}} another way, {{nMiss}} missed.</div>
+      <a href="Review.dc.html" style="display: flex; align-items: center; height: 52px; padding: 0 20px; border-radius: 12px; background: #6FB1FF; color: #0B1622; font-weight: 600; font-size: 15px; text-decoration: none; white-space: nowrap">See how it went</a>
+    </div>
+  </sc-if>
+
+  <div style="display: flex; gap: 10px; margin-top: auto">
+    <div style="width: 78px; display: flex; flex-direction: column; gap: 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA7B4">
+      <div style="height: 92px; display: flex; align-items: center">Leads in</div>
+      <div style="height: 128px; display: flex; align-items: center">Destination</div>
+      <div style="height: 76px; display: flex; align-items: center">Colour</div>
+    </div>
+    <sc-for list="{{cols}}" as="col" hint-placeholder-count="6">
+      <div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+        <sc-if value="{{col.hasA}}" hint-placeholder-val="{{true}}">
+          <button type="button" onClick="{{col.a.tap}}" aria-label="{{col.a.aria}}" style="position: relative; height: 92px; border-radius: 16px; border: 2px solid {{col.a.bd}}; background: {{col.a.bg}}; color: {{col.a.fg}}; font-family: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 0">
+            <span style="font-size: 13px; font-weight: 500; color: {{col.a.subFg}}">{{col.a.fn}}</span>
+            <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 26px; line-height: 1">{{col.a.name}}</span>
+            <sc-if value="{{col.a.hasTier}}" hint-placeholder-val="{{false}}">
+              <span style="position: absolute; top: 6px; right: 6px; padding: 1px 6px; border-radius: 7px; border: 1px solid #F2B544; color: #F2B544; font-size: 11px; font-weight: 600">{{col.a.tier}}</span>
+            </sc-if>
+          </button>
+        </sc-if>
+        <sc-if value="{{col.noA}}" hint-placeholder-val="{{false}}">
+          <div style="height: 92px; box-sizing: border-box; border-radius: 16px; border: 1px dashed #2C3744"></div>
+        </sc-if>
+        <button type="button" onClick="{{col.t.tap}}" aria-label="{{col.t.aria}}" style="position: relative; height: 128px; border-radius: 20px; border: 2px solid {{col.t.bd}}; background: {{col.t.bg}}; color: {{col.t.fg}}; font-family: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 0">
+          <span style="font-size: 14px; font-weight: 600; color: {{col.t.subFg}}">{{col.t.fn}}</span>
+          <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 38px; line-height: 1">{{col.t.name}}</span>
+          <sc-if value="{{col.isHome}}" hint-placeholder-val="{{false}}">
+            <span style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: {{col.t.subFg}}">Home</span>
+          </sc-if>
+          <sc-if value="{{col.t.hasTier}}" hint-placeholder-val="{{false}}">
+            <span style="position: absolute; top: 8px; right: 8px; padding: 1px 6px; border-radius: 7px; border: 1px solid #F2B544; color: #F2B544; font-size: 11px; font-weight: 600">{{col.t.tier}}</span>
+          </sc-if>
+        </button>
+        <sc-if value="{{col.hasC}}" hint-placeholder-val="{{true}}">
+          <button type="button" onClick="{{col.c.tap}}" aria-label="{{col.c.aria}}" style="position: relative; height: 76px; border-radius: 16px; border: 2px solid {{col.c.bd}}; background: {{col.c.bg}}; color: {{col.c.fg}}; font-family: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0">
+            <span style="font-size: 12px; font-weight: 500; color: {{col.c.subFg}}">{{col.c.fn}}</span>
+            <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 22px; line-height: 1">{{col.c.name}}</span>
+            <sc-if value="{{col.c.hasTier}}" hint-placeholder-val="{{false}}">
+              <span style="position: absolute; top: 5px; right: 5px; padding: 1px 6px; border-radius: 7px; border: 1px solid #F2B544; color: #F2B544; font-size: 11px; font-weight: 600">{{col.c.tier}}</span>
+            </sc-if>
+          </button>
+        </sc-if>
+        <sc-if value="{{col.noC}}" hint-placeholder-val="{{false}}">
+          <div style="height: 76px"></div>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"scene":{"editor":"enum","options":["predict","move"],"default":"predict"},"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  letters() { return ['C', 'D', 'E', 'F', 'G', 'A', 'B']; }
+  naturals() { return [0, 2, 4, 5, 7, 9, 11]; }
+
+  // The same board as the map: [id, function, letter step, semitones, suffix].
+  board(mode) {
+    if (mode === 'maj') return [
+      { t: ['iii', 'iii', 2, 4, 'm'], a: ['V/iii', 'V of iii', 6, 11, '7'], c: null },
+      { t: ['vi', 'vi', 5, 9, 'm'], a: ['V/vi', 'V of vi', 2, 4, '7'], c: null },
+      { t: ['ii', 'ii', 1, 2, 'm'], a: ['V/ii', 'V of ii', 5, 9, '7'], c: ['#I°', '#I°', 0, 1, '°'] },
+      { t: ['V', 'V', 4, 7, '7'], a: ['V/V', 'V of V', 1, 2, '7'], c: ['#IV°', '#IV°', 3, 6, '°'] },
+      { t: ['I', 'I', 0, 0, ''], a: null, home: true, c: ['bII', 'bII', 1, 1, ''] },
+      { t: ['IV', 'IV', 3, 5, ''], a: ['V/IV', 'V of IV', 0, 0, '7'], c: ['iv', 'iv', 3, 5, 'm6'] }
+    ];
+    return [
+      { t: ['III', 'III', 2, 3, ''], a: ['V/III', 'V of III', 6, 10, '7'], c: null },
+      { t: ['VI', 'VI', 5, 8, ''], a: ['V/VI', 'V of VI', 2, 3, '7'], c: ['bVI7', 'bVI7', 5, 8, '7'] },
+      { t: ['iiø', 'iiø', 1, 2, 'm7(b5)'], a: null, c: ['bII', 'bII', 1, 1, ''] },
+      { t: ['V', 'V', 4, 7, '7'], a: ['V/V', 'V of V', 1, 2, '7'], c: ['#IV°', '#IV°', 3, 6, '°'] },
+      { t: ['i', 'i', 0, 0, 'm'], a: null, home: true, c: null },
+      { t: ['iv', 'iv', 3, 5, 'm'], a: ['V/iv', 'V of iv', 0, 0, '7'], c: null }
+    ];
+  }
+
+  // Next-move shares from the DCML corpus (as on the map), for the hints.
+  exits(mode) {
+    if (mode === 'maj') return {
+      'I': [['V', 22], ['V/ii', 13], ['V/vi', 8], ['V/IV', 7], ['vi', 7], ['V/V', 7]],
+      'V': [['I', 75]], 'ii': [['V', 56], ['iv', 8]], 'vi': [['V/V', 27], ['ii', 18]],
+      'iii': [['V/ii', 22], ['V/iii', 15], ['V', 14], ['ii', 12], ['vi', 10]],
+      'IV': [['iv', 27], ['#IV°', 18], ['I', 12]], 'V/ii': [['ii', 62], ['V/V', 26]],
+      'V/V': [['V', 82]], 'V/vi': [['vi', 63], ['V/ii', 15]], 'V/iii': [['iii', 47], ['V/vi', 11]],
+      'V/IV': [['IV', 59], ['iv', 11]], 'iv': [['I', 52], ['V', 19]], '#I°': [['V', 47], ['ii', 40], ['V/ii', 11]],
+      '#IV°': [['I', 78]], 'bII': [['I', 33], ['V', 28]]
+    };
+    return {
+      'i': [['V', 29], ['iv', 15], ['V/V', 13], ['V/iv', 8]], 'V': [['i', 71], ['V/iv', 8]],
+      'iv': [['V', 32], ['iiø', 18], ['i', 17], ['V/III', 10]], 'iiø': [['i', 46], ['V', 43]],
+      'III': [['V', 24]], 'VI': [['V', 29]], 'V/V': [['V', 68], ['iv', 12]], 'V/iv': [['iv', 78]],
+      'V/III': [['III', 72]], 'V/VI': [['VI', 46], ['bVI7', 34], ['V/V', 12]], 'bII': [['V', 42], ['i', 23]],
+      'bVI7': [['V', 63], ['bII', 12]], '#IV°': [['V', 42], ['i', 21], ['III', 16]]
+    };
+  }
+
+  // Chords doing the same job: a dominant, its diminished and its tritone
+  // substitute lead to the same place; ii/IV and iiø/iv prepare the dominant.
+  sameJob(mode) {
+    if (mode === 'maj') return { 'V/ii': ['#I°'], '#I°': ['V/ii'], 'ii': ['IV'], 'IV': ['ii'] };
+    return { 'V/V': ['#IV°', 'bVI7'], '#IV°': ['V/V', 'bVI7'], 'bVI7': ['V/V', '#IV°'], 'iv': ['iiø'], 'iiø': ['iv'] };
+  }
+
+  // Where a phrase arrives: the first chord of bars 4, 8, 12 and 16 of each
+  // section, the first chord of a section, and a change of home. Marked strictly.
+  isArrival(seq, i) {
+    const ev = seq[i];
+    if (!ev || ev.repeat) return false;
+    if (ev.moveTo) return true;
+    const first = seq.findIndex((e) => e.bar === ev.bar && !e.repeat) === i;
+    return first && [4, 8, 12, 16, 17, 20, 24].indexOf(ev.bar) >= 0;
+  }
+
+  // How often the corpus makes a move, in percent (0 when it is not listed).
+  share(mode, from, to) {
+    const hit = (this.exits(mode)[from] || []).find((e) => e[0] === to);
+    return hit ? hit[1] : 0;
+  }
+
+  // The next chord that sounds after index i (skipping % bars), or -1.
+  nextSounding(seq, i) {
+    for (let k = i + 1; k < seq.length; k += 1) if (!seq[k].repeat) return k;
+    return -1;
+  }
+
+  // The board id of the chord heard just before index i, in the key in force.
+  prevId(seq, i, mode) {
+    for (let k = i - 1; k >= 0; k -= 1) {
+      const e = seq[k];
+      if (e.repeat) continue;
+      return e.key === mode ? e.id : null;
+    }
+    return null;
+  }
+
+  // Cochichando (Pixinguinha, João de Barro, Alberto Ribeiro), A then the start of B,
+  // as the Choro Songbook writes it (DCML corpus, CC BY-NC-SA 4.0). id is the
+  // chord's place on the board in the key then in force; null = not on the
+  // board at this level, so it is played, not asked.
+  tune() {
+    const D = 'min', F = 'maj';
+    return [
+      { bar: 1, sym: 'Dm', id: 'i', key: D, given: true },
+      { bar: 2, sym: 'A7', id: 'V', key: D },
+      { bar: 3, sym: '%', repeat: true },
+      { bar: 4, sym: 'Dm', id: 'i', key: D }, { bar: 4, sym: 'A7', id: 'V', key: D },
+      { bar: 5, sym: 'Dm', id: 'i', key: D }, { bar: 5, sym: 'Bm7(b5)', id: null, key: D },
+      { bar: 6, sym: 'Am', id: null, key: D },
+      { bar: 7, sym: 'E7', id: 'V/V', key: D },
+      { bar: 8, sym: 'A7', id: 'V', key: D },
+      { bar: 9, sym: 'Dm', id: 'i', key: D },
+      { bar: 10, sym: 'A7', id: 'V', key: D },
+      { bar: 11, sym: '%', repeat: true },
+      { bar: 12, sym: 'D7', id: 'V/iv', key: D },
+      // Your own chart takes another path here (Gm C7 | F Dm): accepted as another way.
+      { bar: 13, sym: 'Gm', id: 'iv', key: D }, { bar: 13, sym: 'Em7(b5)', id: 'iiø', key: D, alt: [{ id: 'V/III', sym: 'C7' }] },
+      { bar: 14, sym: 'Dm', id: 'i', key: D, alt: [{ id: 'III', sym: 'F' }] }, { bar: 14, sym: 'Dm/C', id: null, key: D, bassOnly: true },
+      { bar: 15, sym: 'E7/B', id: 'V/V', key: D }, { bar: 15, sym: 'A7', id: 'V', key: D },
+      { bar: 16, sym: 'Dm', id: 'i', key: D }, { bar: 16, sym: 'C7', id: 'V/III', key: D },
+      { bar: 17, sym: 'F', id: 'III', key: D, moveTo: true }, { bar: 17, sym: 'D7', id: 'V/ii', key: F },
+      { bar: 18, sym: 'Gm', id: 'ii', key: F },
+      { bar: 19, sym: 'C7', id: 'V', key: F },
+      { bar: 20, sym: 'F', id: 'I', key: F },
+      { bar: 21, sym: 'A7', id: 'V/vi', key: F },
+      { bar: 22, sym: 'Dm', id: 'vi', key: F },
+      { bar: 23, sym: 'G7', id: 'V/V', key: F },
+      { bar: 24, sym: 'C7', id: 'V', key: F }
+    ];
+  }
+
+  asked(ev) { return ev && !ev.repeat && !ev.given && ev.id !== null; }
+  nextAsked(seq, from) {
+    let i = from;
+    while (i < seq.length && !this.asked(seq[i])) i += 1;
+    return i;
+  }
+  indexOfBar(seq, bar, which) {
+    let n = 0;
+    for (let i = 0; i < seq.length; i += 1) {
+      if (seq[i].bar === bar) { if (n === which) return i; n += 1; }
+    }
+    return -1;
+  }
+
+  initial() {
+    const seq = this.tune();
+    const at = (bar, which) => this.indexOfBar(seq, bar, which || 0);
+    const results = {};
+    const mark = (bar, which, kind, picked, reason) => { results[at(bar, which)] = { kind: kind, picked: picked, reason: reason }; };
+    mark(2, 0, 'right'); mark(4, 0, 'right'); mark(4, 1, 'right'); mark(5, 0, 'right');
+    mark(7, 0, 'another', 'G#°', 'job'); mark(8, 0, 'right'); mark(9, 0, 'right'); mark(10, 0, 'right');
+    if ((this.props.scene ?? 'predict') === 'move') {
+      mark(12, 0, 'miss', 'A7'); mark(13, 0, 'right'); mark(13, 1, 'another', 'C7', 'alt'); mark(14, 0, 'another', 'F', 'alt');
+      mark(15, 0, 'right'); mark(15, 1, 'right'); mark(16, 0, 'right'); mark(16, 1, 'right'); mark(17, 0, 'right');
+      return {
+        ready: true, idx: at(17, 0) + 1, results: results, home: 'min', pendingMove: true, hints: true,
+        last: { kind: 'right', title: 'Right: F, the III.', text: 'C7 led there as the V of III.' }
+      };
+    }
+    return {
+      ready: true, idx: at(12, 0), results: results, home: 'min', pendingMove: false, hints: true,
+      last: { kind: 'right', title: 'Right: A7, the V.', text: 'Bar 11 holds it. What comes in bar 12?' }
+    };
+  }
+  s() { return this.state && this.state.ready ? this.state : this.initial(); }
+  put(patch) { this.setState(Object.assign({}, this.s(), patch)); }
+
+  centre(mode) { return mode === 'maj' ? { L: 3, pc: 5, mode: 'maj' } : { L: 1, pc: 2, mode: 'min' }; }
+  spell(c, step, semis) {
+    const L = (c.L + step) % 7;
+    const pc = (c.pc + semis) % 12;
+    const d = ((pc - this.naturals()[L] + 18) % 12) - 6;
+    return { text: this.letters()[L] + (d > 0 ? '#'.repeat(d) : 'b'.repeat(-d)), pc: pc };
+  }
+  defs(mode) {
+    const out = {};
+    this.board(mode).forEach((col) => {
+      [col.a, col.t, col.c].forEach((d) => { if (d) out[d[0]] = d; });
+    });
+    return out;
+  }
+  fnName(mode, id) { const d = this.defs(mode)[id]; return d ? d[1] : id; }
+  nameOf(mode, id) {
+    const d = this.defs(mode)[id];
+    if (!d) return id;
+    return this.spell(this.centre(mode), d[2], d[3]).text + d[4];
+  }
+
+  // Sound: a plucked chord, root in the bass.
+  parseSym(sym) {
+    const m = /^([A-G])([#b]?)(.*?)(\/([A-G][#b]?))?$/.exec(sym);
+    if (!m) return null;
+    const pc = (this.naturals()[this.letters().indexOf(m[1])] + (m[2] === '#' ? 1 : m[2] === 'b' ? 11 : 0)) % 12;
+    const body = m[3];
+    let suffix = '';
+    if (body.indexOf('m7(b5)') === 0) suffix = 'm7(b5)';
+    else if (body.indexOf('m6') === 0) suffix = 'm6';
+    else if (body.indexOf('m') === 0) suffix = 'm';
+    else if (body.indexOf('°') === 0) suffix = '°';
+    else if (body.indexOf('7') >= 0) suffix = '7';
+    return { pc: pc, suffix: suffix };
+  }
+  play(syms) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!this.ac) this.ac = new AC();
+      const ac = this.ac;
+      if (ac.state === 'suspended') ac.resume();
+      const shapes = { '': [4, 7, 12], 'm': [3, 7, 12], '7': [4, 7, 10], 'm6': [3, 7, 9], 'm7(b5)': [3, 6, 10], '°': [3, 6, 9] };
+      const out = ac.createGain();
+      out.gain.value = 0.5;
+      const lp = ac.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 2400;
+      out.connect(lp);
+      lp.connect(ac.destination);
+      syms.forEach((sym, k) => {
+        const ch = this.parseSym(sym);
+        if (!ch) return;
+        const bass = 40 + ((ch.pc + 8) % 12);
+        const notes = [bass].concat((shapes[ch.suffix] || shapes['']).map((iv) => { const n = bass + 12 + iv; return n > 74 ? n - 12 : n; }));
+        const t0 = ac.currentTime + 0.02 + k * 0.62;
+        notes.forEach((n, i) => {
+          const osc = ac.createOscillator();
+          osc.type = 'triangle';
+          osc.frequency.value = 440 * Math.pow(2, (n - 69) / 12);
+          const g = ac.createGain();
+          const at = t0 + i * 0.02;
+          g.gain.setValueAtTime(0.0001, at);
+          g.gain.exponentialRampToValueAtTime(i === 0 ? 0.5 : 0.28, at + 0.008);
+          g.gain.exponentialRampToValueAtTime(0.0001, at + 1.2);
+          osc.connect(g);
+          g.connect(out);
+          osc.start(at);
+          osc.stop(at + 1.3);
+        });
+      });
+    } catch (e) { /* no sound: the frame still works */ }
+  }
+
+  // The chords just before index i, as played (a % repeats the bar before).
+  heardBefore(seq, i, n) {
+    const out = [];
+    for (let k = 0; k < i; k += 1) {
+      const ev = seq[k];
+      if (ev.repeat) { if (out.length) out.push(out[out.length - 1]); } else out.push(ev.sym);
+    }
+    return out.slice(-n);
+  }
+
+  // Mark an answer. The songbook is one good version, not the only one:
+  //   right    — the songbook's function (basses and extensions never count);
+  //   another  — another way of the same move, never at an arrival:
+  //              'alt'  the way another version of the tune (your chart) has it,
+  //              'job'  a chord doing the same job,
+  //              'skip' straight to the chord after, leaving a passing chord out,
+  //              'path' another path: a move choro makes (usual or sometimes) from
+  //                     the chord before, that leads on to the chord after;
+  //   miss     — anything else, and anything but the exact chord at an arrival.
+  mark(st, seq, pickedId) {
+    const mode = st.home;
+    const ev = seq[st.idx];
+    const at = this.isArrival(seq, st.idx);
+    const nIdx = this.nextSounding(seq, st.idx);
+    const nxt = nIdx >= 0 ? seq[nIdx] : null;
+    const nxtId = nxt && nxt.key === ev.key && !ev.moveTo ? nxt.id : null;
+    const prev = this.prevId(seq, st.idx, mode);
+    if (pickedId === ev.id) return { kind: 'right' };
+    if (at) return { kind: 'miss', reason: 'arrival' };
+    if ((ev.alt || []).some((a) => a.id === pickedId)) return { kind: 'another', reason: 'alt' };
+    if ((this.sameJob(mode)[ev.id] || []).indexOf(pickedId) >= 0) return { kind: 'another', reason: 'job' };
+    if (nxtId && pickedId === nxtId && this.asked(nxt)) return { kind: 'another', reason: 'skip', consumes: nIdx };
+    if (prev && nxtId && this.share(mode, prev, pickedId) >= 10 && this.share(mode, pickedId, nxtId) >= 10) {
+      return { kind: 'another', reason: 'path' };
+    }
+    return { kind: 'miss' };
+  }
+
+  answer(pickedId) {
+    const st = this.s();
+    const seq = this.tune();
+    const ev = seq[st.idx];
+    if (!ev || st.pendingMove) return;
+    const mode = st.home;
+    const m = this.mark(st, seq, pickedId);
+    const pickedName = this.nameOf(mode, pickedId);
+    const pickedFn = this.fnName(mode, pickedId);
+    const fn = this.fnName(mode, ev.id);
+    const nIdx = this.nextSounding(seq, st.idx);
+    const nextEv = nIdx >= 0 ? seq[nIdx] : null;
+    let last;
+    if (m.kind === 'right') {
+      last = { kind: 'right', title: 'Right: ' + ev.sym + ', the ' + fn + '.', text: 'Listen to where it goes next.' };
+    } else if (m.reason === 'alt') {
+      last = { kind: 'another', title: 'Another way: ' + pickedName + ', as your own chart has it.', text: 'The songbook has ' + ev.sym + ' (' + fn + ') here; both versions reach the same arrival.' };
+    } else if (m.reason === 'job') {
+      const why = (ev.id === 'iv' || ev.id === 'iiø' || ev.id === 'ii' || ev.id === 'IV')
+        ? 'Both prepare the dominant.'
+        : 'Both lead to ' + (nextEv ? nextEv.sym : 'the next chord') + '.';
+      last = { kind: 'another', title: 'Another way: ' + pickedName + ' does the same job as ' + ev.sym + ' (' + fn + ').', text: why };
+    } else if (m.reason === 'skip') {
+      last = { kind: 'another', title: 'Another way: you went straight to ' + nextEv.sym + '.', text: 'The songbook has ' + ev.sym + ' (' + fn + ') first, on the way there.' };
+    } else if (m.reason === 'path') {
+      last = { kind: 'another', title: 'Another way: ' + pickedName + ' (' + pickedFn + ') also leads on to ' + nextEv.sym + '.', text: 'The songbook has ' + ev.sym + ' (' + fn + '). Both are moves choro makes, into the same place.' };
+    } else if (m.reason === 'arrival') {
+      last = { kind: 'miss', title: 'It was ' + ev.sym + ', the ' + fn + '.', text: 'Bar ' + ev.bar + ' is where the phrase arrives, so only that chord counts. You chose ' + pickedName + ' (' + pickedFn + ').' };
+    } else {
+      last = { kind: 'miss', title: 'It was ' + ev.sym + ', the ' + fn + '.', text: 'You chose ' + pickedName + ' (' + pickedFn + '), which doesn’t lead where this does. Hear it again, then go on.' };
+    }
+    const results = Object.assign({}, st.results);
+    results[st.idx] = { kind: m.kind, picked: m.kind === 'right' ? null : pickedName, reason: m.reason };
+    // Leaving a passing chord out answers the chord after it too.
+    const answered = m.consumes != null ? m.consumes : st.idx;
+    if (m.consumes != null) results[m.consumes] = { kind: 'right', picked: null, reason: 'reached' };
+    const endEv = seq[answered];
+    const next = endEv.moveTo ? answered + 1 : this.nextAsked(seq, answered + 1);
+    // Play the chords as the tune has them, then any it plays for you up to the next question.
+    const played = seq.slice(st.idx, next).filter((e) => !e.repeat).map((e) => e.sym);
+    this.play(played);
+    this.setState(Object.assign({}, st, {
+      results: results, last: last, idx: next, pendingMove: !!endEv.moveTo
+    }));
+  }
+
+  renderVals() {
+    const st = this.s();
+    const seq = this.tune();
+    const mode = st.home;
+    const centre = this.centre(mode);
+    const done = st.idx >= seq.length && !st.pendingMove;
+
+    // The strip: bars 1–24, three rows of eight.
+    const byBar = {};
+    seq.forEach((ev, i) => { (byBar[ev.bar] = byBar[ev.bar] || []).push(i); });
+    const rows = [[1, 'A'], [9, 'A'], [17, 'B']].map((r) => {
+      const bars = [];
+      for (let b = r[0]; b < r[0] + 8; b += 1) {
+        const items = (byBar[b] || []).map((i) => {
+          const ev = seq[i];
+          const res = st.results[i];
+          const pending = i === st.idx && !st.pendingMove && !done;
+          const revealed = i < st.idx;
+          if (ev.repeat) return { text: revealed ? '%' : '·', glyph: '', col: '#6B7785', weight: 500, aria: 'the bar before again' };
+          if (pending) return { text: '?', glyph: '', col: '#F2B544', weight: 700, aria: 'the chord to find' };
+          if (!revealed) return { text: '·', glyph: '', col: '#4A5563', weight: 500, aria: 'still to come' };
+          if (!res) return { text: ev.sym, glyph: '', col: '#9AA7B4', weight: 500, aria: ev.sym + (ev.given ? ', where it starts' : ', played for you') };
+          const look = { right: ['#6FB1FF', '✓', 'right'], another: ['#F2B544', '≈', 'another way'], miss: ['#FF8A5B', '×', 'missed'] }[res.kind];
+          return { text: ev.sym, glyph: look[1], col: look[0], weight: 700, aria: ev.sym + ', ' + look[2] + (res.picked ? ', you chose ' + res.picked : '') };
+        });
+        const current = (byBar[b] || []).indexOf(st.idx) >= 0 && !st.pendingMove && !done;
+        const arrives = (byBar[b] || []).some((i) => this.isArrival(seq, i));
+        bars.push({
+          n: String(b), items: items, bd: current ? '#F2B544' : '#2C3744', bg: current ? '#221E14' : '#1B222B',
+          nCol: arrives ? '#6FB1FF' : '#6B7785', nWeight: arrives ? 700 : 400,
+          nAria: 'bar ' + b + (arrives ? ', where the phrase arrives' : '')
+        });
+      }
+      return { label: r[1], bars: bars };
+    });
+
+    // The board, lit with the corpus's usual next moves from the last chord heard.
+    let lastId = null;
+    for (let k = Math.min(st.idx, seq.length) - 1; k >= 0; k -= 1) {
+      const e = seq[k];
+      if (e.repeat) continue;
+      if (e.key === mode && e.id) { lastId = e.id; }
+      break;
+    }
+    if (st.pendingMove || (seq[st.idx - 1] && seq[st.idx - 1].moveTo && mode === 'maj')) lastId = mode === 'maj' ? 'I' : 'III';
+    const lit = {};
+    if (st.hints && !st.pendingMove && lastId) (this.exits(mode)[lastId] || []).forEach((e) => { lit[e[0]] = e[1]; });
+    const make = (d, isHome) => {
+      if (!d) return null;
+      const id = d[0];
+      const name = this.spell(centre, d[2], d[3]).text + d[4];
+      const isCurrent = id === lastId;
+      const share = !isCurrent && Object.prototype.hasOwnProperty.call(lit, id) ? lit[id] : 0;
+      const tier = share >= 35 ? 'usual' : share >= 10 ? 'sometimes' : share > 0 ? 'rare' : '';
+      let bg = '#1B222B', bd = '#2C3744', fg = '#EEF1F4', subFg = '#9AA7B4';
+      if (isHome) { bd = '#6FB1FF'; subFg = '#8FC3FF'; }
+      if (tier) { bd = tier === 'rare' ? '#8C6D2B' : '#F2B544'; bg = '#221E14'; }
+      if (isCurrent) { bg = '#3A3220'; bd = '#8C6D2B'; }
+      return {
+        fn: d[1], name: name, bg: bg, bd: bd, fg: fg, subFg: subFg, tier: tier, hasTier: tier !== '',
+        aria: name + ', ' + d[1] + (tier ? ', a ' + tier + ' next move' : ''),
+        tap: () => this.answer(id)
+      };
+    };
+    const cols = this.board(mode).map((d) => {
+      const a = make(d.a, false);
+      const c = make(d.c, false);
+      return { t: make(d.t, !!d.home), a: a, c: c, isHome: !!d.home, hasA: !!a, noA: !a, hasC: !!c, noC: !c };
+    });
+
+    const counts = { right: 0, another: 0, miss: 0 };
+    Object.keys(st.results).forEach((k) => { counts[st.results[k].kind] += 1; });
+    const look = { right: '#6FB1FF', another: '#F2B544', miss: '#FF8A5B' };
+    const ev = seq[st.idx];
+    const lastHeard = this.heardBefore(seq, st.idx, 1)[0];
+    const ask = ev && !st.pendingMove ? ' Bar ' + ev.bar + ': after ' + lastHeard + ', what comes next?' : '';
+
+    return {
+      homeName: mode === 'maj' ? 'F major' : 'D minor',
+      nRight: String(counts.right), nAnother: String(counts.another), nMiss: String(counts.miss),
+      scoreAria: counts.right + ' right, ' + counts.another + ' another way, ' + counts.miss + ' missed',
+      hints: !!st.hints, hintsWord: st.hints ? 'on' : 'off',
+      hintsBg: st.hints ? '#221E14' : '#1B222B', hintsBd: st.hints ? '#F2B544' : '#2C3744', hintsFg: st.hints ? '#F2B544' : '#9AA7B4',
+      toggleHints: () => this.put({ hints: !this.s().hints }),
+      rows: rows,
+      cols: cols,
+      showMove: !!st.pendingMove,
+      showPrompt: !st.pendingMove && !done,
+      showDone: done,
+      fbTitle: st.last ? st.last.title : 'What comes next?',
+      fbText: (st.last ? st.last.text : '') + ask,
+      fbCol: st.last ? look[st.last.kind] : '#EEF1F4',
+      fbBd: st.last ? look[st.last.kind] : '#2C3744',
+      again: () => { const cur = this.s(); this.play(this.heardBefore(seq, cur.idx, 4)); },
+      showMe: () => {
+        const cur = this.s();
+        const e = seq[cur.idx];
+        if (!e || cur.pendingMove) return;
+        const results = Object.assign({}, cur.results);
+        results[cur.idx] = { kind: 'miss', picked: null };
+        this.play([e.sym]);
+        this.setState(Object.assign({}, cur, {
+          results: results,
+          last: { kind: 'miss', title: 'It was ' + e.sym + ', the ' + this.fnName(cur.home, e.id) + '.', text: 'Shown, and counted as a miss.' },
+          idx: e.moveTo ? cur.idx + 1 : this.nextAsked(seq, cur.idx + 1),
+          pendingMove: !!e.moveTo
+        }));
+      },
+      moveYes: () => {
+        const cur = this.s();
+        const results = Object.assign({}, cur.results);
+        this.play(['F', 'D7']);
+        this.setState(Object.assign({}, cur, {
+          home: 'maj', pendingMove: false, results: results, idx: this.nextAsked(seq, cur.idx),
+          last: { kind: 'right', title: 'Right: home is F major now.', text: 'B is in the relative major. Same board, new names: the D7 you hear is the V of ii.' }
+        }));
+      },
+      moveNo: () => {
+        const cur = this.s();
+        this.setState(Object.assign({}, cur, {
+          home: 'maj', pendingMove: false, idx: this.nextAsked(seq, cur.idx),
+          last: { kind: 'miss', title: 'Home did move: B is in F major.', text: 'The new section settles on F, and its cadences end there. The board is re-centred on F.' }
+        }));
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

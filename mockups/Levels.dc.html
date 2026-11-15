@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Your levels</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; box-sizing: border-box; padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; background: #12161C; color: #EEF1F4; font-family: Inter, system-ui, sans-serif">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 56px">
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <h1 style="margin: 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 28px; line-height: 1">Your levels</h1>
+      <div style="font-size: 14px; color: #9AA7B4">Each level adds the chords the 295 choros use most after the ones you know. The map shows only your level’s chords.</div>
+    </div>
+    <div role="group" aria-label="Major or minor" style="display: flex; padding: 4px; gap: 4px; border-radius: 14px; background: #1B222B; border: 1px solid #2C3744">
+      <sc-for list="{{modes}}" as="m" hint-placeholder-count="2">
+        <button type="button" onClick="{{m.tap}}" aria-pressed="{{m.on}}" style="height: 44px; padding: 0 18px; border-radius: 10px; border: 0; background: {{m.bg}}; color: {{m.fg}}; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer">{{m.label}}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 18px; flex: 1 1 0; min-height: 0">
+
+    <div role="group" aria-label="Levels" style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+      <sc-for list="{{levels}}" as="l" hint-placeholder-count="7">
+        <button type="button" onClick="{{l.tap}}" aria-pressed="{{l.on}}" aria-label="{{l.aria}}" style="display: grid; grid-template-columns: 44px minmax(0, 1fr) 112px; gap: 14px; align-items: center; height: 76px; box-sizing: border-box; padding: 0 16px; border-radius: 16px; border: 2px solid {{l.bd}}; background: {{l.bg}}; color: #EEF1F4; font-family: inherit; text-align: left; cursor: pointer; opacity: {{l.opacity}}">
+          <span style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 20px; background: {{l.dotBg}}; color: {{l.dotFg}}; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 17px">{{l.dot}}</span>
+          <span style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+            <span style="font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{l.name}}</span>
+            <span style="display: flex; gap: 6px; flex-wrap: nowrap; overflow: hidden">
+              <sc-for list="{{l.chips}}" as="c" hint-placeholder-count="3">
+                <span style="padding: 2px 8px; border-radius: 8px; border: 1px solid {{c.bd}}; color: {{c.fg}}; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 13px; white-space: nowrap">{{c.text}}</span>
+              </sc-for>
+            </span>
+          </span>
+          <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
+            <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 18px">{{l.tunes}}</span>
+            <span style="font-size: 11px; color: #9AA7B4; text-align: right">tunes to play whole</span>
+          </span>
+        </button>
+      </sc-for>
+    </div>
+
+    <div style="width: 420px; display: flex; flex-direction: column; gap: 14px">
+      <div style="box-sizing: border-box; padding: 18px; border-radius: 18px; background: #1B222B; border: 1px solid #2C3744; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px">
+          <div style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 20px">{{cur.title}}</div>
+          <div style="font-size: 13px; color: #9AA7B4; white-space: nowrap">{{cur.cover}}</div>
+        </div>
+        <div style="font-size: 14px; color: #C5CED8; line-height: 1.4">{{cur.blurb}}</div>
+        <sc-for list="{{cur.mastery}}" as="k" hint-placeholder-count="4">
+          <div style="display: grid; grid-template-columns: 72px minmax(0, 1fr) 92px; gap: 10px; align-items: center">
+            <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 15px">{{k.fn}}</span>
+            <span style="position: relative; height: 8px; border-radius: 4px; background: #2C3744; overflow: hidden">
+              <span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{k.w}}; background: {{k.col}}"></span>
+            </span>
+            <span style="font-size: 13px; color: #C5CED8; text-align: right; white-space: nowrap">{{k.text}}</span>
+          </div>
+        </sc-for>
+        <div style="font-size: 13px; color: #9AA7B4; line-height: 1.4">Next level when each chord is right, or another way of the same move, 17 of its last 20 times, in at least 3 keys. One question in five is from an earlier level.</div>
+      </div>
+
+      <div style="box-sizing: border-box; padding: 18px; border-radius: 18px; background: #1B222B; border: 1px solid #2C3744; display: flex; flex-direction: column; gap: 10px">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA7B4">Practise this level</div>
+        <sc-for list="{{cur.ways}}" as="w" hint-placeholder-count="3">
+          <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px">
+            <span style="font-size: 14px; font-weight: 600">{{w.name}}</span>
+            <span style="font-size: 13px; color: #C5CED8; line-height: 1.35">{{w.text}}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <a href="Practice.dc.html" style="margin-top: auto; display: flex; align-items: center; justify-content: center; height: 56px; border-radius: 14px; background: #6FB1FF; color: #0B1622; font-weight: 600; font-size: 17px; text-decoration: none">{{cur.go}}</a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  // Measured in the DCML corpus: each level's chords are the most used after the
+  // ones before. cover = share of all chord changes in that mode the board then
+  // covers; tunes = how many of the 295 have at least 80% of their changes on it.
+  levels() {
+    return [
+      { name: 'Home and its dominant', maj: ['I', 'V'], min: ['i', 'V'], cover: [41, 46], tunes: 2, keyMove: null,
+        blurb: 'Where the music rests, and the chord that pulls it home: 4 in 10 chords in choro.' },
+      { name: 'The subdominant side', maj: ['IV', 'ii', 'iv'], min: ['iv', 'iiø'], cover: [57, 62], tunes: 20, keyMove: null,
+        blurb: 'The chords that prepare the dominant. Two that do the same job count as the same move.' },
+      { name: 'The V of V', maj: ['V/V'], min: ['V/V'], cover: [62, 67], tunes: 36, keyMove: 'relative',
+        blurb: 'The first chord from outside the key: a dominant that points at the dominant. From here, A then B: the move to the relative key.' },
+      { name: 'Going to ii, and to iv', maj: ['V/ii', 'vi'], min: ['V/iv'], cover: [73, 73], tunes: 111, keyMove: null,
+        blurb: 'Dominants that lead away from home: they sound like a V, but land somewhere else.' },
+      { name: 'The other secondary dominants', maj: ['V/vi', 'V/IV', 'V/iii', 'iii'], min: ['V/III', 'III', 'V/VI', 'VI'], cover: [84, 81], tunes: 199, keyMove: 'parallel',
+        blurb: 'Every destination now has its dominant. Sections may also move to the parallel key or the subdominant.' },
+      { name: 'Diminished and borrowed colour', maj: ['#IV°', '#I°', 'bII'], min: ['#IV°', 'bII', 'bVI7'], cover: [86, 86], tunes: 225, keyMove: null,
+        blurb: 'Passing diminished chords and chords borrowed from the other mode.' },
+      { name: 'The ii before a secondary dominant', maj: ['ii of IV', '#II°', 'bVII7', 'IV7'], min: ['iiø of V', 'ii of III', 'IV7', 'bII7'], cover: [91, 92], tunes: 261, keyMove: null,
+        blurb: 'Not new chords so much as a new idea: any secondary dominant can bring its own ii.' }
+    ];
+  }
+
+  s() { return this.state && this.state.ready ? this.state : { ready: true, mode: 'min', sel: 2 }; }
+  put(p) { this.setState(Object.assign({}, this.s(), p)); }
+
+  renderVals() {
+    const st = this.s();
+    const all = this.levels();
+    const current = 2; // the learner is on level 3
+    const mi = st.mode === 'maj' ? 0 : 1;
+    const levels = all.map((l, i) => {
+      const done = i < current, now = i === current, on = i === st.sel;
+      const fns = st.mode === 'maj' ? l.maj : l.min;
+      return {
+        name: 'Level ' + (i + 1) + ' · ' + l.name, on: on,
+        dot: done ? '✓' : String(i + 1),
+        dotBg: done ? '#16293D' : now ? '#F2B544' : '#252E3A',
+        dotFg: done ? '#6FB1FF' : now ? '#12161C' : '#9AA7B4',
+        bd: on ? '#6FB1FF' : now ? '#F2B544' : '#2C3744',
+        bg: on ? '#16293D' : '#1B222B',
+        opacity: i > current + 1 ? '0.75' : '1',
+        tunes: String(l.tunes),
+        chips: fns.map((f) => ({ text: f, bd: done ? '#2C5A8A' : now ? '#8C6D2B' : '#2C3744', fg: done ? '#8FC3FF' : now ? '#F2B544' : '#9AA7B4' }))
+          .concat(l.keyMove ? [{ text: l.keyMove === 'relative' ? '→ relative key' : '→ parallel, IV', bd: '#2C3744', fg: '#C5CED8' }] : []),
+        aria: 'Level ' + (i + 1) + ', ' + l.name + (done ? ', done' : now ? ', current' : ', locked') + ', ' + l.tunes + ' tunes to play whole',
+        tap: () => this.put({ sel: i })
+      };
+    });
+
+    const l = all[st.sel];
+    const done = st.sel < current, now = st.sel === current;
+    const fnsSoFar = [];
+    for (let i = 0; i <= st.sel; i += 1) (st.mode === 'maj' ? all[i].maj : all[i].min).forEach((f) => fnsSoFar.push([f, i]));
+    // A learner on level 3: earlier chords mastered, this level's on its way.
+    const sample = { 0: [19, 20], 1: [18, 20], 2: [11, 20] };
+    const mastery = fnsSoFar.slice(-5).map((f) => {
+      let got;
+      if (st.sel < current || f[1] < current) got = sample[f[1]] || [19, 20];
+      else if (now) got = sample[2];
+      else got = [0, 0];
+      const w = got[1] ? Math.round(100 * got[0] / got[1]) : 0;
+      return {
+        fn: f[0], w: w + '%',
+        col: got[0] >= 17 ? '#6FB1FF' : '#F2B544',
+        text: got[1] ? got[0] + ' of last ' + got[1] : 'not met yet'
+      };
+    });
+    const playable = l.tunes;
+    return {
+      modes: [['min', 'Minor'], ['maj', 'Major']].map((m) => {
+        const on = st.mode === m[0];
+        return { label: m[1], on: on, bg: on ? '#6FB1FF' : 'transparent', fg: on ? '#0B1622' : '#9AA7B4', tap: () => this.put({ mode: m[0] }) };
+      }),
+      levels: levels,
+      cur: {
+        title: 'Level ' + (st.sel + 1) + ' · ' + l.name,
+        cover: l.cover[mi] + '% of chords',
+        blurb: l.blurb,
+        mastery: mastery,
+        ways: [
+          { name: 'Meet it', text: 'Hear the new chord in three corpus tunes where it is easy to hear, in context.' },
+          { name: 'Drills', text: 'Short progressions built from the corpus’s usual moves, using only your chords, in any key. Chords you don’t have yet are answered with “Something else”.' },
+          { name: 'Tunes', text: playable + ' choros have at least 80% of their chord changes on this board; the rest are played for you.' }
+        ],
+        go: done ? 'Review this level' : now ? 'Continue level ' + (st.sel + 1) : 'Locked: finish level ' + (current + 1) + ' first'
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

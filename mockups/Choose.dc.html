@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Choose a tune to practise</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1180px; height: 820px; box-sizing: border-box; padding: 28px; display: flex; flex-direction: column; gap: 18px; background: #12161C; color: #EEF1F4; font-family: Inter, system-ui, sans-serif">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 56px">
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <h1 style="margin: 0; font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 28px; line-height: 1">Practise with a tune</h1>
+      <div style="font-size: 14px; color: #9AA7B4">The app plays its harmony; you find each chord on the map. 295 choros from the Choro Songbook.</div>
+    </div>
+    <div role="group" aria-label="Which tunes" style="display: flex; padding: 4px; gap: 4px; border-radius: 14px; background: #1B222B; border: 1px solid #2C3744">
+      <sc-for list="{{modes}}" as="m" hint-placeholder-count="3">
+        <button type="button" onClick="{{m.tap}}" aria-pressed="{{m.on}}" style="height: 44px; padding: 0 18px; border-radius: 10px; border: 0; background: {{m.bg}}; color: {{m.fg}}; font-family: inherit; font-weight: 600; font-size: 15px; cursor: pointer">{{m.label}}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 18px; flex: 1 1 0; min-height: 0">
+
+    <div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; border-radius: 20px; background: #1B222B; border: 1px solid #2C3744; overflow: hidden">
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) 64px 132px 150px 64px; gap: 12px; align-items: center; height: 44px; padding: 0 20px; border-bottom: 1px solid #2C3744; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA7B4">
+        <span>Tune</span><span>Key</span><span>Style</span><span>On your board</span><span>Keys</span>
+      </div>
+      <sc-for list="{{tunes}}" as="u" hint-placeholder-count="8">
+        <button type="button" onClick="{{u.tap}}" aria-pressed="{{u.on}}" style="display: grid; grid-template-columns: minmax(0, 1fr) 64px 132px 150px 64px; gap: 12px; align-items: center; height: 64px; padding: 0 18px; border: 0; border-left: 4px solid {{u.edge}}; border-bottom: 1px solid #252E3A; background: {{u.bg}}; color: #EEF1F4; font-family: inherit; text-align: left; cursor: pointer">
+          <span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+            <span style="font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{u.title}}</span>
+            <span style="font-size: 13px; color: #9AA7B4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{u.composer}}</span>
+          </span>
+          <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 18px">{{u.key}}</span>
+          <span style="font-size: 14px; color: #C5CED8">{{u.genre}}</span>
+          <span style="display: flex; align-items: center; gap: 8px">
+            <span style="position: relative; flex: 1 1 0; height: 8px; border-radius: 4px; background: #2C3744; overflow: hidden">
+              <span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{u.fitW}}; background: #6FB1FF"></span>
+            </span>
+            <span style="width: 40px; font-size: 14px; font-weight: 600; text-align: right">{{u.fit}}</span>
+          </span>
+          <span style="font-size: 15px; font-weight: 600; text-align: center">{{u.keys}}</span>
+        </button>
+      </sc-for>
+      <div style="margin-top: auto; padding: 14px 20px; font-size: 13px; color: #9AA7B4; border-top: 1px solid #2C3744">On your board: how many of the tune’s chord changes are on the map at your level. Chords that are not are played for you, never asked.</div>
+    </div>
+
+    <div style="width: 380px; box-sizing: border-box; padding: 22px; border-radius: 20px; background: #1B222B; border: 1px solid #2C3744; display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9AA7B4">Selected</div>
+        <div style="font-family: 'Space Grotesk', Inter, sans-serif; font-weight: 700; font-size: 26px; line-height: 1.1">{{sel.title}}</div>
+        <div style="font-size: 14px; color: #C5CED8">{{sel.composer}} · {{sel.form}}</div>
+      </div>
+
+      <sc-for list="{{settings}}" as="s" hint-placeholder-count="3">
+        <div role="group" aria-label="{{s.label}}" style="display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 13px; font-weight: 600; color: #C5CED8">{{s.label}}</span>
+          <div style="display: flex; padding: 4px; gap: 4px; border-radius: 14px; background: #12161C; border: 1px solid #2C3744">
+            <sc-for list="{{s.options}}" as="o" hint-placeholder-count="3">
+              <button type="button" onClick="{{o.tap}}" aria-pressed="{{o.on}}" style="flex: 1 1 0; height: 44px; padding: 0 8px; border-radius: 10px; border: 0; background: {{o.bg}}; color: {{o.fg}}; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer">{{o.label}}</button>
+            </sc-for>
+          </div>
+          <span style="font-size: 13px; color: #9AA7B4; line-height: 1.35">{{s.note}}</span>
+        </div>
+      </sc-for>
+
+      <a href="Practice.dc.html" style="margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 10px; height: 56px; border-radius: 14px; background: #6FB1FF; color: #0B1622; font-weight: 600; font-size: 17px; text-decoration: none">
+        Start
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h11"></path><path d="M9 4l4 4-4 4"></path></svg>
+      </a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":820}}'>
+class Component extends DCLogic {
+  // Measured in the DCML Choro Songbooks Corpus: share of each tune's chord
+  // changes on the map's board, and how many keys the tune visits.
+  tunes() {
+    return [
+      { id: 'cochichando', title: 'Cochichando', composer: 'Pixinguinha, João de Barro, Alberto Ribeiro', key: 'Dm', mode: 'min', genre: 'Choro', fit: 93, keys: 3, form: 'A B A C A' },
+      { id: 'naquele', title: 'Naquele Tempo', composer: 'Pixinguinha', key: 'Dm', mode: 'min', genre: 'Choro-serenata', fit: 99, keys: 3, form: 'A B A C A' },
+      { id: 'tico', title: 'Tico-tico no fubá', composer: 'Zequinha de Abreu', key: 'Am', mode: 'min', genre: 'Choro', fit: 98, keys: 3, form: 'A B A C A' },
+      { id: 'umazero', title: 'Um a zero', composer: 'Pixinguinha, Benedito Lacerda', key: 'C', mode: 'maj', genre: 'Choro', fit: 97, keys: 3, form: 'A B A C A' },
+      { id: 'atraente', title: 'Atraente', composer: 'Chiquinha Gonzaga', key: 'F', mode: 'maj', genre: 'Polca', fit: 96, keys: 3, form: 'Intro A B A C A' },
+      { id: 'proezas', title: 'Proezas de Solon', composer: 'Pixinguinha, Benedito Lacerda', key: 'F', mode: 'maj', genre: 'Choro', fit: 95, keys: 3, form: 'A B A C A' },
+      { id: 'brasileirinho', title: 'Brasileirinho', composer: 'Waldir Azevedo', key: 'G', mode: 'maj', genre: 'Choro sambado', fit: 93, keys: 2, form: 'A B A C A' },
+      { id: 'odeon', title: 'Odeon', composer: 'Ernesto Nazareth', key: 'Dm', mode: 'min', genre: 'Choro', fit: 88, keys: 2, form: 'A B A C A' },
+      { id: 'carinhoso', title: 'Carinhoso', composer: 'Pixinguinha, João de Barro', key: 'F', mode: 'maj', genre: 'Choro', fit: 82, keys: 2, form: 'Intro A B A' }
+    ];
+  }
+
+  s() {
+    return this.state && this.state.ready ? this.state
+      : { ready: true, filter: 'min', sel: 'cochichando', sections: 'ab', key: 'original', play: 'predict' };
+  }
+  put(patch) { this.setState(Object.assign({}, this.s(), patch)); }
+
+  seg(current, value, label, field) {
+    const on = current === value;
+    return {
+      label: label, on: on,
+      bg: on ? '#2C3744' : 'transparent', fg: on ? '#EEF1F4' : '#9AA7B4',
+      tap: () => { const p = {}; p[field] = value; this.put(p); }
+    };
+  }
+
+  renderVals() {
+    const st = this.s();
+    const all = this.tunes();
+    const shown = all.filter((u) => st.filter === 'any' || u.mode === st.filter);
+    const sel = all.find((u) => u.id === st.sel) || shown[0] || all[0];
+    const mf = [['any', 'All'], ['min', 'Minor'], ['maj', 'Major']];
+    return {
+      modes: mf.map((m) => {
+        const on = st.filter === m[0];
+        return { label: m[1], on: on, bg: on ? '#6FB1FF' : 'transparent', fg: on ? '#0B1622' : '#9AA7B4', tap: () => this.put({ filter: m[0] }) };
+      }),
+      tunes: shown.map((u) => {
+        const on = u.id === sel.id;
+        return {
+          title: u.title, composer: u.composer, key: u.key, genre: u.genre,
+          fit: u.fit + '%', fitW: u.fit + '%', keys: String(u.keys), on: on,
+          bg: on ? '#16293D' : 'transparent', edge: on ? '#6FB1FF' : 'transparent',
+          tap: () => this.put({ sel: u.id })
+        };
+      }),
+      sel: sel,
+      settings: [
+        {
+          label: 'Sections',
+          options: [this.seg(st.sections, 'a', 'A only', 'sections'), this.seg(st.sections, 'ab', 'A, then B', 'sections'), this.seg(st.sections, 'all', 'Whole tune', 'sections')],
+          note: st.sections === 'a' ? 'Stays in one key.' : 'Goes from home to the next section’s key: you decide when home has moved.'
+        },
+        {
+          label: 'Key',
+          options: [this.seg(st.key, 'original', 'As written (' + sel.key + ')', 'key'), this.seg(st.key, 'random', 'Any key', 'key')],
+          note: st.key === 'random' ? 'A new key each time, so you learn the moves, not the chord names.' : 'The key the songbook writes it in.'
+        },
+        {
+          label: 'How you play',
+          options: [this.seg(st.play, 'predict', 'Predict', 'play'), this.seg(st.play, 'follow', 'Follow', 'play')],
+          note: st.play === 'predict' ? 'It stops before each change and waits for you: no clock.' : 'It keeps playing; tap each chord as it sounds.'
+        }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

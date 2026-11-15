@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choro harmony mockups</title>
+<style>
+:root { --bg: #0E1116; --surface: #1B222B; --border: #2C3744; --text: #EEF1F4; --muted: #9AA7B4; --accent: #6FB1FF; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 Inter, system-ui, sans-serif; }
+main { max-width: 1500px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { margin: 0 0 8px; font-size: 32px; }
+.lede { margin: 0 0 32px; color: var(--muted); max-width: 70ch; }
+h2 { margin: 40px 0 16px; font-size: 22px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 20px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+.card h3 { margin: 0 0 12px; font-size: 16px; }
+.preview { position: relative; width: 100%; aspect-ratio: 1180 / 820; overflow: hidden; border-radius: 12px; background: #12161C; }
+.preview iframe { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; }
+.open { margin: 10px 0 0; }
+.open a { color: var(--accent); }
+.note { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+code { background: var(--surface); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Choro harmony: mockups</h1>
+  <p class="lede">Each frame is a live page: tap the chords, play the practice. Opened from the file system they work as they are; the design is described in <code>docs/design.md</code>. Sound needs a tap first (browsers start audio only after one).</p>
+    <section>
+      <h2>Choro harmony map</h2>
+      <div class="grid">
+      <article class="card">
+        <h3>0 · What am I hearing? (find home, then name chords)</h3>
+        <div class="preview" data-w="1180" data-h="820"><iframe src="Listen.dc.html" title="0 · What am I hearing? (find home, then name chords)" loading="lazy"></iframe></div>
+        <p class="open"><a href="Listen.dc.html">Open full size</a></p>
+        <p class="note">One screen for a tune you have no chart for. Enter notes; the app fills in whatever is still unknown. With no home yet it ranks home keys: tap one to hear the cadence into it, then &#x27;Make ... home&#x27;. With a home it ranks the chords on the map, weighted by how sections open (&#x27;Coming from: Nothing&#x27;) or by what follows the home chord. The rankings are real and recompute as you edit. Hum is simulated (no microphone here): it enters an example phrase.</p>
+      </article>
+      <article class="card">
+        <h3>1 · Leaving home (playable)</h3>
+        <div class="preview" data-w="1180" data-h="820"><iframe src="Main.dc.html" title="1 · Leaving home (playable)" loading="lazy"></iframe></div>
+        <p class="open"><a href="Main.dc.html">Open full size</a></p>
+        <p class="note">Seven levels, each adding the functions the corpus uses most after the ones before. Coverage of all chord changes rises 41/46% (major/minor) at level 1 to 91/92% at level 7; tunes with at least 80% of their changes on the board, 2 at level 1 to 261 at level 7. Below level 4 whole tunes are mostly &#x27;played for you&#x27;, so early levels practise on drills built from the corpus&#x27;s usual moves. Key moves join at level 3 (relative key) and 5 (parallel, subdominant). The learner here is on level 3; the mastery numbers are an example.</p>
+      </article>
+      <article class="card">
+        <h3>2 · Visiting, or moving in?</h3>
+        <div class="preview" data-w="1180" data-h="820"><iframe src="Main.dc.html?scene=arrived" title="2 · Visiting, or moving in?" loading="lazy"></iframe></div>
+        <p class="open"><a href="Main.dc.html?scene=arrived">Open full size</a></p>
+        <p class="note">The reference is one good version, not the only one. Comparing your 9 charts with the corpus&#x27;s versions of the same tunes: of 202 places they differ, 47% are the same chord with another bass or extension, 29% a passing chord added or left out, 9% a related chord sharing two notes, 5% the same root made into a secondary dominant; only about 5% are genuinely different harmony. So phrase arrivals are marked strictly, and the way between them leniently.</p>
+      </article>
+      <article class="card">
+        <h3>3 · New home</h3>
+        <div class="preview" data-w="1180" data-h="820"><iframe src="Main.dc.html?scene=moved" title="3 · New home" loading="lazy"></iframe></div>
+        <p class="open"><a href="Main.dc.html?scene=moved">Open full size</a></p>
+        <p class="note">When the tune changes key, the app asks before going on: is F a visit, or the new home? &#x27;Make F major home&#x27; re-centres the board, as on the map; B continues in F, where the D7 you hear is now the V of ii.</p>
+      </article>
+      </div>
+    </section>
+    <section>
+      <h2>Checked practice</h2>
+      <div class="grid">
+      <article class="card">
+        <h3>P1 · Pick a tune</h3>
+        <div class="preview" data-w="1180" data-h="820"><iframe src="Choose.dc.html" title="P1 · Pick a tune" loading="lazy"></iframe></div>
+        <p class="open"><a href="Choose.dc.html">Open full size</a></p>
+        <p class="note">Seven levels, each adding the functions the corpus uses most after the ones before. Coverage of all chord changes rises 41/46% (major/minor) at level 1 to 91/92% at level 7; tunes with at least 80% of their changes on the board, 2 at level 1 to 261 at level 7. Below level 4 whole tunes are mostly &#x27;played for you&#x27;, so early levels practise on drills built from the corpus&#x27;s usual moves. Key moves join at level 3 (relative key) and 5 (parallel, subdominant). The learner here is on level 3; the mastery numbers are an example.</p>
+      </article>
+      <article class="card">
+        <h3>P2 · Predict the next chord (playable)</h3>
+        <div class="preview" data-w="1180" data-h="820"><iframe src="Practice.dc.html" title="P2 · Predict the next chord (playable)" loading="lazy"></iframe></div>
+        <p class="open"><a href="Practice.dc.html">Open full size</a></p>
+        <p class="note">The reference is one good version, not the only one. Comparing your 9 charts with the corpus&#x27;s versions of the same tunes: of 202 places they differ, 47% are the same chord with another bass or extension, 29% a passing chord added or left out, 9% a related chord sharing two notes, 5% the same root made into a secondary dominant; only about 5% are genuinely different harmony. So phrase arrivals are marked strictly, and the way between them leniently.</p>
+      </article>
+      <article class="card">
+        <h3>P3 · Has home moved?</h3>
+        <div class="preview" data-w="1180" data-h="820"><iframe src="Practice.dc.html?scene=move" title="P3 · Has home moved?" loading="lazy"></iframe></div>
+        <p class="open"><a href="Practice.dc.html?scene=move">Open full size</a></p>
+        <p class="note">When the tune changes key, the app asks before going on: is F a visit, or the new home? &#x27;Make F major home&#x27; re-centres the board, as on the map; B continues in F, where the D7 you hear is now the V of ii.</p>
+      </article>
+      <article class="card">
+        <h3>P4 · How it went</h3>
+        <div class="preview" data-w="1180" data-h="820"><iframe src="Review.dc.html" title="P4 · How it went" loading="lazy"></iframe></div>
+        <p class="open"><a href="Review.dc.html">Open full size</a></p>
+        <p class="note">After the run: each phrase with what you got, tap to hear it again. It names the pattern in the misses (here, applied dominants heard as the plain V) and turns it into a short drill in random keys. The numbers are an example run, not computed.</p>
+      </article>
+      </div>
+    </section>
+    <section>
+      <h2>Levels, and how answers are marked</h2>
+      <div class="grid">
+      <article class="card">
+        <h3>L1 · Levels</h3>
+        <div class="preview" data-w="1180" data-h="820"><iframe src="Levels.dc.html" title="L1 · Levels" loading="lazy"></iframe></div>
+        <p class="open"><a href="Levels.dc.html">Open full size</a></p>
+        <p class="note">Seven levels, each adding the functions the corpus uses most after the ones before. Coverage of all chord changes rises 41/46% (major/minor) at level 1 to 91/92% at level 7; tunes with at least 80% of their changes on the board, 2 at level 1 to 261 at level 7. Below level 4 whole tunes are mostly &#x27;played for you&#x27;, so early levels practise on drills built from the corpus&#x27;s usual moves. Key moves join at level 3 (relative key) and 5 (parallel, subdominant). The learner here is on level 3; the mastery numbers are an example.</p>
+      </article>
+      <article class="card">
+        <h3>L2 · Same move, another way</h3>
+        <div class="preview" data-w="1180" data-h="820"><iframe src="Marking.dc.html" title="L2 · Same move, another way" loading="lazy"></iframe></div>
+        <p class="open"><a href="Marking.dc.html">Open full size</a></p>
+        <p class="note">The reference is one good version, not the only one. Comparing your 9 charts with the corpus&#x27;s versions of the same tunes: of 202 places they differ, 47% are the same chord with another bass or extension, 29% a passing chord added or left out, 9% a related chord sharing two notes, 5% the same root made into a secondary dominant; only about 5% are genuinely different harmony. So phrase arrivals are marked strictly, and the way between them leniently.</p>
+      </article>
+      </div>
+    </section>
+</main>
+<script>
+// Scale each live frame to its card.
+function fit(box) {
+  const frame = box.querySelector('iframe');
+  const w = Number(box.dataset.w), h = Number(box.dataset.h);
+  const s = box.clientWidth / w;
+  frame.style.width = w + 'px';
+  frame.style.height = h + 'px';
+  frame.style.transform = 'scale(' + s + ')';
+}
+const boxes = document.querySelectorAll('.preview');
+const ro = new ResizeObserver((entries) => entries.forEach((e) => fit(e.target)));
+boxes.forEach((b) => { fit(b); ro.observe(b); });
+</script>
+</body>
+</html>
