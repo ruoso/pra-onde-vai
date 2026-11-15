@@ -42,6 +42,12 @@ export default {
     iiNote: 'Su ii es el {fn}',
   },
   map: {
+    newHome: 'Nueva casa',
+    askTitle: '¿Dónde está la casa?',
+    askText: 'Elige la tonalidad en la que descansa el tema: el acorde al que vuelven sus frases. El tablero se arma desde ahí.',
+    askMajor: 'Tonalidades mayores',
+    askMinor: 'Tonalidades menores',
+    askListen: '¿No lo sabes? Encuéntralo de oído',
     crumbs: 'Casas hasta ahora',
     crumbCurrent: 'Casa actual:',
     crumbBack: 'Volver a',

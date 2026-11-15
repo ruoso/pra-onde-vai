@@ -35,9 +35,38 @@ const chord = (name) => screen.getByRole('button', { name: startsWith(`${name},`
 
 beforeEach(() => { document.documentElement.lang = 'en'; });
 
+// The map asks where home is before it shows the board.
+async function openMap(home = 'Dm') {
+  const opened = await open('#/map');
+  await opened.user.click(screen.getByRole('button', { name: startsWith(`${home},`) }));
+  return opened;
+}
+
 describe('the map', () => {
-  it('opens in D minor with home and its dominant, and lights the usual moves from the chord you tap', async () => {
+  it('asks where home is, and never assumes one', async () => {
     const { user } = await open('#/map');
+    expect(screen.getByRole('heading', { name: 'Where is home?' })).toBeInTheDocument();
+    expect(within(screen.getByRole('group', { name: 'Major keys' })).getAllByRole('button')).toHaveLength(12);
+    expect(within(screen.getByRole('group', { name: 'Minor keys' })).getAllByRole('button')).toHaveLength(12);
+    expect(screen.queryByRole('group', { name: 'The board of chord functions' })).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Bb, Bb major' }));
+    expect(screen.getByRole('button', { name: startsWith('Current home: Bb major,') })).toBeInTheDocument();
+    expectName(chord('Bb'), 'Bb, I, Home');
+    expect(chord('F7')).toBeInTheDocument();
+    // New home: back to the question, for the next tune.
+    await user.click(screen.getByRole('button', { name: 'New home' }));
+    expect(screen.getByRole('heading', { name: 'Where is home?' })).toBeInTheDocument();
+  });
+
+  it('sends you to find home by ear when you don’t know it', async () => {
+    const { user } = await open('#/map');
+    await user.click(screen.getByRole('link', { name: 'Don’t know? Find it by ear →' }));
+    expect(await screen.findByRole('heading', { name: 'What am I hearing?' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Use the map’s home/ })).toBeNull();
+  });
+
+  it('lights the usual moves from the chord you tap', async () => {
+    const { user } = await openMap('Dm');
     expect(screen.getByRole('button', { name: startsWith('Current home: D minor,') })).toBeInTheDocument();
     expectName(chord('Dm'), 'Dm, i, Home');
     expect(chord('A7')).toBeInTheDocument();
@@ -49,7 +78,7 @@ describe('the map', () => {
   });
 
   it('asks "visiting, or moving in?" on a destination, and makes it home', async () => {
-    const { user } = await open('#/map');
+    const { user } = await openMap('Dm');
     await user.click(screen.getByRole('radio', { name: 'Whole board' }));
     await user.click(chord('C7'));
     expectName(chord('F'), 'F, III, a usual next move');
@@ -66,7 +95,7 @@ describe('the map', () => {
   });
 
   it('moves to the parallel key and back, the dominant unchanged', async () => {
-    const { user } = await open('#/map');
+    const { user } = await openMap('Dm');
     await user.click(screen.getByRole('radio', { name: 'major' }));
     expect(screen.getByRole('button', { name: startsWith('Current home: D major,') })).toBeInTheDocument();
     expect(chord('A7')).toBeInTheDocument();
@@ -76,13 +105,15 @@ describe('the map', () => {
   });
 
   it('shows only the learner’s level, in fixed places', async () => {
-    await open('#/map');
+    await openMap('Dm');
     expect(screen.queryByRole('button', { name: /^E7,/ })).toBeNull();
     expect(screen.getAllByRole('button', { name: /^[A-G]/ }).filter((b) => b.classList.contains('chord'))).toHaveLength(2);
   });
 
-  it('has no accessibility violations', async () => {
-    const { view } = await open('#/map');
+  it('has no accessibility violations, asking for home or showing the board', async () => {
+    const { view, user } = await open('#/map');
+    expect(await axe(view.container)).toHaveNoViolations();
+    await user.click(screen.getByRole('button', { name: startsWith('Dm,') }));
     expect(await axe(view.container)).toHaveNoViolations();
   });
 });

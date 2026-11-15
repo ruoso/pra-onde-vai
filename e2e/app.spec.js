@@ -83,3 +83,12 @@ test('scrolls the 295 tunes inside their list, not the whole page', async ({ pag
   expect(list).toBeGreaterThan(5000);
   expect(h).toBeLessThan(2500);
 });
+
+test('asks for home, then the board meets WCAG 2.1 AA', async ({ page }) => {
+  await page.goto('./#/map');
+  await expect(page.getByRole('heading', { name: 'Where is home?' })).toBeVisible();
+  await page.getByRole('button', { name: /^Dm\s*,/ }).click();
+  await expect(page.getByRole('group', { name: 'The board of chord functions' })).toBeVisible();
+  const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+  expect(results.violations.map((v) => v.id)).toEqual([]);
+});

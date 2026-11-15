@@ -9,7 +9,6 @@ import { parseRoute } from './router.js';
 import { openStore } from '../storage/db.js';
 import { loadData } from '../data/load.js';
 import { currentLevel } from '../core/levels/progress.js';
-import { parseKey } from '../core/theory/pitch.js';
 import { setDetune } from '../audio/synth.js';
 import Nav from './components/Nav.jsx';
 import MapScreen from './screens/MapScreen.jsx';
@@ -28,11 +27,6 @@ const SCREENS = {
   review: ReviewScreen, levels: LevelsScreen, meet: MeetScreen, about: AboutScreen,
 };
 
-/** The map's first state: home is D minor, as the mockups open, until another home is chosen. */
-export function initialMap(key = parseKey('Dm')) {
-  return { centres: [{ key, rel: 'home' }], current: null, moved: false, trail: [] };
-}
-
 export default function App({ store: givenStore = null, data: givenData = null }) {
   const [store, setStore] = useState(givenStore);
   const [data, setData] = useState(givenData);
@@ -40,7 +34,7 @@ export default function App({ store: givenStore = null, data: givenData = null }
   const [attempts, setAttempts] = useState([]);
   const [ready, setReady] = useState(false);
   const [route, setRoute] = useState(() => parseRoute(window.location.hash));
-  const [map, setMap] = useState(() => initialMap());
+  const [map, setMap] = useState(null);
   const [run, setRun] = useState(null);
   const [failed, setFailed] = useState(false);
 

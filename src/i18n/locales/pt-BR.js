@@ -42,6 +42,12 @@ export default {
     iiNote: 'O ii dele é o {fn}',
   },
   map: {
+    newHome: 'Nova casa',
+    askTitle: 'Onde é a casa?',
+    askText: 'Escolha o tom em que a música repousa: o acorde para onde as frases voltam. O quadro se organiza a partir dele.',
+    askMajor: 'Tons maiores',
+    askMinor: 'Tons menores',
+    askListen: 'Não sabe? Descubra de ouvido',
     crumbs: 'Casas até aqui',
     crumbCurrent: 'Casa atual:',
     crumbBack: 'Voltar para',

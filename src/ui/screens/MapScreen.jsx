@@ -14,12 +14,22 @@ import { boardAt } from '../../core/levels/levels.js';
 import { playChords } from '../../audio/synth.js';
 import { fnName, keyName } from '../words.js';
 import { href } from '../router.js';
+import HomePicker from '../components/HomePicker.jsx';
+import { initialMap } from '../mapState.js';
 
 const RELATIONS = { 'maj:vi': 'relative', 'min:III': 'relative', 'maj:IV': 'subdominant', 'min:iv': 'subdominant', 'maj:V': 'dominant', 'min:V': 'dominant' };
 const TRAIL = 9;
 
 export default function MapScreen() {
   const { data, map, setMap, level, settings, setSetting, navigate } = useApp();
+  if (!map) {
+    return (
+      <HomePicker onPick={(key, text) => {
+        playChords([{ sym: text, d: 0.5 }], { pattern: false });
+        setMap(initialMap(key));
+      }} />
+    );
+  }
   const centre = map.centres[map.centres.length - 1].key;
   const mode = centre.mode;
   const board = settings.mapScope === 'all' ? null : boardAt(level, mode);
@@ -91,6 +101,7 @@ export default function MapScreen() {
         <div className="toolbar-end">
           <Segmented label={t('map.modeLabel')} value={mode} onChange={flip}
             options={[{ value: 'min', label: t('mode.minorWord') }, { value: 'maj', label: t('mode.majorWord') }]} />
+          <Button className="button" onPress={() => setMap(null)}>{t('map.newHome')}</Button>
           <a className="button amber" href={href('listen')}>{t('map.stuck')}</a>
           <Segmented label={t('map.scopeLabel')} value={settings.mapScope} onChange={(v) => setSetting('mapScope', v)}
             options={[{ value: 'level', label: t('map.scopeLevel', { n: level }) }, { value: 'all', label: t('map.scopeAll') }]} />

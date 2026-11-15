@@ -16,7 +16,7 @@ import { playChords, playNotes } from '../../audio/synth.js';
 import { listen } from '../../audio/mic.js';
 import { fnName, keyName, nameIn } from '../words.js';
 import { href } from '../router.js';
-import { initialMap } from '../App.jsx';
+import { initialMap } from '../mapState.js';
 
 const MAX_NOTES = 10;
 
@@ -30,7 +30,7 @@ export default function ListenScreen() {
   const [micError, setMicError] = useState(false);
   const stopMic = useRef(null);
   const known = !!home;
-  const mapHome = map.centres[map.centres.length - 1].key;
+  const mapHome = map ? map.centres[map.centres.length - 1].key : null;
 
   useEffect(() => () => stopMic.current?.(), []);
 
@@ -117,7 +117,7 @@ export default function ListenScreen() {
             <span className="home-key">{known ? keyName(home) : t('listen.unknown')}</span>
             {known && <Button className="button small" onPress={() => { setHome(null); setNotes([]); setSel(null); setFrom('start'); }}>{t('listen.change')}</Button>}
           </div>
-          {!known && (
+          {!known && mapHome && (
             <Button className="button" onPress={() => { setHome(mapHome); setNotes([]); setSel(null); }}>{t('listen.useMapHome', { key: keyName(mapHome) })}</Button>
           )}
           {known && (

@@ -100,6 +100,13 @@ the way to analyse a user's tunes.
 The map is the main instrument: tap the chord you hear. Mockups:
 `Main.dc.html`, and the same page with `?scene=arrived` and `?scene=moved`.
 
+- **It starts by asking where home is**: the 24 keys as their home chords, by
+  fifths. The board is laid out from home, so the map never assumes one (the
+  mockup opens in D minor only to show something). Not knowing is what the
+  listening help is for (§5): *Don't know? Find it by ear* goes there, and
+  it ends by opening the map in the home it found. *New home* asks again, for
+  the next tune; a reload asks again too.
+
 - **Columns by fifths**, so each dominant sits above its destination and a
   chain of dominants (F#7 B7 E7 A7) steps one column to the right:
   major `iii · vi · ii · V · I · IV`, minor `III · VI · iiø · V · i · iv`.
@@ -281,8 +288,8 @@ how many of the 295 have at least 80% of their changes on the board.
 - **Another version** (§7.2) is in the marking engine, but no version reaches
   it until the user's own books come in.
 - ~~**The mockups do not share state**, and the mastery and review numbers are
-  examples.~~ In the app, home found on the listening screen opens the map
-  there, mastery and the review are computed from your answers, and progress
+  examples.~~ In the app, the map asks for home and the listening
+  screen finds it when you don't know it, mastery and the review are computed from your answers, and progress
   is kept on the device. The sound is still a synthesised pluck, now in a
   violão pattern (bass on the beat, chord on the off-beat).
 - **Unlocking is strict**: a level opens only when the one before is mastered

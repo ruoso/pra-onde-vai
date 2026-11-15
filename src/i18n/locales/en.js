@@ -42,6 +42,12 @@ export default {
     iiNote: 'Its ii is the {fn}',
   },
   map: {
+    newHome: 'New home',
+    askTitle: 'Where is home?',
+    askText: 'Pick the key the tune rests in: the chord its phrases come home to. The board is laid out from there.',
+    askMajor: 'Major keys',
+    askMinor: 'Minor keys',
+    askListen: 'Don’t know? Find it by ear',
     crumbs: 'Homes so far',
     crumbCurrent: 'Current home:',
     crumbBack: 'Go back to',
