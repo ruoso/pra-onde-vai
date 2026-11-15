@@ -51,7 +51,8 @@ function watch(reg, nav) {
     });
   };
   if (reg.waiting && nav.serviceWorker.controller) set({ updateReady: true });
-  if (reg.active && nav.serviceWorker.controller) set({ offlineReady: true });
+  // An app already cached says nothing: "ready offline" is news once, when
+  // the first visit has finished caching it.
   if (reg.installing) settle(reg.installing);
   reg.addEventListener('updatefound', () => settle(reg.installing));
 }

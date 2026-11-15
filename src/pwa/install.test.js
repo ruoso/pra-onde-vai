@@ -93,6 +93,13 @@ describe('the service worker', () => {
     expect(win.location.reload).toHaveBeenCalled();
   });
 
+  it('says nothing about offline on later visits, when the app is already cached', async () => {
+    const reg = registration({ active: {} });
+    const { win, nav } = browser({ reg, controller: {} });
+    await initPwa({ win, nav });
+    expect(getState()).toMatchObject({ offlineReady: false, updateReady: false });
+  });
+
   it('looks for an update when the app comes back to the foreground', async () => {
     const reg = registration({ active: {} });
     const { win, nav } = browser({ reg, controller: {} });

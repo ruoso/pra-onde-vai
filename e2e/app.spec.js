@@ -33,6 +33,8 @@ test('works offline once loaded, tunes and all', async ({ page, context }) => {
   await page.goto('./#/tunes/cochichando');
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Cochichando' })).toBeVisible();
+  // Already cached: the notice was news once, and does not come back.
+  await expect(page.getByText('Ready to work offline: every tune is on this device.')).toHaveCount(0);
   await page.getByRole('button', { name: /Start/ }).click();
   await expect(page.getByText('Bar 2: after Dm, which chord is this?')).toBeVisible();
   await context.setOffline(false);
