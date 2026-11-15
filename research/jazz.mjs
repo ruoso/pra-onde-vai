@@ -16,7 +16,8 @@ import { chordDef, isOnBoard } from '../src/core/theory/board.js';
 import { LEVELS, boardAt } from '../src/core/levels/levels.js';
 import { parseKey, mod } from '../src/core/theory/pitch.js';
 
-const tunes = JSON.parse(readFileSync(process.argv[2], 'utf8'));
+const main = import.meta.url === `file://${process.argv[1]}`;
+const tunes = main ? JSON.parse(readFileSync(process.argv[2], 'utf8')) : [];
 
 // iRealPro's spelling, as the treebank writes it, into cifra.md's.
 const SUFFIX = { '': '', '^': '', '^7': '7M', 7: '7', m: 'm', m7: 'm7', m6: 'm6', 'm^7': 'm(7M)', 6: '6', '%7': 'm7(b5)', o7: '°', sus: '7(4)', '+': '(#5)' };
@@ -26,7 +27,7 @@ export function cifra(sym) {
   return m[1] + SUFFIX[m[2]];
 }
 // Humdrum keys: upper case major, lower case minor, `-` a flat.
-function keyOf(text) {
+export function keyOf(text) {
   const minor = text[0] === text[0].toLowerCase();
   const name = text[0].toUpperCase() + text.slice(1).replace('-', 'b');
   return parseKey(name + (minor ? 'm' : ''));
@@ -42,20 +43,25 @@ function offName(info, key) {
 }
 
 /** Labels for a tune: the board's ids, the ii of a secondary dominant read from what follows. */
-function labels(chords, key) {
+export function labels(chords, key) {
   const infos = chords.map((c) => chordInfo(c));
   const out = chords.map((c, i) => {
     const l = labelSymbol(c, key);
     return isOnBoard(key.mode, l) ? l : offName(infos[i], key);
   });
-  for (let i = 0; i + 1 < chords.length; i += 1) {
+  // As the choro build does (scripts/corpus/labels.js), a run of the same
+  // chord (Gm7 | Gm7 | C7) takes the label together, from what follows the run.
+  for (let i = 0; i < chords.length; i += 1) {
+    let j = i;
+    while (j + 1 < chords.length && chords[j + 1] === chords[i]) j += 1;
     const a = infos[i];
-    const b = infos[i + 1];
-    if (isOnBoard(key.mode, out[i]) || a.kind !== 'min' || b.kind !== 'dom') continue;
-    const root = chords[i].includes('m6') ? mod(a.root + 9, 12) : a.root;
-    if (b.root !== mod(root + 5, 12)) continue;
-    const to = /^V\/(.+)$/.exec(out[i + 1])?.[1];
-    if (to && chordDef(key.mode, `ii/${to}`)) out[i] = `ii/${to}`;
+    const b = infos[j + 1];
+    if (b && !isOnBoard(key.mode, out[i]) && a.kind === 'min' && b.kind === 'dom') {
+      const root = chords[i].includes('m6') ? mod(a.root + 9, 12) : a.root;
+      const to = /^V\/(.+)$/.exec(out[j + 1])?.[1];
+      if (b.root === mod(root + 5, 12) && to && chordDef(key.mode, `ii/${to}`)) for (let k = i; k <= j; k += 1) out[k] = `ii/${to}`;
+    }
+    i = j;
   }
   return out;
 }
@@ -109,6 +115,7 @@ for (const t of tunes) {
 }
 
 const pct = (a, b) => (b ? Math.round((100 * a) / b) : 0);
+if (main) {
 const total = (m) => [...freq[m].values()].reduce((a, n) => a + n, 0);
 console.log(`Jazz Harmony Treebank: ${tunes.length} tunes (${perTune.filter((x) => x.mode === 'maj').length} major, ${perTune.filter((x) => x.mode === 'min').length} minor), against each tune's one key`);
 console.log('\nlevel  coverage maj/min  median tune  tunes >=80%  >=90%');
@@ -132,3 +139,4 @@ for (const m of ['maj', 'min']) {
 }
 console.log(`\nof the chord changes off the full board, ${pct(remote, off)}% are a V (or ii–V) resolving onto a chord the board has no destination for: a key the tune visits`);
 console.log(`dominants resolving down a semitone (tritone substitutes): ${pct(tritone, doms)}% of dominants`);
+}
