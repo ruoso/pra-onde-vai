@@ -40,6 +40,14 @@ export function sectionName(section) {
   return section.n ? `${s} ${section.n}` : s;
 }
 
+/** A choice of sections, as the chooser offers it: `A`, `B → A`, the whole tune. */
+export function choiceName(choice) {
+  if (!choice) return '';
+  if (choice.kind === 'part') return choice.from;
+  if (choice.kind === 'join') return `${choice.from} → ${choice.to}`;
+  return t('choose.whole');
+}
+
 export function composersText(list) {
   return new Intl.ListFormat(document.documentElement.lang || 'en', { type: 'conjunction' }).format(list);
 }

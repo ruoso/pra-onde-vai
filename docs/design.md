@@ -185,8 +185,10 @@ Mockups: `Choose.dc.html`, `Practice.dc.html` (and `?scene=move`),
 - **Pick a tune** from the corpus. *On your board* is the share of its chord
   changes the map covers at your level (the full board: a median 88%, 133 of
   295 tunes at 90% or more). Chords above your level are played for you. Choose
-  the sections (A only; A then B, which brings a change of key; the whole
-  tune), the key (as written, or any key, so you learn moves rather than names)
+  the sections from the tune's own form: a part alone (A, B, C), a join
+  between two of them as the form plays it (A → B, the return B → A, A → C,
+  C → A, each with its change of key, or the same key, said up front), or
+  the whole tune; the key (as written, or any key, so you learn moves rather than names)
   and the mode:
   - **Name it**: each chord sounds, then waits for you to find it on the
     board. No clock. The way in, and how drills always run: the skill a

@@ -10,7 +10,7 @@ import { pickFocus, attemptOf } from '../core/levels/progress.js';
 import { missDrillPlan } from '../core/practice/review.js';
 import { keyText, transposeCentre, parseKey } from '../core/theory/pitch.js';
 
-export function tuneRun(tune, { sections = 'ab', key = 'original', play = 'name' }, level, rng = Math.random) {
+export function tuneRun(tune, { sections = 'all', key = 'original', play = 'name' }, level, rng = Math.random) {
   const transpose = key === 'random' ? pickTransposition(tune, rng) : null;
   const events = buildSequence(tune, { sections, transpose, level });
   const home = transpose ? transposeCentre(parseKey(tune.key), transpose.step, transpose.semis) : parseKey(tune.key);

@@ -7,8 +7,26 @@ import { Button, ListBox, ListBoxItem, SearchField, Input, Label } from 'react-a
 import { t } from '../../i18n/index.js';
 import { useApp } from '../AppContext.jsx';
 import Segmented from '../components/Segmented.jsx';
-import { hasSecondPart } from '../../core/practice/sequence.js';
-import { composersText, sectionName } from '../words.js';
+import { sectionChoices } from '../../core/practice/sequence.js';
+import { parseKey } from '../../core/theory/pitch.js';
+import { composersText, sectionName, choiceName, keyName } from '../words.js';
+
+/** The key a section starts in: the key of its first chord. */
+function sectionKey(tune, i) {
+  const c = tune.sections[i].phrases.flatMap((p) => tune.phrases[p].bars.flat()).find((x) => x && x.k);
+  return c ? parseKey(c.k) : null;
+}
+
+/** What a choice of sections does to home, in a line. */
+function choiceNote(tune, choice) {
+  if (choice.kind === 'all') return t('choose.wholeNote');
+  if (choice.kind === 'part') return t('choose.partNote', { name: choice.from });
+  const [a, b] = choice.sections.map((i) => sectionKey(tune, i));
+  const same = a && b && a.pc === b.pc && a.mode === b.mode;
+  return same
+    ? t('choose.joinSame', { from: choice.from, to: choice.to, key: keyName(a) })
+    : t('choose.joinMove', { from: choice.from, to: choice.to, fromKey: keyName(a), toKey: keyName(b) });
+}
 import { href } from '../router.js';
 import { tuneRun } from '../runs.js';
 
@@ -18,7 +36,7 @@ export default function ChooseScreen() {
   const { data, level, route, navigate, setRun } = useApp();
   const [filter, setFilter] = useState('all');
   const [query, setQuery] = useState('');
-  const [options, setOptions] = useState({ sections: 'ab', key: 'original', play: 'name' });
+  const [options, setOptions] = useState({ sections: null, key: 'original', play: 'name' });
   const cover = (tune) => Math.round(100 * tune.coverage[level - 1]);
 
   const q = fold(query.trim());
@@ -27,8 +45,11 @@ export default function ChooseScreen() {
     .filter((u) => !q || fold(u.title).includes(q) || u.composers.some((c) => fold(c).includes(q)))
     .sort((a, b) => cover(b) - cover(a) || a.title.localeCompare(b.title, 'pt'));
   const selected = data.tunes.find((u) => u.id === route.params.tune) ?? shown[0] ?? null;
-  const twoParts = selected ? hasSecondPart(selected) : false;
-  const sections = !twoParts && options.sections === 'ab' ? 'a' : options.sections;
+  // The choices are the tune's own; the first join (A → B) unless one was picked.
+  const choices = selected ? sectionChoices(selected) : [];
+  const choice = choices.find((c) => c.id === options.sections)
+    ?? choices.find((c) => c.kind === 'join') ?? choices[0];
+  const sections = choice?.id;
 
   const begin = () => {
     setRun(tuneRun(selected, { ...options, sections }, level));
@@ -101,8 +122,8 @@ export default function ChooseScreen() {
             <div className="setting">
               <Label id="set-sections" className="setting-label">{t('choose.sections')}</Label>
               <Segmented label={t('choose.sections')} value={sections} onChange={(v) => setOptions({ ...options, sections: v })}
-                options={[{ value: 'a', label: t('choose.aOnly') }, { value: 'ab', label: t('choose.aThenB'), disabled: !twoParts }, { value: 'all', label: t('choose.whole') }]} />
-              <p className="setting-note">{sections === 'a' ? t('choose.aNote') : t('choose.abNote')}</p>
+                options={choices.map((c) => ({ value: c.id, label: choiceName(c) }))} className="wrap" />
+              <p className="setting-note">{choiceNote(selected, choice)}</p>
             </div>
             <div className="setting">
               <Label className="setting-label">{t('choose.key')}</Label>

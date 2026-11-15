@@ -40,7 +40,7 @@ test('works offline once loaded, tunes and all', async ({ page, context }) => {
 
 test('practises a tune from the first chord to how it went', async ({ page }) => {
   await page.goto('./#/tunes/cochichando');
-  await page.getByRole('radio', { name: 'A, then B' }).click();
+  await page.getByRole('radio', { name: 'A → B' }).click();
   await page.getByRole('button', { name: /Start/ }).click();
   await page.getByRole('button', { name: /^A7\s*,\s*V\b/ }).click();
   await expect(page.getByText('Right: A7, the V.')).toBeVisible();

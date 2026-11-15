@@ -12,7 +12,8 @@ import { answer, showMe, resolveMove, current, isDone, counts, homeOf, heardBefo
 import { nextMoves } from '../../core/stats/tiers.js';
 import { TOP_LEVEL } from '../../core/levels/levels.js';
 import { playChords, stop } from '../../audio/synth.js';
-import { feedback, keyName, sectionName, fnName } from '../words.js';
+import { feedback, keyName, sectionName, fnName, choiceName } from '../words.js';
+import { sectionChoices } from '../../core/practice/sequence.js';
 import { href } from '../router.js';
 import { attemptsOf } from '../runs.js';
 import LevelProgress from '../components/LevelProgress.jsx';
@@ -128,7 +129,7 @@ export default function PracticeScreen() {
   const beforeMove = moveEv && prevIdx >= 0 ? prevIdx : undefined;
   const title = tune ? tune.title : run.kind === 'misses' ? t('practice.missesTitle') : t('practice.drillTitle', { n: run.level });
   const sub = tune
-    ? [t(`practice.sections.${run.options.sections}`), run.transpose ? t('practice.inKey', { key: keyName(run.home) }) : t('practice.asWritten'), t(naming ? 'choose.name' : 'choose.predict')].join(' · ')
+    ? [choiceName(sectionChoices(tune).find((c) => c.id === run.options.sections)), run.transpose ? t('practice.inKey', { key: keyName(run.home) }) : t('practice.asWritten'), t(naming ? 'choose.name' : 'choose.predict')].join(' · ')
     : t('practice.drillSub');
   // In a drill, a chord above the learner's level is asked too: its own
   // button or "Something else" answers it. A tune plays such chords for you.

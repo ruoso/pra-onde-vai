@@ -7,10 +7,53 @@ import { transposeSymbol } from '../theory/chord.js';
 import { labelSymbol } from '../theory/functions.js';
 import { boardAt } from '../levels/levels.js';
 
-/** The sections a run plays: `a` the first part, `ab` it and the next part, `all` the form. */
+/** The letter a section goes by: its own, or the part it returns to (`A` for "A, again"). */
+export function baseName(section) {
+  if (section.kind === 'part') return section.name;
+  if ((section.kind === 'again' || section.kind === 'end') && section.of?.kind === 'part') return section.of.name;
+  return null;
+}
+
+/**
+ * What a run can play, from the tune's own form: each part alone (A, B, C),
+ * every join between two sections in the order the form plays them (A → B,
+ * the return B → A, A → C, C → A), and the whole tune. A join is told by its
+ * letters, once, the first time the form plays it.
+ * @returns [{ id, kind: 'part' | 'join' | 'all', from, to, sections }]
+ */
+export function sectionChoices(tune) {
+  const out = [];
+  const seen = new Set();
+  tune.sections.forEach((s, i) => {
+    if (s.kind === 'part' && !seen.has(s.name)) {
+      seen.add(s.name);
+      out.push({ id: `s:${i}`, kind: 'part', from: s.name, to: null, sections: [i] });
+    }
+  });
+  const joins = new Set();
+  for (let i = 0; i + 1 < tune.sections.length; i += 1) {
+    const from = baseName(tune.sections[i]);
+    const to = baseName(tune.sections[i + 1]);
+    if (!from || !to || from === to || joins.has(`${from}>${to}`)) continue;
+    joins.add(`${from}>${to}`);
+    out.push({ id: `j:${i}`, kind: 'join', from, to, sections: [i, i + 1] });
+  }
+  out.push({ id: 'all', kind: 'all', from: null, to: null, sections: tune.sections.map((_, i) => i) });
+  return out;
+}
+
+/**
+ * The sections a run plays: a choice of sectionChoices (`s:2`, `j:1`, `all`),
+ * or, as first offered, `a` (the first part) and `ab` (it and the next part).
+ */
 export function chosenSections(tune, which) {
   const idx = tune.sections.map((s, i) => [s, i]);
   if (which === 'all') return idx.map(([, i]) => i);
+  const m = /^([sj]):(\d+)$/.exec(which ?? '');
+  if (m) {
+    const i = Number(m[2]);
+    return m[1] === 's' ? [i] : [i, i + 1].filter((x) => x < tune.sections.length);
+  }
   const parts = idx.filter(([s]) => s.kind === 'part');
   const first = parts[0] ?? idx[0];
   if (which === 'a') return [first[1]];
@@ -18,10 +61,6 @@ export function chosenSections(tune, which) {
   return next ? [first[1], next[1]] : [first[1]];
 }
 
-/** Whether a tune has a second part for `ab` to play. */
-export function hasSecondPart(tune) {
-  return chosenSections(tune, 'ab').length > 1;
-}
 
 /**
  * The events of a run.

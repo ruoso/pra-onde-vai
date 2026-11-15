@@ -186,3 +186,30 @@ describe('Name it on Cochichando: each chord sounds, then you name it', () => {
     expect(st.play.map((i) => st.events[i].sym)).toEqual(['D7']);
   });
 });
+
+describe('the sections to practise', () => {
+  it('offers each part, every join of the form (the returns included), and the whole tune', async () => {
+    const { sectionChoices } = await import('./sequence.js');
+    const choices = sectionChoices(tune);
+    expect(choices.map((c) => (c.kind === 'join' ? `${c.from} → ${c.to}` : c.kind === 'part' ? c.from : 'all'))).toEqual([
+      'A', 'B', 'C', 'A → B', 'B → A', 'A → C', 'C → A', 'all',
+    ]);
+    // B → A is the form's own return: B, then A with its new ending.
+    const back = choices.find((c) => c.from === 'B' && c.to === 'A');
+    expect(back.sections.map((i) => tune.sections[i].phrases.join(' '))).toEqual(['P4 P5 P4 P5', 'P1 P6']);
+  });
+
+  it('plays a join with its change of home: C → A goes from D major back to D minor', () => {
+    const ev = buildSequence(tune, { sections: 'j:3', level: 6 });
+    expect(ev[0]).toMatchObject({ sym: 'D', section: 3 });
+    const move = ev.find((e) => e.moveTo);
+    expect(move.section).toBe(4);
+    // Dm is not on the D major board, so it is played for you, and then the
+    // run asks whether home has moved.
+    expect(move).toMatchObject({ sym: 'Dm', asked: false });
+    expect(keyText(move.key)).toBe('Dm');
+    let st = start(ev, { mode: 'name' });
+    while (st.pendingMove === null) st = answer(st, current(st).expected, stats);
+    expect(st.events[st.pendingMove]).toBe(move);
+  });
+});

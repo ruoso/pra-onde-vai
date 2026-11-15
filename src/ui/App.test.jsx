@@ -55,7 +55,8 @@ describe('the guide', () => {
     }
     expect(screen.getByText(/each chord sounds, then waits for you to find it/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Guide' })).toHaveAttribute('aria-current', 'page');
-    expect((await store.getSettings()).guided).toBe(true);
+    // Saved on the device, so the next visit opens on the map.
+    await waitFor(async () => expect((await store.getSettings()).guided).toBe(true));
     await user.click(screen.getByRole('link', { name: 'Continue level 1 →' }));
     expect(await screen.findByRole('heading', { name: 'Your levels' })).toBeInTheDocument();
   });
@@ -215,7 +216,7 @@ describe('practising a tune', () => {
     expect(screen.getByRole('heading', { name: 'Cochichando' })).toBeInTheDocument();
     // Name it, the way tunes start: the chord sounds, then you find it.
     expect(screen.getByText('Cochichando')).toBeInTheDocument();
-    expect(screen.getByText('A, then B · as written · Name it')).toBeInTheDocument();
+    expect(screen.getByText('A → B · as written · Name it')).toBeInTheDocument();
     expect(screen.getByText('Bar 2: after Dm, which chord is this?')).toBeInTheDocument();
     await user.click(chord('A7'));
     expect(screen.getByText('Right: A7, the V.')).toBeInTheDocument();
@@ -258,7 +259,7 @@ describe('practising a tune', () => {
 
   it('turns the misses into a drill in random keys', async () => {
     const { user } = await open('#/tunes/cochichando');
-    await user.click(screen.getByRole('radio', { name: 'A only' }));
+    await user.click(screen.getByRole('radio', { name: 'A' }));
     await user.click(screen.getByRole('button', { name: /Start/ }));
     while (!screen.queryByRole('link', { name: 'See how it went' })) {
       await user.click(screen.getByRole('button', { name: 'Show me' }));
@@ -269,12 +270,27 @@ describe('practising a tune', () => {
     expect(screen.getByText(/^Bar 2: after /)).toBeInTheDocument();
   });
 
+  it('offers each part, each join of the form, the returns included, and the whole tune', async () => {
+    const { user } = await open('#/tunes/cochichando');
+    const group = screen.getByRole('radiogroup', { name: 'Sections' });
+    expect(within(group).getAllByRole('radio').map((r) => r.textContent)).toEqual(['A', 'B', 'C', 'A → B', 'B → A', 'A → C', 'C → A', 'Whole tune']);
+    expect(within(group).getByRole('radio', { name: 'A → B' })).toBeChecked();
+    expect(screen.getByText('From A in D minor into B in F major: you decide when home has moved.')).toBeInTheDocument();
+    await user.click(within(group).getByRole('radio', { name: 'C → A' }));
+    expect(screen.getByText('From C in D major into A in D minor: you decide when home has moved.')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /Start/ }));
+    expect(screen.getByText('C → A · as written · Name it')).toBeInTheDocument();
+    // C starts in D major: the run starts there.
+    expect(screen.getByText('D major')).toBeInTheDocument();
+    expect(screen.getByText(/^Bar \d+: after .+, which chord is this\?$/)).toBeInTheDocument();
+  });
+
   it('can predict instead: it stops before each change and asks what comes next', async () => {
     const { user } = await open('#/tunes/cochichando');
     await user.click(screen.getByRole('radio', { name: 'Predict' }));
     expect(screen.getByText(/Without the melody, several answers can be right\./)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /Start/ }));
-    expect(screen.getByText('A, then B · as written · Predict')).toBeInTheDocument();
+    expect(screen.getByText('A → B · as written · Predict')).toBeInTheDocument();
     expect(screen.getByText('Bar 2: after Dm, what comes next?')).toBeInTheDocument();
   });
 
@@ -282,7 +298,7 @@ describe('practising a tune', () => {
     const { user } = await open('#/tunes/cochichando');
     await user.click(screen.getByRole('radio', { name: 'Any key' }));
     await user.click(screen.getByRole('button', { name: /Start/ }));
-    const sub = screen.getByText(/A, then B · in /).textContent;
+    const sub = screen.getByText(/A → B · in /).textContent;
     expect(sub).not.toMatch(/D minor/);
   });
 
