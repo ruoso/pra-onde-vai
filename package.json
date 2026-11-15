@@ -1,13 +1,47 @@
 {
   "name": "pra-onde-vai",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "license": "MIT",
-  "description": "An ear-training app for choro harmony: design and mockups.",
+  "type": "module",
+  "description": "Pra Onde Vai: an ear-training app for choro harmony. Offline, free and non-commercial.",
   "scripts": {
-    "test": "node tests/mockups.test.cjs && node tests/practice-marking.test.mjs"
+    "corpus": "node scripts/fetch-corpus.js",
+    "data": "node scripts/build-data.js",
+    "dev": "vite",
+    "build": "npm run data && vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "test": "npm run data && vitest run && npm run test:mockups",
+    "test:unit": "vitest run",
+    "test:mockups": "node tests/mockups.test.cjs && node tests/practice-marking.test.mjs",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "react": "^19.3.1",
+    "react-aria-components": "^1.22.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "jsdom": "30.1.2"
+    "@axe-core/playwright": "^4.14.0",
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.65.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.10",
+    "@vitejs/plugin-react": "^6.3.0",
+    "axe-core": "^4.14.0",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "fake-indexeddb": "^6.2.8",
+    "globals": "^17.14.0",
+    "jsdom": "^30.1.2",
+    "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.0",
+    "vitest-axe": "^0.1.0"
   }
 }

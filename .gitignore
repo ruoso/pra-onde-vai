@@ -2,3 +2,8 @@ node_modules/
 __pycache__/
 research/mapping.tsv
 vendor/
+dist/
+dev-dist/
+src/data/generated/
+test-results/
+playwright-report/
