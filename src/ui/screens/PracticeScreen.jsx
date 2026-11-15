@@ -15,6 +15,7 @@ import { playChords, stop } from '../../audio/synth.js';
 import { feedback, keyName, sectionName, fnName } from '../words.js';
 import { href } from '../router.js';
 import { attemptsOf } from '../runs.js';
+import LevelProgress from '../components/LevelProgress.jsx';
 
 export const BAR_SECONDS = { slow: 2.2, normal: 1.6, fast: 1.1 };
 
@@ -80,7 +81,7 @@ function Bar({ bar, st, done }) {
 }
 
 export default function PracticeScreen() {
-  const { data, run, setRun, settings, setSetting, addAttempts } = useApp();
+  const { data, run, setRun, settings, setSetting, addAttempts, attempts, level: learnerLevel } = useApp();
   const played = useRef(null);
   const st = run?.st;
   const tune = run?.kind === 'tune' ? data.tunes.find((x) => x.id === run.tuneId) : null;
@@ -177,6 +178,17 @@ export default function PracticeScreen() {
             return <li key={i} className={r ? `mark-${r.kind}` : e.given ? 'given' : ''}>{e.sym}{r ? ` ${{ right: '✓', another: '≈', miss: '×' }[r.kind]}` : ''}</li>;
           })}
         </ol>
+      )}
+
+      {run.kind === 'drill' && (
+        <>
+          <LevelProgress attempts={attempts} level={run.level} compact />
+          {learnerLevel > run.level && run.level < TOP_LEVEL && (
+            <p className="notice is-good" role="status">
+              {t('progress.unlocked', { n: run.level + 1 })} <a href={href('levels', { level: String(run.level + 1) })}>{t('progress.toLevel', { n: run.level + 1 })}</a>
+            </p>
+          )}
+        </>
       )}
 
       <div aria-live="polite" className="panels">

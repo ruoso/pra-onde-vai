@@ -7,8 +7,9 @@ import { Button, ListBox, ListBoxItem } from 'react-aria-components';
 import { t } from '../../i18n/index.js';
 import { useApp } from '../AppContext.jsx';
 import Segmented from '../components/Segmented.jsx';
-import { LEVELS, addedAt, boardAt } from '../../core/levels/levels.js';
-import { mastery, WINDOW, levelDone } from '../../core/levels/progress.js';
+import { LEVELS, addedAt } from '../../core/levels/levels.js';
+import { levelDone } from '../../core/levels/progress.js';
+import LevelProgress from '../components/LevelProgress.jsx';
 import { fnName } from '../words.js';
 import { href } from '../router.js';
 import { levelDrillRun } from '../runs.js';
@@ -24,11 +25,9 @@ export default function LevelsScreen() {
   const locked = sel > level;
 
   const drillNow = () => {
-    setRun(levelDrillRun(data.stats, attempts, sel, mode));
+    setRun(levelDrillRun(data.stats, attempts, sel));
     navigate(href('practice'));
   };
-
-  const rows = [...boardAt(sel, mode)].slice(-6).map((fn) => ({ fn, m: mastery(attempts, mode, fn) }));
 
   return (
     <div className="levels-screen">
@@ -72,15 +71,7 @@ export default function LevelsScreen() {
               <span className="sub">{t('levels.cover', { pct: info.cover[mode] })}</span>
             </div>
             <p className="card-text">{t(`levels.blurb.${l.key}`)}</p>
-            <ul className="mastery">
-              {rows.map(({ fn, m }) => (
-                <li key={fn}>
-                  <span className="m-fn">{fnName(fn)}</span>
-                  <span className="bar"><span className={m.mastered ? 'is-done' : ''} style={{ width: `${Math.round((100 * m.ok) / WINDOW)}%` }} /></span>
-                  <span className="m-text">{m.tries ? t('levels.ofLast', { ok: m.ok, tries: m.tries, keys: m.keys }) : t('levels.notMet')}</span>
-                </li>
-              ))}
-            </ul>
+            <LevelProgress attempts={attempts} level={sel} />
             <p className="note">{t('levels.rule')}</p>
           </section>
           <section className="card" aria-labelledby="ways-h">

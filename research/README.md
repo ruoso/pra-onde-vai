@@ -31,8 +31,8 @@ Some scripts read a cifra.md book of the user's own charts (a folder of
 | `analyse.py <book>/*.cifra.md` | the rule-based analyser: section keys against a hand analysis, chord labels, formulas | §3.3 |
 | `graph.py <book>` | the move graph of the user's charts by function | §2 |
 | `home.py <book>` | how sections start and end in the user's charts | §1 |
-| `dcml2cifra.py $X $T <out> [skip-title…]` | the corpus as cifra.md songs; then normalise them with `cifra-fmt -w <out>/*.cifra.md` (the Go command in `../estante-de-cifras/cifra.md/go/cmd/cifra-fmt`) | §3.1 |
-| `verify.py $X <out>` | after normalising: every converted song plays chord for chord as transcribed (it compares canonical spellings, so `NC` before normalising reads as a difference) | §3.1 |
+| `dcml2cifra.py $X $T <out> [skip-title…]` | the corpus as cifra.md songs, each part written once: a return to a part is the part again in the Form, and what the corpus plays around it is an Intro, a Break, a To C or the Coda (a return playing only some of its part is "A, short", listed on stdout); then normalise them with `cifra-fmt -w <out>/*.cifra.md` (the Go command in `../estante-de-cifras/cifra.md/go/cmd/cifra-fmt`) | §3.1 |
+| `verify.py $X <out>` | after normalising: every converted song plays chord for chord as transcribed, a later return to a part read as one pass of it short of at most its last four bars, which the next section plays instead (it compares canonical spellings, so `NC` before normalising reads as a difference) | §3.1 |
 | `compare.py <mine> <theirs>` | two versions of a song, section by section | §7.1 |
 | `versions.py <mine> <theirs> [<mine> <theirs>…]` | how two versions differ, classified, over many pairs | §7.1 |
 

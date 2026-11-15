@@ -40,18 +40,25 @@ export function currentLevel(attempts) {
 }
 
 /**
- * Which function a drill question should practise: one of the level's own
- * chords four times in five, else one from an earlier level. Chords further
- * from mastery come up more often.
+ * Where a level stands: each chord it adds, in both modes, with its mastery.
+ * The level is done when every one is mastered.
  */
-export function pickFocus(attempts, level, mode, rng = Math.random) {
-  const own = addedAt(level, mode);
-  const earlier = [...boardAt(level - 1, mode)];
+export function levelProgress(attempts, level) {
+  return MODES.flatMap((mode) => addedAt(level, mode).map((fn) => ({ mode, fn, ...mastery(attempts, mode, fn) })));
+}
+
+/**
+ * Which chord a drill progression should practise, as { mode, fn }: one of
+ * the level's own chords, in either mode, four times in five, else one from
+ * an earlier level. A chord not yet mastered comes up far more often, so a
+ * drill goes where the level still needs work — the minor side as much as
+ * the major.
+ */
+export function pickFocus(attempts, level, rng = Math.random) {
+  const own = MODES.flatMap((mode) => addedAt(level, mode).map((fn) => ({ mode, fn })));
+  const earlier = MODES.flatMap((mode) => [...boardAt(level - 1, mode)].map((fn) => ({ mode, fn })));
   const pool = level > 1 && rng() < REVIEW_SHARE ? earlier : own;
-  const weights = pool.map((fn) => {
-    const m = mastery(attempts, mode, fn);
-    return m.mastered ? 1 : 3;
-  });
+  const weights = pool.map(({ mode, fn }) => (mastery(attempts, mode, fn).mastered ? 1 : 6));
   let r = rng() * weights.reduce((a, b) => a + b, 0);
   for (let i = 0; i < pool.length; i += 1) {
     r -= weights[i];

@@ -265,6 +265,36 @@ describe('levels', () => {
     expect(screen.getByRole('option', { name: startsWith('Level 1 · Home and its dominant, done') })).toBeInTheDocument();
   });
 
+  it('says what is left when major is mastered and minor is not, and the drill goes there until level 2 unlocks', async () => {
+    const store = await openStore(`app-test-${n++}`);
+    const right = (mode, fn, count, keys) => Array.from({ length: count }, (_, i) => attemptOf(mode, fn, 'right', keys[i % keys.length], i));
+    // I and V mastered in major; i and V in minor one right answer short.
+    await store.addAttempts([...right('maj', 'I', 20, ['C', 'F', 'G']), ...right('maj', 'V', 20, ['C', 'F', 'G']),
+      ...right('min', 'i', 16, ['Am', 'Dm', 'Em']), ...right('min', 'V', 16, ['Am', 'Dm', 'Em'])]);
+    const { user } = await open('#/levels/1', { store });
+    const progress = screen.getByRole('region', { name: 'To unlock level 2' });
+    expect(within(progress).getByText('2 chords to go')).toBeInTheDocument();
+    expect(within(progress).getAllByText('✓ mastered')).toHaveLength(2);
+    expect(within(progress).getAllByText('16 of 17 right · 3 of 3 keys')).toHaveLength(2);
+
+    await user.click(screen.getByRole('button', { name: 'Continue level 1' }));
+    expect(screen.getByRole('region', { name: 'To unlock level 2' })).toBeInTheDocument();
+    // Name it: the chord asked is the last one played. Answer it, as a listener
+    // who heard it would, until the level is done.
+    const heard = () => synth.playChords.mock.calls.at(-1)[0].at(-1).sym;
+    for (let i = 0; i < 60 && !screen.queryByText('Level 2 is unlocked.'); i += 1) {
+      if (screen.queryByRole('link', { name: 'See how it went' })) {
+        await user.click(screen.getByRole('link', { name: 'See how it went' }));
+        await user.click(await screen.findByRole('button', { name: 'Another drill' }));
+        continue;
+      }
+      await user.click(chord(heard()));
+    }
+    expect(screen.getByText('Level 2 is unlocked.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Level 2' })).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'To unlock level 2' })).getByText('Every chord mastered')).toBeInTheDocument();
+  });
+
   it('starts a drill of the level on the whole board, with "Something else" for chords above it', async () => {
     const { user } = await open('#/levels/1');
     await user.click(screen.getByRole('button', { name: 'Continue level 1' }));

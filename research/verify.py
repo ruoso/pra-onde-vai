@@ -7,6 +7,14 @@ and endings expanded) must equal the transcription's S line expanded, with the
 corpus's `o` read as `°`. Only bars are compared; annotation and note lines are
 skipped. This is an independent reading of the written text, not of the
 converter's internals.
+
+A part is written once, and the Form names it again when it comes back, to be
+played the way choro is played. So a later entry of a part in the Form may play
+one pass of it (the part's repeat group with one of its endings, with or without
+what is written before and after the group) short of its last four bars at most,
+which the next section of the Form then plays instead: a To C, a Coda, or the
+next part. The first entry of each part, and every other section (To ..., Break,
+Coda, ..., short), must play exactly as transcribed.
 """
 import os
 import re
@@ -60,7 +68,7 @@ def source(path):
 
 
 def converted(path):
-    """Expand the cifra.md text: sections by the Form line, repeats as played."""
+    """The Form line, and each section's chords as played and its passes."""
     text = open(path, encoding='utf-8').read()
     form = re.search(r'^Form: (.*)$', text, re.M).group(1).split(' → ')
     sections, cur, fence = {}, None, False
@@ -147,7 +155,57 @@ def converted(path):
             played.append(list(played[-1]) if b == ['%'] else b)
         return played
 
-    return [b for name in form for b in expand(sections[name])]
+    def passes(lines):
+        """One pass of a part, read from its bars as played: the whole part;
+        X E1 X E2 gives X E1, X E2 and X; a unit played k times, then a tail,
+        gives the unit with and without the tail; and the same after a pickup
+        of up to four bars played once."""
+        def of(w, pickup=True):
+            out = [w]
+            n = len(w)
+            for m in range(1, n // 2 + 1):
+                for e1 in range(1, n - 2 * m + 1):
+                    if w[m + e1:2 * m + e1] == w[:m] and 2 * m + e1 < n:
+                        x, a, b = w[:m], w[m:m + e1], w[2 * m + e1:]
+                        out += [x + a, x + b, x]
+                k = 1
+                while w[k * m:(k + 1) * m] == w[:m]:
+                    k += 1
+                if k >= 2:
+                    out += [w[:m], w[:m] + w[k * m:]]
+            if pickup:
+                for p in range(1, min(4, n - 1) + 1):
+                    out += [q for r in of(w[p:], False) for q in (r, w[:p] + r)]
+            return out
+        return [q for q in of(expand(lines)) if q]
+
+    return form, {n: expand(ls) for n, ls in sections.items()}, {n: passes(ls) for n, ls in sections.items()}
+
+
+EXACT = re.compile(r'^(To |Break|Coda)|, short')
+
+
+def plays_as(src, form, played, passes):
+    """Whether the Form plays the source, reading later returns of a part by
+    the convention above; returns the number of such returns, or None."""
+    def walk(i, pos, seen):
+        if i == len(form):
+            return 0 if pos == len(src) else None
+        name = form[i]
+        bars = played[name]
+        if src[pos:pos + len(bars)] == bars:
+            r = walk(i + 1, pos + len(bars), seen | {name})
+            if r is not None:
+                return r
+        if name in seen and not EXACT.search(name):
+            for q in passes[name]:
+                for n in range(len(q), max(1, len(q) - 4) - 1, -1):
+                    if src[pos:pos + n] == q[:n]:
+                        r = walk(i + 1, pos + n, seen)
+                        if r is not None:
+                            return r + 1
+        return None
+    return walk(0, 0, frozenset())
 
 
 bad = 0
@@ -163,12 +221,18 @@ mapping = {}
 for line in open(os.path.join(here, 'mapping.tsv'), encoding='utf-8'):
     a, b = line.rstrip('\n').split('\t')
     mapping[a] = b
+conventional = 0
 for fn in sorted(os.listdir(cdir)):
     src = source(os.path.join(tdir, mapping[fn]))
-    got = converted(os.path.join(cdir, fn))
-    if src != got:
+    form, played, ps = converted(os.path.join(cdir, fn))
+    r = plays_as(src, form, played, ps)
+    if r is None:
         bad += 1
+        got = [b for name in form for b in played[name]]
         k = next((i for i, (a, b) in enumerate(zip(src, got)) if a != b), min(len(src), len(got)))
-        print(f'{fn}: differs at played bar {k + 1}: source {src[k:k + 3]} converted {got[k:k + 3]} '
-              f'({len(src)} vs {len(got)} bars)')
-print(f'{len(os.listdir(cdir)) - bad} of {len(os.listdir(cdir))} songs play exactly as transcribed')
+        print(f'{fn}: does not play as transcribed; read literally it differs at played bar {k + 1}: '
+              f'source {src[k:k + 3]} converted {got[k:k + 3]} ({len(src)} vs {len(got)} bars)')
+    else:
+        conventional += r
+print(f'{len(os.listdir(cdir)) - bad} of {len(os.listdir(cdir))} songs play as transcribed '
+      f'({conventional} returns to a part read as a player plays them)')

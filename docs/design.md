@@ -288,6 +288,10 @@ how many of the 295 have at least 80% of their changes on the board.
   degree alone, as the first estimate did, it was 91% / 92%.
 - **Unlocking**: each chord right, or another way of the same move, 17 of its
   last 20 times, in at least 3 keys; one question in five from earlier levels.
+  A level's chords count in major and in minor separately, so its drills go
+  for whichever chord, in whichever mode, is furthest from mastered, and the
+  drill and the levels screen show every one with its count (*12 of 17
+  right · 2 of 3 keys*).
 - Each level has three ways in: *Meet it* (the new chord in three corpus tunes
   where it is easy to hear), *Drills* and *Tunes*.
 

@@ -20,9 +20,15 @@ export function tuneRun(tune, { sections = 'ab', key = 'original', play = 'name'
   };
 }
 
-export function levelDrillRun(stats, attempts, level, mode, rng = Math.random) {
-  const progressions = drill({ stats, level, mode, rng, focusOf: (_, m) => pickFocus(attempts, level, m, rng) });
-  return { kind: 'drill', title: null, level, mode, st: start(drillSequence(progressions), { mode: 'name' }) };
+/** A level's drill, both modes, each progression going for a chord the level still needs. */
+export function levelDrillRun(stats, attempts, level, rng = Math.random) {
+  const plan = Array.from({ length: 12 }, () => pickFocus(attempts, level, rng));
+  const progressions = drill({
+    stats, level, mode: plan[0].mode, rng,
+    modeOf: (i) => plan[i % plan.length].mode,
+    focusOf: (i) => plan[i % plan.length].fn,
+  });
+  return { kind: 'drill', title: null, level, mode: plan[0].mode, st: start(drillSequence(progressions), { mode: 'name' }) };
 }
 
 export function missDrillRun(stats, level, pattern, rng = Math.random) {
@@ -41,7 +47,7 @@ export function again(run, data, attempts, overrides = {}) {
     const tune = data.tunes.find((x) => x.id === run.tuneId);
     return tuneRun(tune, { ...run.options, ...overrides }, run.level);
   }
-  return levelDrillRun(data.stats, attempts, run.level, run.mode);
+  return levelDrillRun(data.stats, attempts, run.level);
 }
 
 /** The attempts an answer makes, for mastery: the function asked and how it went. */

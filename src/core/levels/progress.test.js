@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { attemptOf, mastery, currentLevel, levelDone, pickFocus } from './progress.js';
+import { attemptOf, mastery, currentLevel, levelDone, pickFocus, levelProgress } from './progress.js';
 import { LEVELS, boardAt, levelOf, addedAt } from './levels.js';
 
 const many = (mode, fn, n, kinds, keys) =>
@@ -56,14 +56,36 @@ describe('unlocking', () => {
   });
 });
 
-describe('the review mix', () => {
-  it('asks one question in five from earlier levels', () => {
-    let seed = 1;
-    const rng = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-    const picks = Array.from({ length: 2000 }, () => pickFocus([], 3, 'maj', rng));
-    const earlier = picks.filter((p) => p !== 'V/V').length / picks.length;
+const seeded = (seed) => () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+const master = (mode, fn) => many(mode, fn, 20, () => 'right', ['C', 'F', 'G']);
+
+describe('what a drill practises', () => {
+  it('asks one question in five from earlier levels, in both modes', () => {
+    const picks = Array.from({ length: 2000 }, () => pickFocus([], 3, seeded(1)));
+    const rng = seeded(1);
+    const many2 = Array.from({ length: 2000 }, () => pickFocus([], 3, rng));
+    const earlier = many2.filter((p) => p.fn !== 'V/V').length / many2.length;
     expect(earlier).toBeGreaterThan(0.15);
     expect(earlier).toBeLessThan(0.25);
-    expect(pickFocus([], 1, 'maj', () => 0.01)).toBe('I');
+    expect(new Set(many2.map((p) => p.mode))).toEqual(new Set(['maj', 'min']));
+    expect(picks).toHaveLength(2000);
+  });
+
+  it('goes where the level still needs work: the minor side, when major is mastered', () => {
+    const done = [...master('maj', 'I'), ...master('maj', 'V')];
+    const rng = seeded(5);
+    const picks = Array.from({ length: 1000 }, () => pickFocus(done, 1, rng));
+    const minor = picks.filter((p) => p.mode === 'min').length / picks.length;
+    expect(minor).toBeGreaterThan(0.8);
+  });
+});
+
+describe('where a level stands', () => {
+  it('lists the level’s chords in both modes, so a mastered major side does not hide the minor one', () => {
+    const done = [...master('maj', 'I'), ...master('maj', 'V')];
+    expect(levelProgress(done, 1).map((x) => [x.mode, x.fn, x.mastered])).toEqual([
+      ['maj', 'I', true], ['maj', 'V', true], ['min', 'i', false], ['min', 'V', false],
+    ]);
+    expect(currentLevel(done)).toBe(1);
   });
 });

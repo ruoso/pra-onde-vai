@@ -312,6 +312,22 @@ button { font: inherit; }
 .mastery .bar span { background: var(--amber); }
 .mastery .bar span.is-done { background: var(--blue); }
 .m-text { font-size: 13px; color: var(--sub); text-align: right; white-space: nowrap; }
+.level-progress { display: flex; flex-direction: column; gap: 8px; }
+.level-progress .progress-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.progress-left { font-size: 13px; color: var(--sub); }
+.level-progress ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 6px 16px; }
+.level-progress li { display: grid; grid-template-columns: 110px minmax(40px, 1fr) 180px; gap: 10px; align-items: center; }
+.level-progress .bar { position: relative; height: 8px; border-radius: 4px; background: var(--border); overflow: hidden; }
+.level-progress .bar span { display: block; height: 100%; background: var(--amber); }
+.level-progress li.is-done .bar span { background: var(--blue); }
+.p-fn { font-family: var(--display); font-weight: 700; font-size: 15px; white-space: nowrap; }
+.p-mode { font-family: var(--body); font-weight: 500; font-size: 12px; color: var(--muted); }
+.p-text { font-size: 13px; color: var(--sub); text-align: right; white-space: nowrap; }
+.level-progress li.is-done .p-text { color: var(--blue); }
+.level-progress.compact { padding: 10px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); }
+.level-progress.compact ul { grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); }
+.level-progress.compact li { grid-template-columns: 96px minmax(40px, 1fr) 180px; }
+.notice.is-good { background: var(--blue-bg); border-color: var(--blue); }
 .way { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px; }
 .way-name { font-size: 14px; font-weight: 600; }
 .way-text { font-size: 13px; color: var(--sub); line-height: 1.4; }
