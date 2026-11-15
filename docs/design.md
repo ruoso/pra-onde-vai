@@ -116,7 +116,10 @@ The map is the main instrument: tap the chord you hear. Mockups:
   mockup opens in D minor only to show something). Not knowing is what the
   listening help is for (§5): *Don't know? Find it by ear* goes there, and
   it ends by opening the map in the home it found. *New home* asks again, for
-  the next tune; a reload asks again too.
+  the next tune; a reload asks again too. Tapping the current home opens the
+  same choice: before anything is played it replaces the starting home;
+  after, it is a change of home in the run, named by how it stands to the
+  key before (relative, parallel…) and undone like any other.
 - **What you played** stays in a strip under the board. *Play back* plays
   every chord since home was chosen, changes of home included, at the
   playback speed; *Undo* takes back the last step, a change of home

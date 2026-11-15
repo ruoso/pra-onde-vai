@@ -100,6 +100,8 @@ export default {
     iiNote: 'O ii dele é o {fn}',
   },
   map: {
+    change: 'mudar',
+    changeTitle: 'Mudar a casa',
     seeAll: 'Ver tudo',
     chartTitle: 'O que você tocou',
     chartName: 'Nome',

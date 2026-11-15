@@ -230,6 +230,27 @@ describe('the map', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
+  it('changes home from the current home: replacing it before anything is played, as a change of home after', async () => {
+    const { user } = await openMap('Dm');
+    await user.click(screen.getByRole('button', { name: startsWith('Current home: D minor,') }));
+    let dialog = screen.getByRole('dialog', { name: 'Change home' });
+    await user.click(within(dialog).getByRole('button', { name: 'C, C major' }));
+    // Nothing played yet: C major simply is home now, with no way back to D minor.
+    expect(screen.getByRole('button', { name: startsWith('Current home: C major,') })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Go back to/ })).toBeNull();
+
+    await user.click(chord('G7'));
+    await user.click(screen.getByRole('button', { name: startsWith('Current home: C major,') }));
+    dialog = screen.getByRole('dialog', { name: 'Change home' });
+    await user.click(within(dialog).getByRole('button', { name: 'Am, A minor' }));
+    expect(screen.getByRole('button', { name: startsWith('Current home: A minor, relative key') })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: startsWith('Go back to C major,') })).toBeInTheDocument();
+    expect(within(screen.getByRole('list', { name: 'Played' })).getByText('home: A minor')).toBeInTheDocument();
+    expect(chord('E7')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(screen.getByRole('button', { name: startsWith('Current home: C major,') })).toBeInTheDocument();
+  });
+
   it('moves to the parallel key and back, the dominant unchanged', async () => {
     const { user } = await openMap('Dm');
     await user.click(screen.getByRole('radio', { name: 'major' }));

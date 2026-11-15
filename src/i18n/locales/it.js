@@ -99,6 +99,8 @@ export default {
     iiNote: 'Il suo ii è {fn}',
   },
   map: {
+    change: 'cambia',
+    changeTitle: 'Cambia la casa',
     seeAll: 'Vedi tutto',
     chartTitle: 'Cosa hai suonato',
     chartName: 'Nome',

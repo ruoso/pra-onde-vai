@@ -2,7 +2,7 @@
 // by fifths, spelled as charts spell them. Not knowing is fine: the
 // listening screen is there to find it by ear.
 
-import { Button } from 'react-aria-components';
+import { Button, Heading } from 'react-aria-components';
 import { t } from '../../i18n/index.js';
 import { parseKey } from '../../core/theory/pitch.js';
 import { keyName } from '../words.js';
@@ -11,7 +11,8 @@ import { href } from '../router.js';
 export const MAJOR_HOMES = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'];
 export const MINOR_HOMES = ['Am', 'Em', 'Bm', 'F#m', 'C#m', 'G#m', 'Ebm', 'Bbm', 'Fm', 'Cm', 'Gm', 'Dm'];
 
-export default function HomePicker({ onPick }) {
+/** `inDialog`: the same choice, opened from the current home on the map, titled for its dialog. */
+export default function HomePicker({ onPick, inDialog = false }) {
   const row = (list, label) => (
     <div className="home-row" role="group" aria-label={label}>
       {list.map((text) => {
@@ -25,8 +26,10 @@ export default function HomePicker({ onPick }) {
     </div>
   );
   return (
-    <section className="home-picker" aria-labelledby="home-picker-h">
-      <h1 id="home-picker-h">{t('map.askTitle')}</h1>
+    <section className="home-picker" aria-labelledby={inDialog ? undefined : 'home-picker-h'}>
+      {inDialog
+        ? <Heading slot="title" className="card-title">{t('map.changeTitle')}</Heading>
+        : <h1 id="home-picker-h">{t('map.askTitle')}</h1>}
       <p className="sub">{t('map.askText')}</p>
       <span className="eyebrow">{t('map.askMajor')}</span>
       {row(MAJOR_HOMES, t('map.askMajor'))}

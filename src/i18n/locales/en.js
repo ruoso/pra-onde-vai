@@ -100,6 +100,8 @@ export default {
     iiNote: 'Its ii is the {fn}',
   },
   map: {
+    change: 'change',
+    changeTitle: 'Change home',
     seeAll: 'See it all',
     chartTitle: 'What you played',
     chartName: 'Name',

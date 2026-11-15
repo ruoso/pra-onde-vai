@@ -186,6 +186,7 @@ button { font: inherit; }
 .crumb-key { font-family: var(--display); font-weight: 700; font-size: 19px; }
 .crumb-rel { font-size: 12px; color: var(--muted); }
 .crumb.is-active .crumb-rel { color: var(--blue-soft); }
+.crumb-edit { color: var(--amber); }
 .banner { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 64px; padding: 10px 20px; border-radius: 16px; background: var(--surface); border: 1px solid var(--border); }
 .banner.is-stay { background: var(--blue-bg); border-color: var(--blue); }
 .banner-title { font-size: 17px; font-weight: 600; }

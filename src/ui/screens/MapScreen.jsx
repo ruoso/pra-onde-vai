@@ -18,12 +18,17 @@ import HomePicker from '../components/HomePicker.jsx';
 import { initialMap, resetMap, addChord, changeHome, currentOf, movedOf, playedOf, removeChord, undo } from '../mapState.js';
 import { BAR_SECONDS } from './PracticeScreen.jsx';
 import MapChart from '../components/MapChart.jsx';
+import { Dialog, Modal, ModalOverlay } from 'react-aria-components';
+import { useState } from 'react';
+import { relationOf } from '../../core/practice/relations.js';
+import { sameKey } from '../../core/theory/pitch.js';
 
 const RELATIONS = { 'maj:vi': 'relative', 'min:III': 'relative', 'maj:IV': 'subdominant', 'min:iv': 'subdominant', 'maj:V': 'dominant', 'min:V': 'dominant' };
 const TRAIL = 9;
 
 export default function MapScreen() {
   const { data, map, setMap, level, settings, setSetting, navigate } = useApp();
+  const [choosing, setChoosing] = useState(false);
   if (!map) {
     return (
       <HomePicker onPick={(key, text) => {
@@ -74,6 +79,20 @@ export default function MapScreen() {
     });
   };
 
+  // Tapping the current home changes it: before anything is played, the
+  // starting home is replaced; after, it is a change of home in the run,
+  // which Undo takes back.
+  const changeTo = (key) => {
+    setChoosing(false);
+    setMap((m) => {
+      const from = m.centres[m.centres.length - 1].key;
+      if (sameKey(from, key)) return m;
+      if (!m.log.length && m.centres.length === 1) return initialMap(key);
+      const rel = relationOf(from, key);
+      return changeHome(m, [...m.centres, { key, rel: rel === 'other' ? 'newCentre' : rel }], { current: homeId(key.mode) });
+    });
+  };
+
   const back = (i) => {
     setMap((m) => (i === m.centres.length - 1 ? m : changeHome(m, m.centres.slice(0, i + 1), { moved: false })));
   };
@@ -87,9 +106,9 @@ export default function MapScreen() {
             const active = i === map.centres.length - 1;
             return (
               <li key={i}>
-                <Button className={`crumb ${active ? 'is-active' : ''}`} onPress={() => back(i)} aria-current={active ? 'location' : undefined}>
+                <Button className={`crumb ${active ? 'is-active' : ''}`} onPress={() => (active ? setChoosing(true) : back(i))} aria-current={active ? 'location' : undefined}>
                   <span className="crumb-key"><span className="sr-only">{active ? t('map.crumbCurrent') : t('map.crumbBack')} </span>{keyName(c.key)}<span className="sr-only">,</span></span>
-                  <span className="crumb-rel">{t(`map.rel.${c.rel}`)}</span>
+                  <span className="crumb-rel">{t(`map.rel.${c.rel}`)}{active && <span className="crumb-edit"> · {t('map.change')}</span>}</span>
                 </Button>
               </li>
             );
@@ -106,6 +125,14 @@ export default function MapScreen() {
             options={[{ value: 'free', label: t('map.free') }, { value: 'checked', label: t('map.checked') }]} />
         </div>
       </div>
+
+      <ModalOverlay className="overlay" isDismissable isOpen={choosing} onOpenChange={setChoosing}>
+        <Modal className="modal wide">
+          <Dialog className="dialog">
+            <HomePicker inDialog onPick={(key) => changeTo(key)} />
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
 
       <div className={`banner ${stayInfo ? 'is-stay' : ''}`} aria-live="polite">
         {stayInfo ? (
