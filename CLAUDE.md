@@ -38,6 +38,17 @@ Do not reopen these unless the user does.
 - Seven levels by corpus frequency; drills before whole tunes until level 4.
 - The two modes are major and minor; choro's character is in the moves (the
   board and its tiers), not in a scale of its own.
+- cifra.md comes in as a copy of Estante's JavaScript implementation
+  (`lib/cifra-md`), not as a dependency.
+- Internationalisation as in Estante: English, Brazilian Portuguese, Latin
+  American Spanish and Italian, with Estante's small i18n module and its tests
+  (`docs/implementation-plan.md`, §Languages). Note names are letters, as in
+  chord charts, in every language.
+- The stack is Estante's: Vite, React, react-aria-components,
+  vite-plugin-pwa, Vitest with jsdom, Testing Library and axe, Playwright,
+  ESLint; the data build in Node (`docs/implementation-plan.md`, §Stack).
+- Static hosting on GitHub Pages, deployed from `main` by GitHub Actions once
+  every test passes.
 
 ## The user
 
@@ -58,7 +69,8 @@ Ask for it when a step needs it.
   data build), never typed in by hand; when a figure changes, change it in the
   docs too.
 - Commit messages: an imperative subject line, then a body saying what changed
-  and why, then the attribution trailers. Push only when asked.
+  and why, then the attribution trailers. Work goes straight to `main` (no
+  branches); push only when asked, since each push deploys.
 - The mockups are also on a Claude Design canvas
   (https://claude.ai/artifact/QBfdwcv672ZJNQ2VHDxv6C); this repository's copy
   is the reference. `mockups/support.js` exists only to run them outside the

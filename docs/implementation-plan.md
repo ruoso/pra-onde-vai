@@ -8,7 +8,42 @@ open are at the end, to settle with the user before or as each is reached.
 
 A free, non-commercial, offline web app (a PWA), tablet in landscape first,
 phone later. Everything runs on the device: the tunes and statistics ship with
-it, progress is stored locally, there is no account and no server.
+it, progress is stored locally, there is no account and no server. It is
+served as static files from GitHub Pages; once its assets are loaded and
+cached it works with no network.
+
+## Stack
+
+The same as Estante de Cifras, so the two projects share habits and the
+user knows the code:
+
+- **Vite** with **React** and the React Compiler, in plain JavaScript (ES
+  modules, no TypeScript), as Estante is.
+- **react-aria-components** for the controls: the board's buttons, the
+  segmented controls, dialogs and sheets, keyboard and screen-reader
+  behaviour on a tablet and a computer alike. They carry no look of their
+  own, so the mockups' visual language applies as drawn.
+- **vite-plugin-pwa** for the service worker and the install manifest: every
+  asset, the tune file included, cached up front.
+- **Vitest** with **jsdom** and **Testing Library** for the core and the
+  screens, **vitest-axe** for accessibility in those tests, and **Playwright**
+  for end-to-end runs in a real browser (install, go offline, practise a tune).
+- **ESLint** with the React, hooks and jsx-a11y plugins.
+- **The data build in Node**, as a script in the repository, so the app and
+  its data need one toolchain. It reads the corpus at a pinned commit; the
+  research scripts in Python stay as they are, for the research.
+
+The mockups' `support.js` is only for the mockups.
+
+### Hosting and deploying
+
+GitHub Pages, as static files: the app has no state on a server, so nothing
+else is needed. A GitHub Actions workflow on every push to `main` clones the
+corpus at its pinned commit, runs the data build, lint, the unit tests and
+the end-to-end tests, builds, and publishes to Pages only if all of it
+passed. The site lives under the repository's path, so Vite's `base`, the
+manifest's `start_url` and `scope`, and the service worker's scope are all
+set to that path (and tested: the end-to-end run serves the build under it).
 
 ## Architecture
 
@@ -19,8 +54,13 @@ of the UI, the audio or storage, and is tested on its own.
   key (the mockups' `spell(centre, step, semitones)`: `F#` and `Gb` are
   different), the two boards (major and minor: each button's id, function
   name, letter step, semitones and chord suffix — `board()` in
-  `mockups/Practice.dc.html`), chord parsing (cifra.md's grammar: reuse the
-  `cifra-md` package if it is a dependency, §Open decisions).
+  `mockups/Practice.dc.html`), chord parsing (cifra.md's grammar, from the
+  copy of `cifra-md` below).
+- **`lib/cifra-md`** — a copy of the JavaScript cifra.md implementation
+  from Estante de Cifras (`cifra.md/js/src`, MIT), with its tests. Copied,
+  not linked: the app needs the chord grammar now and the full reader later,
+  and a copy keeps this repository buildable on its own. The copy records the
+  Estante commit it came from, so it can be refreshed by hand.
 - **`core/corpus`** — the tune model (below) and its loading.
 - **`core/stats`** — next-move tiers (usual ≥ 35%, sometimes ≥ 10%, rare > 0),
   how sections open, coverage per tune and level. Computed at build time from
@@ -44,6 +84,35 @@ of the UI, the audio or storage, and is tested on its own.
   conveniences such as the last screen).
 - **`ui`** — the screens of the mockups: Map, Listen, Choose, Practice, Review,
   Levels, plus About (credits and licence).
+- **`i18n`** — translations, as in Estante de Cifras (below).
+
+### Languages
+
+The same set-up as Estante de Cifras (`app/src/i18n/` there), carried over:
+
+- The same four languages: English, Brazilian Portuguese, Latin American
+  Spanish and Italian. English is the source and the fallback; each language's
+  name is written in that language.
+- No library: one message object per language, a lookup by dotted key,
+  `{name}` interpolation, plural and ordinal forms by `Intl.PluralRules`.
+- The browser's language (by primary subtag) until the user picks one; the
+  choice is a setting kept in `storage`, and `<html lang>` follows it. A
+  change remounts the tree under a key, as Estante's `LocaleRoot` does.
+- The core knows nothing of languages: it returns ids and codes (a board
+  button's id, a mark such as `job`, an error code), and the view turns them
+  into text.
+- Tests check that every language has exactly English's keys and the same
+  placeholders in every string, and the screens' tests run in more than one
+  language.
+
+What gets translated here: the interface, the function names on the board
+(*dominant*, *dominante*), the tiers (*usual*, *sometimes*, *rare*), the
+marks and the review's explanations. What does not: chord symbols, which are
+letters in every language (as cifra.md writes them), and the tunes' titles,
+composers and section names, which are data. Note names on the listening
+staff are written as chord charts write them, letters (`C`, `F#`, `Bb`) in
+every language, never *dó ré mi*: what you hear on the staff is named the way
+you will read it in a chart.
 
 ### The tune data
 
@@ -76,8 +145,10 @@ ship.
 Each step ends with tests that go the whole way through what the user does
 (see `CLAUDE.md`), and the app building.
 
-1. **Scaffold**: the stack (§Open decisions), lint, tests, build, a CI that
-   runs them.
+1. **Scaffold**: the stack (§Stack), lint, tests, build, the workflow that
+   runs them and publishes to GitHub Pages (§Hosting and deploying); the copy of `cifra-md` with its tests passing here; i18n with
+   its four languages and its tests, so every screen is written with `t()`
+   from the start.
 2. **The data build**: the tune file and the statistics from the corpus. Done
    when every tune aligns, the 295 tunes load, and the figures in
    `docs/design.md` and `docs/corpus-notes.md` come out of it (e.g. the tiers,
@@ -104,23 +175,24 @@ Later, each needing design first: Follow mode (real-time, with a rhythm
 engine), voicings for the 6-string guitar, the user's own cifra.md books as
 practice tunes and second versions (design §7.2, *another version*).
 
+## Decisions taken
+
+- **cifra.md is a copy** of Estante's JavaScript implementation
+  (`lib/cifra-md`, above), not a git dependency or a published package.
+- **Internationalisation as in Estante**: the same four languages and the
+  same set-up (§Languages), from the first screen.
+- **Note names are letters**, as in chord charts, in every language.
+- **The stack is Estante's** (§Stack).
+- **Work lands straight on `main`**, as in Estante; each push deploys.
+- **GitHub Pages** serves the app as static files (§Hosting and deploying).
+
 ## Open decisions
 
 To settle with the user; a recommendation for each.
 
-- **Stack.** Recommendation: the same as Estante de Cifras — Vite, React,
-  react-aria-components for accessible controls, Vitest with jsdom and Testing
-  Library, ESLint — so the two projects share habits and the user knows the
-  code. The mockups' `support.js` is only for the mockups.
-- **cifra.md.** The app needs the cifra.md chord grammar now and the full
-  reader later (the user's own books). The JavaScript implementation lives in
-  the Estante de Cifras repository (`cifra.md/js`, package `cifra-md`).
-  Options: a git dependency on that path, a copy, or publishing the package.
 - **How the user's own books arrive** (later): a zip like Estante's download,
   a folder, or a link to an Estante book.
 - **Name and code licence.** The tune data must be CC BY-NC-SA 4.0; the code
   can be anything compatible with a free, non-commercial app.
 - **Sound.** A synthesised pluck is enough to start; a sampled nylon guitar
   would sound like the real thing.
-- **Where work lands.** Estante commits straight to `main`; ask whether this
-  repository works the same way or through branches.
