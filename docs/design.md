@@ -1,4 +1,4 @@
-# Choro harmony — design
+# Pra Onde Vai — design
 
 An ear-training app for the harmony of choro. Its goal is the skill a 6-string
 accompanist needs at a roda: to hear where a tune is going and follow it,

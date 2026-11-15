@@ -177,6 +177,9 @@ practice tunes and second versions (design §7.2, *another version*).
 
 ## Decisions taken
 
+- **The name is *Pra Onde Vai*** ("where is it going"), the question the app
+  trains you to answer at every change. The repository, the package and the
+  Pages path are `pra-onde-vai`.
 - **cifra.md is a copy** of Estante's JavaScript implementation
   (`lib/cifra-md`, above), not a git dependency or a published package.
 - **Internationalisation as in Estante**: the same four languages and the
@@ -192,7 +195,7 @@ To settle with the user; a recommendation for each.
 
 - **How the user's own books arrive** (later): a zip like Estante's download,
   a folder, or a link to an Estante book.
-- **Name and code licence.** The tune data must be CC BY-NC-SA 4.0; the code
-  can be anything compatible with a free, non-commercial app.
+- **Code licence.** The tune data must be CC BY-NC-SA 4.0; the code can be
+  anything compatible with a free, non-commercial app.
 - **Sound.** A synthesised pluck is enough to start; a sampled nylon guitar
   would sound like the real thing.

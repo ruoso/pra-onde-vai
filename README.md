@@ -1,8 +1,8 @@
-# Choro harmony
+# Pra Onde Vai
 
-An ear-training app for the harmony of choro, at the design stage: learn to
-hear where a tune is going and follow it on the 6-string guitar, including
-tunes there is no chart for. Free and non-commercial.
+*Where is it going?* An ear-training app for the harmony of choro, at the
+design stage: learn to hear where a tune is going and follow it on the 6-string
+guitar, including tunes there is no chart for. Free and non-commercial.
 
 - **[docs/design.md](docs/design.md)** — the whole design: the map of chord
   functions, the listening help, checked practice on 295 real choros, how
