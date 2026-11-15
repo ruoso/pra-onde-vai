@@ -48,9 +48,9 @@ nearly forced (V → I three times in four; the V of V → V four times in five)
    chord on the map, marked against the songbook's version, with levels that
    grow the board.
 
-A **guide** opens the first time: the idea, each part with a way into it,
-how answers are marked, and where to start. After that the app opens on the
-map, and the guide stays in the navigation.
+The app lands on a **guide**: the idea, each part with a way into it, how
+answers are marked, and where to start. The map and the rest are in the
+navigation.
 
 It **installs as an app** and then works with no network: the guide and
 About offer the browser's install prompt where there is one, the steps

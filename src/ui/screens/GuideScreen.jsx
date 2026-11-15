@@ -1,8 +1,6 @@
-// The opening page: what the app is for, how its parts fit, how answers are
-// marked, and where to start. It opens the first time; after that the app
-// opens on the map, and the guide is in the navigation.
+// The landing page: what the app is for, how its parts fit, how answers are
+// marked, where to start, and how to install it.
 
-import { useEffect } from 'react';
 import { t } from '../../i18n/index.js';
 import { useApp } from '../AppContext.jsx';
 import { href } from '../router.js';
@@ -19,10 +17,7 @@ function Part({ id, title, children, to, go }) {
 }
 
 export default function GuideScreen() {
-  const { settings, setSetting, level, data } = useApp();
-  useEffect(() => {
-    if (!settings.guided) setSetting('guided', true);
-  }, [settings.guided, setSetting]);
+  const { level, data } = useApp();
   const p = (key, params) => <p className="card-text">{t(key, params)}</p>;
   return (
     <div className="guide-screen">

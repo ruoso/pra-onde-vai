@@ -1,6 +1,6 @@
 // Hash routes, so every screen has an address that works on GitHub Pages and
 // offline with no server rewrites: #/map, #/tunes/cochichando, #/levels/3.
-// The bare address is `start`: the guide the first time, the map after.
+// The bare address is `start`, which lands on the guide.
 
 const ROUTES = [
   ['start', /^\/?$/],

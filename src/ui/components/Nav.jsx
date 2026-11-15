@@ -15,8 +15,8 @@ const ITEMS = [
 ];
 
 export default function Nav() {
-  const { route, level, settings } = useApp();
-  const here = route.name === 'start' ? (settings.guided ? 'map' : 'guide') : route.name;
+  const { route, level } = useApp();
+  const here = route.name === 'start' ? 'guide' : route.name;
   return (
     <header className="nav">
       <a className="skip" href="#main">{t('nav.skip')}</a>

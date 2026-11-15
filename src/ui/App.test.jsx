@@ -47,28 +47,24 @@ async function openMap(home = 'Dm') {
 }
 
 describe('the guide', () => {
-  it('opens the first time, explains the parts, and leads into each', async () => {
-    const { user, store } = await open('');
+  it('is where the app lands, explains the parts, and leads into each', async () => {
+    const { user } = await open('');
     expect(screen.getByRole('heading', { level: 1, name: 'Pra Onde Vai' })).toBeInTheDocument();
     for (const name of ['The map', 'What am I hearing?', 'Practise with a tune', 'Levels and drills', 'How answers are marked', 'Where to start']) {
       expect(screen.getByRole('heading', { name })).toBeInTheDocument();
     }
     expect(screen.getByText(/each chord sounds, then waits for you to find it/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Guide' })).toHaveAttribute('aria-current', 'page');
-    // Saved on the device, so the next visit opens on the map.
-    await waitFor(async () => expect((await store.getSettings()).guided).toBe(true));
     await user.click(screen.getByRole('link', { name: 'Continue level 1 →' }));
     expect(await screen.findByRole('heading', { name: 'Your levels' })).toBeInTheDocument();
   });
 
-  it('after the first time, the app opens on the map, and the guide is in the navigation', async () => {
+  it('lands there every time, not only the first', async () => {
     const store = await openStore(`app-test-${n++}`);
-    await store.setSetting('guided', true);
-    const { user } = await open('', { store });
-    expect(screen.getByRole('heading', { name: 'Where is home?' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Map' })).toHaveAttribute('aria-current', 'page');
-    await user.click(screen.getByRole('link', { name: 'Guide' }));
-    expect(await screen.findByRole('heading', { name: 'How answers are marked' })).toBeInTheDocument();
+    await open('', { store });
+    cleanup();
+    await open('', { store });
+    expect(screen.getByRole('heading', { name: 'How answers are marked' })).toBeInTheDocument();
   });
 
   it('links each part to its screen', async () => {
