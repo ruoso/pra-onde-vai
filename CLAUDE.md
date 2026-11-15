@@ -49,6 +49,7 @@ Do not reopen these unless the user does.
   ESLint; the data build in Node (`docs/implementation-plan.md`, §Stack).
 - Static hosting on GitHub Pages, deployed from `main` by GitHub Actions once
   every test passes.
+- The code is MIT (`LICENSE`); the tune data stays CC BY-NC-SA 4.0.
 
 ## The user
 

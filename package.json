@@ -2,6 +2,7 @@
   "name": "pra-onde-vai",
   "version": "0.0.0",
   "private": true,
+  "license": "MIT",
   "description": "An ear-training app for choro harmony: design and mockups.",
   "scripts": {
     "test": "node tests/mockups.test.cjs && node tests/practice-marking.test.mjs"

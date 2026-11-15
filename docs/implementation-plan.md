@@ -188,6 +188,9 @@ practice tunes and second versions (design §7.2, *another version*).
 - **The stack is Estante's** (§Stack).
 - **Work lands straight on `main`**, as in Estante; each push deploys.
 - **GitHub Pages** serves the app as static files (§Hosting and deploying).
+- **The code is MIT**, as Estante's is (`LICENSE`); the tune data and
+  everything derived from the corpus stay CC BY-NC-SA 4.0, and the About
+  screen states both.
 
 ## Open decisions
 
@@ -195,7 +198,5 @@ To settle with the user; a recommendation for each.
 
 - **How the user's own books arrive** (later): a zip like Estante's download,
   a folder, or a link to an Estante book.
-- **Code licence.** The tune data must be CC BY-NC-SA 4.0; the code can be
-  anything compatible with a free, non-commercial app.
 - **Sound.** A synthesised pluck is enough to start; a sampled nylon guitar
   would sound like the real thing.

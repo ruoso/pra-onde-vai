@@ -45,3 +45,6 @@ Lumiar). The corpus is licensed
 tune data this project uses or derives from it is shared under the same
 licence. The corpus itself is not in this repository: `research/README.md`
 says how to fetch it.
+
+The code (the app, the mockups, the research scripts and the tests) is under
+the [MIT License](LICENSE).
